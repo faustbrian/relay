@@ -1,0 +1,24 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Request;
+use Cline\Relay\Support\Attributes\ContentTypes\{{ contentType }};
+use Cline\Relay\Support\Attributes\Methods\{{ methodClass }};
+
+/**
+ * {{ class }} request.
+ */
+#[{{ methodClass }}(), {{ contentType }}()]
+{{ attributes }}
+final class {{ class }} extends Request
+{
+    public function __construct(
+        private readonly int $id,
+    ) {}
+
+    public function endpoint(): string
+    {
+        return '/resource/'.$this->id;
+    }
+}
