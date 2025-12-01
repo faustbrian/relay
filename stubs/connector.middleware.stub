@@ -1,0 +1,49 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Connector;
+use Cline\Relay\Features\Middleware\HeaderMiddleware;
+use Cline\Relay\Features\Middleware\LoggingMiddleware;
+use Cline\Relay\Features\Middleware\TimingMiddleware;
+use GuzzleHttp\HandlerStack;
+
+/**
+ * {{ connectorName }} API connector with middleware pipeline.
+ */
+final class {{ class }} extends Connector
+{
+    public function __construct(
+        private readonly string $baseUrl = 'https://api.example.com',
+    ) {}
+
+    public function baseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    public function middleware(): HandlerStack
+    {
+        $stack = HandlerStack::create();
+
+        // Add timing middleware
+        $stack->push(TimingMiddleware::create(), 'timing');
+
+        // Add logging middleware
+        $stack->push(LoggingMiddleware::create(), 'logging');
+
+        // Add custom headers middleware
+        $stack->push(HeaderMiddleware::create([
+            'X-Client-Version' => '1.0.0',
+        ]), 'headers');
+
+        return $stack;
+    }
+
+    public function defaultHeaders(): array
+    {
+        return [
+            'Accept' => 'application/json',
+        ];
+    }
+}
