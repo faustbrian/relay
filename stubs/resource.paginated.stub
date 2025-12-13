@@ -1,0 +1,40 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\Response;
+use Cline\Relay\Features\Pagination\PaginatedResponse;
+
+/**
+ * {{ class }} resource with pagination support.
+ */
+final class {{ class }} extends Resource
+{
+    /**
+     * List all resources with pagination.
+     */
+    public function list(int $page = 1, int $perPage = 25): PaginatedResponse
+    {
+        // return $this->connector()->paginate(
+        //     new ListResourcesRequest($page, $perPage),
+        // );
+    }
+
+    /**
+     * Iterate through all pages.
+     *
+     * @return \Generator<Response>
+     */
+    public function all(): \Generator
+    {
+        $response = $this->list();
+
+        yield $response;
+
+        while ($response->hasNextPage()) {
+            $response = $response->nextPage();
+            yield $response;
+        }
+    }
+}

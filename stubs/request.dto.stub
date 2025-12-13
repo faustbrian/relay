@@ -1,0 +1,38 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Request;
+use Cline\Relay\Core\Response;
+use Cline\Relay\Support\Attributes\ContentTypes\Json;
+use Cline\Relay\Support\Attributes\Dto;
+use Cline\Relay\Support\Attributes\Methods\Get;
+
+/**
+ * {{ class }} request with DTO mapping.
+ */
+#[Get(), Json()]
+#[Dto(class: ResourceDto::class)]
+{{ attributes }}
+final class {{ class }} extends Request
+{
+    public function __construct(
+        private readonly int $id,
+    ) {}
+
+    public function endpoint(): string
+    {
+        return '/resources/'.$this->id;
+    }
+
+    public function createDtoFromResponse(Response $response): ResourceDto
+    {
+        $data = $response->json();
+
+        return new ResourceDto(
+            id: $data['id'],
+            name: $data['name'],
+            // Map additional fields...
+        );
+    }
+}

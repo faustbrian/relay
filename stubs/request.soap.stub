@@ -1,0 +1,38 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Protocols\SoapRequest;
+use Override;
+
+/**
+ * {{ class }} SOAP request.
+ */
+{{ attributes }}
+final class {{ class }} extends SoapRequest
+{
+    public function __construct(
+        private readonly array $params = [],
+    ) {}
+
+    public function wsdl(): ?string
+    {
+        return 'https://api.example.com/service.wsdl';
+    }
+
+    public function endpoint(): string
+    {
+        return '/soap-service';
+    }
+
+    public function soapMethod(): string
+    {
+        return 'GetResource';
+    }
+
+    #[Override()]
+    public function soapParams(): array
+    {
+        return $this->params;
+    }
+}

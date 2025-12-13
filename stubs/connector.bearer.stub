@@ -1,0 +1,35 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\Request;
+use Cline\Relay\Features\Auth\BearerToken;
+
+/**
+ * {{ connectorName }} API connector with Bearer token authentication.
+ */
+final class {{ class }} extends Connector
+{
+    public function __construct(
+        private readonly string $baseUrl = 'https://api.example.com',
+        private readonly string $token = '',
+    ) {}
+
+    public function baseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    public function authenticate(Request $request): void
+    {
+        (new BearerToken($this->token))->authenticate($request);
+    }
+
+    public function defaultHeaders(): array
+    {
+        return [
+            'Accept' => 'application/json',
+        ];
+    }
+}

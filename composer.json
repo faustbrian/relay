@@ -1,0 +1,85 @@
+{
+  "name": "cline/relay",
+  "description": "A modern, attribute-driven HTTP client for PHP",
+  "license": "MIT",
+  "keywords": [
+    "php",
+    "http",
+    "client",
+    "api",
+    "guzzle",
+    "rest",
+    "graphql"
+  ],
+  "authors": [
+    {
+      "name": "Brian Faust",
+      "email": "brian@cline.sh"
+    }
+  ],
+  "require": {
+    "php": "^8.4",
+    "crell/attributeutils": "^1.3",
+    "guzzlehttp/guzzle": "^7.10",
+    "illuminate/support": "*",
+    "league/oauth2-server": "^9.3",
+    "nyholm/psr7": "^1.8.2",
+    "psr/http-client": "^1.0.3",
+    "psr/http-factory": "^1.1",
+    "psr/http-message": "^2.0",
+    "psr/simple-cache": "^3.0",
+    "spatie/laravel-package-tools": "^1.92.7"
+  },
+  "require-dev": {
+    "cline/coding-standard": "^1.5.7",
+    "ergebnis/composer-normalize": "^2.49@dev",
+    "orchestra/testbench": "^10.8",
+    "pestphp/pest": "^4.1.6",
+    "pestphp/pest-plugin-laravel": "^4.0",
+    "pestphp/pest-plugin-type-coverage": "^4.0.3",
+    "symfony/var-dumper": "^7.4.0"
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "Cline\\Relay\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "ergebnis/composer-normalize": true,
+      "pestphp/pest-plugin": true
+    },
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Cline\\Relay\\RelayServiceProvider"
+      ]
+    }
+  },
+  "scripts": {
+    "lint": "ecs check --fix",
+    "refactor": "rector",
+    "test": [
+      "@test:lint",
+      "@test:type-coverage",
+      "@test:unit",
+      "@test:types",
+      "@test:refactor"
+    ],
+    "test:lint": "ecs check",
+    "test:refactor": "rector --dry-run",
+    "test:type-coverage": "pest --parallel --min=90 --type-coverage",
+    "test:types": "phpstan",
+    "test:unit": "pest --parallel --min=90 --coverage"
+  }
+}
