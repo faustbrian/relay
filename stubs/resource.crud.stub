@@ -1,0 +1,60 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use App\Http\Integrations\{{ connector }}\Requests\Create{{ resourceName }}Request;
+use App\Http\Integrations\{{ connector }}\Requests\Delete{{ resourceName }}Request;
+use App\Http\Integrations\{{ connector }}\Requests\Get{{ resourceName }}Request;
+use App\Http\Integrations\{{ connector }}\Requests\List{{ resourceName }}sRequest;
+use App\Http\Integrations\{{ connector }}\Requests\Update{{ resourceName }}Request;
+use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\Response;
+use Cline\Relay\Features\Pagination\PaginatedResponse;
+
+/**
+ * {{ class }} resource with CRUD operations.
+ */
+final class {{ class }} extends Resource
+{
+    /**
+     * Get a single {{ resourceNameLower }}.
+     */
+    public function get(int|string $id): Response
+    {
+        return $this->send(new Get{{ resourceName }}Request($id));
+    }
+
+    /**
+     * List all {{ resourceNamePlural }}.
+     */
+    public function list(int $page = 1, int $perPage = 25): PaginatedResponse
+    {
+        return $this->connector()->paginate(
+            new List{{ resourceName }}sRequest($page, $perPage),
+        );
+    }
+
+    /**
+     * Create a new {{ resourceNameLower }}.
+     */
+    public function create(array $data): Response
+    {
+        return $this->send(new Create{{ resourceName }}Request($data));
+    }
+
+    /**
+     * Update a {{ resourceNameLower }}.
+     */
+    public function update(int|string $id, array $data): Response
+    {
+        return $this->send(new Update{{ resourceName }}Request($id, $data));
+    }
+
+    /**
+     * Delete a {{ resourceNameLower }}.
+     */
+    public function delete(int|string $id): Response
+    {
+        return $this->send(new Delete{{ resourceName }}Request($id));
+    }
+}

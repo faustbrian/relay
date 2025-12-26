@@ -1,0 +1,56 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Connector;
+use Cline\Relay\Features\Caching\CacheConfig;
+use Illuminate\Support\Facades\Cache;
+use Psr\SimpleCache\CacheInterface;
+
+/**
+ * {{ connectorName }} API connector with caching support.
+ */
+final class {{ class }} extends Connector
+{
+    public function __construct(
+        private readonly string $baseUrl = 'https://api.example.com',
+        private readonly int $cacheTtl = 300,
+    ) {}
+
+    public function baseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    public function cache(): ?CacheInterface
+    {
+        return Cache::store();
+    }
+
+    public function cacheConfig(): ?CacheConfig
+    {
+        $cache = $this->cache();
+
+        if (!$cache instanceof CacheInterface) {
+            return null;
+        }
+
+        return new CacheConfig(
+            store: $cache,
+            ttl: $this->cacheTtl,
+            prefix: '{{ connectorName | lower }}_',
+        );
+    }
+
+    public function cacheableMethods(): array
+    {
+        return ['GET', 'HEAD'];
+    }
+
+    public function defaultHeaders(): array
+    {
+        return [
+            'Accept' => 'application/json',
+        ];
+    }
+}

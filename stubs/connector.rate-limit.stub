@@ -1,0 +1,45 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Connector;
+use Cline\Relay\Features\RateLimiting\CacheStore;
+use Cline\Relay\Features\RateLimiting\RateLimitConfig;
+use Cline\Relay\Support\Contracts\RateLimitStore;
+use Illuminate\Support\Facades\Cache;
+
+/**
+ * {{ connectorName }} API connector with rate limiting.
+ */
+final class {{ class }} extends Connector
+{
+    public function __construct(
+        private readonly string $baseUrl = 'https://api.example.com',
+        private readonly int $requestsPerMinute = 60,
+    ) {}
+
+    public function baseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    public function rateLimit(): ?RateLimitConfig
+    {
+        return new RateLimitConfig(
+            maxRequests: $this->requestsPerMinute,
+            perSeconds: 60,
+        );
+    }
+
+    public function rateLimitStore(): RateLimitStore
+    {
+        return new CacheStore(Cache::store());
+    }
+
+    public function defaultHeaders(): array
+    {
+        return [
+            'Accept' => 'application/json',
+        ];
+    }
+}

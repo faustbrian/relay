@@ -1,0 +1,37 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Protocols\GraphQL\GraphQLRequest;
+
+/**
+ * {{ class }} GraphQL request.
+ */
+{{ attributes }}
+final class {{ class }} extends GraphQLRequest
+{
+    public function __construct(
+        private readonly int $id,
+    ) {}
+
+    public function graphqlQuery(): string
+    {
+        return <<<'GRAPHQL'
+            query GetResource($id: ID!) {
+                resource(id: $id) {
+                    id
+                    name
+                    createdAt
+                    updatedAt
+                }
+            }
+            GRAPHQL;
+    }
+
+    public function variables(): ?array
+    {
+        return [
+            'id' => $this->id,
+        ];
+    }
+}

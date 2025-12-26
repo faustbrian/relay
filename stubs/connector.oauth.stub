@@ -1,0 +1,64 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\Request;
+use Cline\Relay\Features\OAuth2\AuthorizationCodeGrant;
+use Cline\Relay\Features\OAuth2\OAuthConfig;
+use Cline\Relay\Support\Contracts\OAuthAuthenticator;
+
+/**
+ * {{ connectorName }} API connector with OAuth2 authentication.
+ */
+final class {{ class }} extends Connector
+{
+    use AuthorizationCodeGrant;
+
+    private ?OAuthAuthenticator $authenticator = null;
+
+    public function __construct(
+        private readonly string $baseUrl = 'https://api.example.com',
+        private readonly string $clientId = '',
+        private readonly string $clientSecret = '',
+        private readonly string $redirectUri = '',
+    ) {}
+
+    public function baseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    public function oauthConfig(): OAuthConfig
+    {
+        return new OAuthConfig(
+            clientId: $this->clientId,
+            clientSecret: $this->clientSecret,
+            redirectUri: $this->redirectUri,
+            authorizeEndpoint: '/oauth/authorize',
+            tokenEndpoint: '/oauth/token',
+        );
+    }
+
+    public function withAuthenticator(OAuthAuthenticator $authenticator): static
+    {
+        $clone = clone $this;
+        $clone->authenticator = $authenticator;
+
+        return $clone;
+    }
+
+    public function authenticate(Request $request): void
+    {
+        if ($this->authenticator instanceof OAuthAuthenticator) {
+            $request->withBearerToken($this->authenticator->getAccessToken());
+        }
+    }
+
+    public function defaultHeaders(): array
+    {
+        return [
+            'Accept' => 'application/json',
+        ];
+    }
+}
