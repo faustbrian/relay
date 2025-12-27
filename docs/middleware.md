@@ -1,8 +1,3 @@
----
-title: Middleware
-description: Intercept and modify requests and responses with Guzzle middleware
----
-
 Relay supports Guzzle middleware for intercepting and modifying requests and responses. Middleware can add headers, log requests, track timing, and more.
 
 ## Overview

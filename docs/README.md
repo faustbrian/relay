@@ -1,8 +1,3 @@
----
-title: Getting Started
-description: Install and configure Relay, a modern attribute-driven HTTP client for PHP
----
-
 Relay is a powerful PHP 8.4+ attribute-driven HTTP client for building elegant API SDKs. This guide covers installation, configuration, and creating your first API connector.
 
 ## Installation

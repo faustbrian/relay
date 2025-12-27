@@ -1,8 +1,3 @@
----
-title: Testing
-description: Mock connectors, response factories, and testing utilities for Relay
----
-
 Relay provides comprehensive testing utilities for writing reliable tests.
 
 ## MockClient

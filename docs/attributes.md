@@ -1,8 +1,3 @@
----
-title: Attributes
-description: Configure requests declaratively with PHP 8 attributes for HTTP methods, content types, and more
----
-
 Relay uses PHP 8 attributes to configure requests declaratively. This guide covers all available attributes.
 
 ## HTTP Method Attributes

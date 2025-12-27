@@ -1,8 +1,3 @@
----
-title: Caching
-description: Cache API responses to reduce calls and improve performance
----
-
 Relay supports response caching to reduce API calls and improve performance.
 
 ## Overview

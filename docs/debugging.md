@@ -1,8 +1,3 @@
----
-title: Debugging
-description: Debug tools, request inspection, and export utilities for Relay
----
-
 Relay provides comprehensive debugging tools to help you understand, troubleshoot, and diagnose issues with your API integrations.
 
 ## Overview

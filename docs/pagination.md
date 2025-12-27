@@ -1,8 +1,3 @@
----
-title: Pagination
-description: Handle paginated API responses with multiple strategies in Relay
----
-
 Relay provides flexible pagination support for iterating through API results with multiple strategies.
 
 ## Pagination Strategies

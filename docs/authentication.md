@@ -1,8 +1,3 @@
----
-title: Authentication
-description: Configure authentication strategies including Bearer tokens, API keys, OAuth2, and custom authenticators
----
-
 Relay provides multiple authentication strategies for different API requirements. All authenticators implement the `Authenticator` contract.
 
 ## Using Authentication

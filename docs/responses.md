@@ -1,8 +1,3 @@
----
-title: Responses
-description: Parse, validate, and transform HTTP responses with typed accessors and convenience methods
----
-
 The Response class wraps HTTP responses with typed accessors and convenience methods for parsing, validation, and transformation.
 
 ## Basic Response Handling

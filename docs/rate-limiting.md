@@ -1,8 +1,3 @@
----
-title: Rate Limiting
-description: Client-side rate limiting and handling API quotas in Relay
----
-
 Relay provides client-side rate limiting to prevent exceeding API quotas and handles server-side 429 responses gracefully.
 
 ## Connector-Level Rate Limiting

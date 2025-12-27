@@ -1,8 +1,3 @@
----
-title: Requests
-description: Define API endpoints with HTTP methods, headers, query parameters, and request bodies
----
-
 Requests represent individual API endpoint calls. They define the HTTP method, endpoint, headers, query parameters, and body.
 
 ## Creating a Request

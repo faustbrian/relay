@@ -1,8 +1,3 @@
----
-title: Pooling
-description: Execute multiple requests concurrently with request pooling in Relay
----
-
 Relay supports concurrent request execution through request pooling, significantly improving performance when dealing with multiple API calls.
 
 ## Basic Usage

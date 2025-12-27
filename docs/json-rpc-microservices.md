@@ -1,8 +1,3 @@
----
-title: JSON-RPC Microservices
-description: Base classes for building internal microservice integrations with automatic configuration and authentication
----
-
 Relay provides specialized base classes for internal microservice communication using JSON-RPC. These classes handle common patterns like configuration lookup, bearer token authentication, and Spatie Data integration.
 
 ## Overview

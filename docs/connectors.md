@@ -1,8 +1,3 @@
----
-title: Connectors
-description: Configure API connections with base URLs, authentication, headers, timeouts, and more
----
-
 Connectors represent an API service and define how requests are sent. They configure base URLs, authentication, headers, timeouts, and other connection settings.
 
 ## Creating a Connector

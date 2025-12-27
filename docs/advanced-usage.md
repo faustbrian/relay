@@ -1,8 +1,3 @@
----
-title: Advanced Usage
-description: DTOs, GraphQL, streaming, idempotency, and custom protocols in Relay
----
-
 This guide covers advanced Relay features including DTO mapping, GraphQL support, streaming, idempotency, and custom protocols.
 
 ## DTO Mapping

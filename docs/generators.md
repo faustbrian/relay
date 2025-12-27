@@ -1,8 +1,3 @@
----
-title: Generators
-description: Artisan commands to scaffold API integrations quickly in Relay
----
-
 Relay provides powerful Artisan commands to scaffold API integrations quickly.
 
 ## Quick Start

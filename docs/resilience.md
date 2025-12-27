@@ -1,8 +1,3 @@
----
-title: Resilience
-description: Retries, circuit breakers, and timeouts for handling transient failures in Relay
----
-
 Relay provides resilience patterns to handle transient failures gracefully.
 
 ## Retry Configuration
