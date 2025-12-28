@@ -494,9 +494,11 @@ describe('Fixture Recording', function (): void {
         // Clean up recorded fixture
         $recordedPath = Fixture::getFixturePath().'/recorded-test.json';
 
-        if (file_exists($recordedPath)) {
-            unlink($recordedPath);
+        if (!file_exists($recordedPath)) {
+            return;
         }
+
+        unlink($recordedPath);
     });
 
     it('sets and clears recorder callback', function (): void {
@@ -512,7 +514,7 @@ describe('Fixture Recording', function (): void {
         MockConfig::throwOnMissingFixtures(false);
         $fixture = Fixture::make('nonexistent');
 
-        expect(fn () => $fixture->resolve())
+        expect(fn (): Response => $fixture->resolve())
             ->toThrow(FixtureException::class, 'Cannot record fixture');
     });
 
@@ -561,7 +563,7 @@ describe('Fixture Recording', function (): void {
         $fixture = Fixture::make('no-recorder');
         $request = createFixtureRequest('/test');
 
-        expect(fn () => $fixture->forRequest($request)->resolve())
+        expect(fn (): Response => $fixture->forRequest($request)->resolve())
             ->toThrow(FixtureException::class, 'Cannot record fixture');
     });
 
@@ -576,7 +578,7 @@ describe('Fixture Recording', function (): void {
         $fixture = Fixture::make('no-request');
 
         // No forRequest() called
-        expect(fn () => $fixture->resolve())
+        expect(fn (): Response => $fixture->resolve())
             ->toThrow(FixtureException::class, 'Cannot record fixture');
     });
 

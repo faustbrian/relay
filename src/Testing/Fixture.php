@@ -45,7 +45,7 @@ final class Fixture
 {
     private static string $fixturePath = 'tests/Fixtures/Saloon';
 
-    /** @var (Closure(Request): Response)|null */
+    /** @var null|(Closure(Request): Response) */
     private static ?Closure $recorder = null;
 
     /**
@@ -69,7 +69,9 @@ final class Fixture
      */
     private array $sensitiveRegexPatterns = [];
 
-    /** Request associated with this fixture (for recording). */
+    /**
+     * Request associated with this fixture (for recording).
+     */
     private ?Request $request = null;
 
     /**
@@ -98,16 +100,6 @@ final class Fixture
     }
 
     /**
-     * Set the request for recording purposes.
-     */
-    public function forRequest(Request $request): self
-    {
-        $this->request = $request;
-
-        return $this;
-    }
-
-    /**
      * Create a fixture from a name.
      */
     public static function make(string $name): self
@@ -129,6 +121,16 @@ final class Fixture
     public static function getFixturePath(): string
     {
         return self::$fixturePath;
+    }
+
+    /**
+     * Set the request for recording purposes.
+     */
+    public function forRequest(Request $request): self
+    {
+        $this->request = $request;
+
+        return $this;
     }
 
     /**
@@ -303,7 +305,7 @@ final class Fixture
      */
     private function record(): Response
     {
-        if (self::$recorder === null || $this->request === null) {
+        if (!self::$recorder instanceof \Closure || !$this->request instanceof Request) {
             throw FixtureException::recordingDisabled($this->name);
         }
 
