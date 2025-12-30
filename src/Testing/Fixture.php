@@ -305,7 +305,7 @@ final class Fixture
      */
     private function record(): Response
     {
-        if (!self::$recorder instanceof \Closure || !$this->request instanceof Request) {
+        if (!self::$recorder instanceof Closure || !$this->request instanceof Request) {
             throw FixtureException::recordingDisabled($this->name);
         }
 
