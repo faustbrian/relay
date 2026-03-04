@@ -1,0 +1,51 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Connector;
+use Cline\Relay\Features\Resilience\CircuitBreakerConfig;
+use Cline\Relay\Features\Resilience\RetryConfig;
+use Cline\Relay\Support\Attributes\ThrowOnError;
+
+/**
+ * {{ connectorName }} API connector with circuit breaker and retry.
+ */
+#[ThrowOnError()]
+final class {{ class }} extends Connector
+{
+    public function __construct(
+        private readonly string $baseUrl = 'https://api.example.com',
+    ) {}
+
+    public function baseUrl(): string
+    {
+        return $this->baseUrl;
+    }
+
+    public function retryConfig(): RetryConfig
+    {
+        return new RetryConfig(
+            times: 3,
+            delay: 100,
+            multiplier: 2.0,
+            maxDelay: 30_000,
+            when: [429, 500, 502, 503, 504],
+        );
+    }
+
+    public function circuitBreakerConfig(): CircuitBreakerConfig
+    {
+        return new CircuitBreakerConfig(
+            failureThreshold: 5,
+            successThreshold: 2,
+            timeout: 30,
+        );
+    }
+
+    public function defaultHeaders(): array
+    {
+        return [
+            'Accept' => 'application/json',
+        ];
+    }
+}

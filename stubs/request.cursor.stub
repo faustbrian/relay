@@ -1,0 +1,43 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Request;
+use Cline\Relay\Support\Attributes\ContentTypes\Json;
+use Cline\Relay\Support\Attributes\Methods\Get;
+use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
+
+/**
+ * {{ class }} request with cursor-based pagination.
+ */
+#[Get(), Json()]
+#[CursorPagination(
+    cursorParam: 'cursor',
+    limitParam: 'limit',
+    limit: 25,
+    nextCursorKey: 'meta.next_cursor',
+)]
+{{ attributes }}
+final class {{ class }} extends Request
+{
+    public function __construct(
+        private readonly ?string $cursor = null,
+        private readonly int $limit = 25,
+    ) {}
+
+    public function endpoint(): string
+    {
+        return '/resources';
+    }
+
+    public function query(): ?array
+    {
+        $query = ['limit' => $this->limit];
+
+        if ($this->cursor !== null) {
+            $query['cursor'] = $this->cursor;
+        }
+
+        return $query;
+    }
+}
