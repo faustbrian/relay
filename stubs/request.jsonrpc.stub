@@ -1,0 +1,23 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Protocols\JsonRpcRequest;
+use Override;
+
+/**
+ * {{ class }} JSON-RPC request.
+ */
+{{ attributes }}
+final class {{ class }} extends JsonRpcRequest
+{
+    public function __construct(
+        private readonly array $data = [],
+    ) {}
+
+    #[Override()]
+    public function params(): array
+    {
+        return $this->data;
+    }
+}

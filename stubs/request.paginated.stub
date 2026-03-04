@@ -1,0 +1,41 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Request;
+use Cline\Relay\Support\Attributes\ContentTypes\Json;
+use Cline\Relay\Support\Attributes\Methods\Get;
+use Cline\Relay\Support\Attributes\Pagination\Pagination;
+
+/**
+ * {{ class }} request with page-based pagination.
+ */
+#[Get(), Json()]
+#[Pagination(
+    pageParam: 'page',
+    perPageParam: 'per_page',
+    perPage: 25,
+    totalKey: 'meta.total',
+    lastPageKey: 'meta.last_page',
+)]
+{{ attributes }}
+final class {{ class }} extends Request
+{
+    public function __construct(
+        private readonly int $page = 1,
+        private readonly int $perPage = 25,
+    ) {}
+
+    public function endpoint(): string
+    {
+        return '/resources';
+    }
+
+    public function query(): array
+    {
+        return [
+            'page' => $this->page,
+            'per_page' => $this->perPage,
+        ];
+    }
+}

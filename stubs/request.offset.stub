@@ -1,0 +1,40 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Request;
+use Cline\Relay\Support\Attributes\ContentTypes\Json;
+use Cline\Relay\Support\Attributes\Methods\Get;
+use Cline\Relay\Support\Attributes\Pagination\OffsetPagination;
+
+/**
+ * {{ class }} request with offset-based pagination.
+ */
+#[Get(), Json()]
+#[OffsetPagination(
+    offsetParam: 'offset',
+    limitParam: 'limit',
+    limit: 25,
+    totalKey: 'total',
+)]
+{{ attributes }}
+final class {{ class }} extends Request
+{
+    public function __construct(
+        private readonly int $offset = 0,
+        private readonly int $limit = 25,
+    ) {}
+
+    public function endpoint(): string
+    {
+        return '/resources';
+    }
+
+    public function query(): array
+    {
+        return [
+            'offset' => $this->offset,
+            'limit' => $this->limit,
+        ];
+    }
+}

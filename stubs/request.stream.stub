@@ -1,0 +1,25 @@
+<?php declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Cline\Relay\Core\Request;
+use Cline\Relay\Support\Attributes\Methods\Get;
+use Cline\Relay\Support\Attributes\Stream;
+
+/**
+ * {{ class }} streaming request.
+ */
+#[Get()]
+#[Stream()]
+{{ attributes }}
+final class {{ class }} extends Request
+{
+    public function __construct(
+        private readonly string $resourceId,
+    ) {}
+
+    public function endpoint(): string
+    {
+        return '/resources/'.$this->resourceId.'/stream';
+    }
+}
