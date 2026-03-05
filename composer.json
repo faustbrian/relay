@@ -20,6 +20,7 @@
     "require": {
         "php": "^8.4",
         "crell/attributeutils": "^1.3",
+        "facade/ignition-contracts": "^1.0.2",
         "guzzlehttp/guzzle": "^7.10",
         "illuminate/support": "*",
         "league/oauth2-server": "^9.3",
@@ -32,7 +33,7 @@
         "spatie/laravel-package-tools": "^1.93.0"
     },
     "require-dev": {
-        "cline/coding-standard": "^2.0",
+        "cline/coding-standard": "^2.0.1",
         "ergebnis/composer-normalize": "^2.50@dev",
         "orchestra/testbench": "^8.0 || ^9.0 || ^10.9",
         "pestphp/pest": "^4.4.1",

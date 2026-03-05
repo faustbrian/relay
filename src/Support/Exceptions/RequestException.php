@@ -11,6 +11,9 @@ namespace Cline\Relay\Support\Exceptions;
 
 use Cline\Relay\Core\Request;
 use Cline\Relay\Core\Response;
+use Facade\IgnitionContracts\BaseSolution;
+use Facade\IgnitionContracts\ProvidesSolution;
+use Facade\IgnitionContracts\Solution;
 use GuzzleHttp\Exception\RequestException as GuzzleException;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
@@ -22,7 +25,7 @@ use function sprintf;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-abstract class RequestException extends RuntimeException
+abstract class RequestException extends RuntimeException implements ProvidesSolution
 {
     public function __construct(
         string $message,
@@ -76,5 +79,17 @@ abstract class RequestException extends RuntimeException
     public function status(): int
     {
         return $this->response?->status() ?? 0;
+    }
+
+    public function getSolution(): Solution
+    {
+        /** @var BaseSolution $solution */
+        $solution = BaseSolution::create('Review package usage and configuration.');
+
+        return $solution
+            ->setSolutionDescription('Exception: '.$this->getMessage())
+            ->setDocumentationLinks([
+                'Package documentation' => 'https://github.com/cline/relay',
+            ]);
     }
 }
