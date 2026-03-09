@@ -1,23 +1,25 @@
 ## Table of Contents
 
-1. MIGRATION FROM SALOON (`docs/MIGRATION_FROM_SALOON.md`)
-2. Overview (`docs/README.md`)
-3. Advanced Usage (`docs/advanced-usage.md`)
-4. Attributes (`docs/attributes.md`)
-5. Authentication (`docs/authentication.md`)
-6. Caching (`docs/caching.md`)
-7. Connectors (`docs/connectors.md`)
-8. Debugging (`docs/debugging.md`)
-9. Generators (`docs/generators.md`)
-10. Json Rpc Microservices (`docs/json-rpc-microservices.md`)
-11. Middleware (`docs/middleware.md`)
-12. Pagination (`docs/pagination.md`)
-13. Pooling (`docs/pooling.md`)
-14. Rate Limiting (`docs/rate-limiting.md`)
-15. Requests (`docs/requests.md`)
-16. Resilience (`docs/resilience.md`)
-17. Responses (`docs/responses.md`)
-18. Testing (`docs/testing.md`)
+1. [MIGRATION FROM SALOON](#doc-docs-migration-from-saloon) (`docs/MIGRATION_FROM_SALOON.md`)
+2. [Overview](#doc-docs-readme) (`docs/README.md`)
+3. [Advanced Usage](#doc-docs-advanced-usage) (`docs/advanced-usage.md`)
+4. [Attributes](#doc-docs-attributes) (`docs/attributes.md`)
+5. [Authentication](#doc-docs-authentication) (`docs/authentication.md`)
+6. [Caching](#doc-docs-caching) (`docs/caching.md`)
+7. [Connectors](#doc-docs-connectors) (`docs/connectors.md`)
+8. [Debugging](#doc-docs-debugging) (`docs/debugging.md`)
+9. [Generators](#doc-docs-generators) (`docs/generators.md`)
+10. [Json Rpc Microservices](#doc-docs-json-rpc-microservices) (`docs/json-rpc-microservices.md`)
+11. [Middleware](#doc-docs-middleware) (`docs/middleware.md`)
+12. [Pagination](#doc-docs-pagination) (`docs/pagination.md`)
+13. [Pooling](#doc-docs-pooling) (`docs/pooling.md`)
+14. [Rate Limiting](#doc-docs-rate-limiting) (`docs/rate-limiting.md`)
+15. [Requests](#doc-docs-requests) (`docs/requests.md`)
+16. [Resilience](#doc-docs-resilience) (`docs/resilience.md`)
+17. [Responses](#doc-docs-responses) (`docs/responses.md`)
+18. [Testing](#doc-docs-testing) (`docs/testing.md`)
+<a id="doc-docs-migration-from-saloon"></a>
+
 # Migration Guide: Saloon v3 to Relay
 
 This guide provides comprehensive examples for migrating from Saloon v3 to Relay, covering connectors, requests, resources, authentication (OAuth2, token-based, and header-based), and pagination.
@@ -1975,6 +1977,8 @@ $pipeline->push(function (Request $request, Closure $next): Response {
 - [ ] Replace `HasRateLimits` trait with `rateLimit()` method or `#[RateLimit]` attribute
 - [ ] Update Guzzle middleware to Relay middleware if needed
 
+<a id="doc-docs-readme"></a>
+
 Relay is a powerful PHP 8.4+ attribute-driven HTTP client for building elegant API SDKs. This guide covers installation, configuration, and creating your first API connector.
 
 ## Installation
@@ -2339,6 +2343,8 @@ $posts = $response->dtoCollection(Post::class, 'data.posts');
 - **[Debugging](debugging)** - Debug tools and dumpers
 - **[Advanced Usage](advanced-usage)** - DTOs, GraphQL, streaming, and more
 
+<a id="doc-docs-advanced-usage"></a>
+
 This guide covers advanced Relay features including DTO mapping, GraphQL support, streaming, idempotency, and custom protocols.
 
 ## DTO Mapping
@@ -2682,6 +2688,8 @@ class AdvancedConnector extends Connector
     }
 }
 ```
+
+<a id="doc-docs-attributes"></a>
 
 Relay uses PHP 8 attributes to configure requests declaratively. This guide covers all available attributes.
 
@@ -3191,6 +3199,8 @@ $contentType = $request->contentType();
 $isIdempotent = $request->isIdempotent();
 ```
 
+<a id="doc-docs-authentication"></a>
+
 Relay provides multiple authentication strategies for different API requirements. All authenticators implement the `Authenticator` contract.
 
 ## Using Authentication
@@ -3594,6 +3604,8 @@ class MultiAuthConnector extends Connector
 }
 ```
 
+<a id="doc-docs-caching"></a>
+
 Relay supports response caching to reduce API calls and improve performance.
 
 ## Overview
@@ -3927,6 +3939,8 @@ $connector->send(new CreateProductRequest(['name' => 'New Product']));
 $response3 = $connector->send(new GetProductsRequest());
 echo $response3->fromCache(); // false
 ```
+
+<a id="doc-docs-connectors"></a>
 
 Connectors represent an API service and define how requests are sent. They configure base URLs, authentication, headers, timeouts, and other connection settings.
 
@@ -4292,6 +4306,8 @@ class GitHubConnector extends Connector
 }
 ```
 
+<a id="doc-docs-debugging"></a>
+
 Relay provides comprehensive debugging tools to help you understand, troubleshoot, and diagnose issues with your API integrations.
 
 ## Overview
@@ -4525,6 +4541,8 @@ class MyConnector extends Connector
 3. **Use Wiretap for development** - Enable globally in local environment
 4. **Export to curl for manual testing** - Debug external issues
 
+<a id="doc-docs-generators"></a>
+
 Relay provides powerful Artisan commands to scaffold API integrations quickly.
 
 ## Quick Start
@@ -4660,6 +4678,8 @@ This creates a `stubs/relay/` directory where you can modify the templates.
 2. **Use `--crud --requests` together** - Creates matching requests for resources
 3. **Choose authentication upfront** - Harder to change later
 4. **Add rate limiting for external APIs** - Prevents hitting API limits
+
+<a id="doc-docs-json-rpc-microservices"></a>
 
 Relay provides specialized base classes for internal microservice communication using JSON-RPC. These classes handle common patterns like configuration lookup, bearer token authentication, and Spatie Data integration.
 
@@ -4948,6 +4968,8 @@ $connector = (new ServiceConnector())->debug();
 $response = $connector->queryCoordinates($data);
 // Prints formatted request and response
 ```
+
+<a id="doc-docs-middleware"></a>
 
 Relay supports Guzzle middleware for intercepting and modifying requests and responses. Middleware can add headers, log requests, track timing, and more.
 
@@ -5338,6 +5360,8 @@ class ApiConnector extends Connector
 }
 ```
 
+<a id="doc-docs-pagination"></a>
+
 Relay provides flexible pagination support for iterating through API results with multiple strategies.
 
 ## Pagination Strategies
@@ -5553,6 +5577,8 @@ $paginated = $connector->paginateWith(
 3. **Use lazy collections** - Memory efficient for large datasets
 4. **Handle empty pages** - Check `$paginated->items() === []` for no results
 
+<a id="doc-docs-pooling"></a>
+
 Relay supports concurrent request execution through request pooling, significantly improving performance when dealing with multiple API calls.
 
 ## Basic Usage
@@ -5756,6 +5782,8 @@ $connector->pool($requests)
 3. **Handle all error cases** - Both response errors and exceptions
 4. **Batch large request sets** - Process in manageable chunks
 
+<a id="doc-docs-rate-limiting"></a>
+
 Relay provides client-side rate limiting to prevent exceeding API quotas and handles server-side 429 responses gracefully.
 
 ## Connector-Level Rate Limiting
@@ -5951,6 +5979,8 @@ class GetDataRequest extends Request {}
 2. **Set conservative limits** - Stay below API limits
 3. **Combine with retry** - Auto-retry on 429 responses
 4. **Monitor remaining quota** - Check headers and log warnings
+
+<a id="doc-docs-requests"></a>
 
 Requests represent individual API endpoint calls. They define the HTTP method, endpoint, headers, query parameters, and body.
 
@@ -6424,6 +6454,8 @@ class CreateOrderRequest extends Request
 }
 ```
 
+<a id="doc-docs-resilience"></a>
+
 Relay provides resilience patterns to handle transient failures gracefully.
 
 ## Retry Configuration
@@ -6642,6 +6674,8 @@ class InventoryConnector extends Connector
 2. **Use exponential backoff** - Avoid thundering herd
 3. **Set appropriate thresholds** - Balance availability and protection
 4. **Log circuit state changes** - Monitor service health
+
+<a id="doc-docs-responses"></a>
 
 The Response class wraps HTTP responses with typed accessors and convenience methods for parsing, validation, and transformation.
 
@@ -6973,6 +7007,8 @@ if ($response->json('has_attachment')) {
     }
 }
 ```
+
+<a id="doc-docs-testing"></a>
 
 Relay provides comprehensive testing utilities for writing reliable tests.
 
