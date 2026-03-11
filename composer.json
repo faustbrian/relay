@@ -22,7 +22,7 @@
         "crell/attributeutils": "^1.3",
         "facade/ignition-contracts": "^1.0.2",
         "guzzlehttp/guzzle": "^7.10",
-        "illuminate/support": "*",
+        "laravel/framework": "*",
         "league/oauth2-server": "^9.3",
         "nyholm/psr7": "^1.8.2",
         "psr/http-client": "^1.0.3",
