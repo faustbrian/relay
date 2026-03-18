@@ -10,8 +10,8 @@
 namespace Cline\Relay\Core\JsonRpc;
 
 use Cline\Relay\Protocols\JsonRpcRequest;
+use Cline\Struct\AbstractData;
 use Override;
-use Spatie\LaravelData\Data;
 
 use function is_array;
 
@@ -19,7 +19,7 @@ use function is_array;
  * Base request for internal microservices using JSON-RPC.
  *
  * Automatically handles the `$data` property if present:
- * - Wraps Data objects in `['data' => $data->toArray()]`
+ * - Wraps data objects in `['data' => $data->toArray()]`
  * - Wraps arrays in `['data' => $data]`
  * - Returns empty array if data is empty/null
  *
@@ -35,14 +35,14 @@ abstract class JsonRpcMicroserviceRequest extends JsonRpcRequest
     #[Override()]
     public function params(): array
     {
-        /** @var null|array<string, mixed>|Data $data */
+        /** @var null|AbstractData|array<string, mixed> $data */
         $data = $this->data ?? null;
 
         if ($data === null) {
             return [];
         }
 
-        if ($data instanceof Data) {
+        if ($data instanceof AbstractData) {
             $array = $this->filterNulls($data->toArray());
 
             return $array === [] ? [] : ['data' => $array];

@@ -10,8 +10,8 @@
 namespace Tests;
 
 use Cline\Relay\RelayServiceProvider;
+use Cline\Struct\StructServiceProvider;
 use Orchestra\Testbench\TestCase as BaseTestCase;
-use Spatie\LaravelData\LaravelDataServiceProvider;
 
 /**
  * @author Brian Faust <brian@cline.sh>
@@ -26,7 +26,7 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            LaravelDataServiceProvider::class,
+            StructServiceProvider::class,
             RelayServiceProvider::class,
         ];
     }
