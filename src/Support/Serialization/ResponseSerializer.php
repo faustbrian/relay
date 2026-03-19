@@ -36,7 +36,6 @@ final class ResponseSerializer
      */
     public function toDto(Response $response, string $dtoClass): DataTransferObject
     {
-        // @phpstan-ignore function.alreadyNarrowedType (Runtime validation ensures class string implements interface)
         throw_unless(is_subclass_of($dtoClass, DataTransferObject::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
 
         /** @var array<string, mixed> */
@@ -55,7 +54,6 @@ final class ResponseSerializer
      */
     public function toDtoFrom(Response $response, string $key, string $dtoClass): DataTransferObject
     {
-        // @phpstan-ignore function.alreadyNarrowedType (Runtime validation ensures class string implements interface)
         throw_unless(is_subclass_of($dtoClass, DataTransferObject::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
 
         /** @var array<string, mixed> */
@@ -74,7 +72,6 @@ final class ResponseSerializer
      */
     public function toDtoCollection(Response $response, string $dtoClass, ?string $key = null): array
     {
-        // @phpstan-ignore function.alreadyNarrowedType (Runtime validation ensures class string implements interface)
         throw_unless(is_subclass_of($dtoClass, DataTransferObject::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
 
         /** @var array<array<string, mixed>> */
