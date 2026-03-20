@@ -181,6 +181,56 @@ describe('MockClient Response Mapping', function (): void {
 
         expect($response->json('source'))->toBe('fixture');
     });
+
+    it('resolves fixtures recorded in the legacy saloon format', function (): void {
+        $fixture = Fixture::make('mock-client-fixture');
+        $path = $fixture->getFilePath();
+        $dir = dirname($path);
+
+        if (!is_dir($dir)) {
+            mkdir($dir, 0o755, true);
+        }
+
+        file_put_contents($path, json_encode([
+            'statusCode' => 200,
+            'headers' => ['Content-Type' => 'application/json'],
+            'data' => ['source' => 'legacy-fixture'],
+        ]));
+
+        $request = createMockClientTestRequest('/users');
+        $mockClient = new MockClient([
+            $request::class => MockResponse::fixture('mock-client-fixture'),
+        ]);
+
+        $response = $mockClient->resolve($request, 'https://api.example.com');
+
+        expect($response->json('source'))->toBe('legacy-fixture');
+    });
+
+    it('decodes legacy saloon fixtures with a json string body', function (): void {
+        $fixture = Fixture::make('mock-client-fixture');
+        $path = $fixture->getFilePath();
+        $dir = dirname($path);
+
+        if (!is_dir($dir)) {
+            mkdir($dir, 0o755, true);
+        }
+
+        file_put_contents($path, json_encode([
+            'statusCode' => 200,
+            'headers' => ['Content-Type' => 'application/json'],
+            'data' => json_encode(['source' => 'legacy-string-body']),
+        ]));
+
+        $request = createMockClientTestRequest('/users');
+        $mockClient = new MockClient([
+            $request::class => MockResponse::fixture('mock-client-fixture'),
+        ]);
+
+        $response = $mockClient->resolve($request, 'https://api.example.com');
+
+        expect($response->json('source'))->toBe('legacy-string-body');
+    });
 });
 
 describe('MockClient Sequential Responses', function (): void {
@@ -246,6 +296,34 @@ describe('MockClient Request Tracking', function (): void {
         expect($mockClient->sentRequests())->toHaveCount(2);
         expect($mockClient->sentRequests()[0])->toBe($request1);
         expect($mockClient->sentRequests()[1])->toBe($request2);
+    });
+
+    it('attaches the request to mocked responses', function (): void {
+        $request = new #[Get()] class('/users') extends Request
+        {
+            public function __construct(
+                private readonly string $ep,
+            ) {}
+
+            public function endpoint(): string
+            {
+                return $this->ep;
+            }
+
+            public function createDtoFromResponse(Response $response): array
+            {
+                /** @var array{id: int} */
+                return $response->json();
+            }
+        };
+
+        $mockClient = new MockClient([
+            $request::class => MockResponse::json(['id' => 1]),
+        ]);
+
+        $response = $mockClient->resolve($request, 'https://api.example.com');
+
+        expect($response->dtoOrFail())->toBe(['id' => 1]);
     });
 
     it('returns last request', function (): void {

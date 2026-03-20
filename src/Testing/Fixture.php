@@ -276,9 +276,9 @@ final class Fixture
         // Apply redactions when loading
         $data = $this->applyRedactions($decoded);
 
-        $status = $data['status'] ?? 200;
+        $status = $data['status'] ?? $data['statusCode'] ?? 200;
         $headers = $data['headers'] ?? [];
-        $body = $data['body'] ?? [];
+        $body = $data['body'] ?? $data['data'] ?? [];
 
         if (!is_int($status)) {
             $status = 200;
@@ -286,6 +286,14 @@ final class Fixture
 
         if (!is_array($headers)) {
             $headers = [];
+        }
+
+        if (is_string($body)) {
+            $decodedBody = json_decode($body, true);
+
+            if ($decodedBody !== null) {
+                $body = $decodedBody;
+            }
         }
 
         /** @var array<array<string>|string> $headers */

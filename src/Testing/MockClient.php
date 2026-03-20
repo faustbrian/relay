@@ -162,6 +162,8 @@ final class MockClient
             throw MockClientException::invalidResponse($request::class);
         }
 
+        $response = $response->withRequest($request);
+
         $this->history[] = [
             'request' => $request,
             'response' => $response,
