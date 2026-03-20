@@ -2,12 +2,12 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 
 /**
  * {{ connectorName }} API connector.
  */
-final class {{ class }} extends Connector
+final class {{ class }} extends AbstractConnector
 {
     public function __construct(
         private readonly string $baseUrl = 'https://api.example.com',

@@ -8,7 +8,7 @@
  */
 
 use Carbon\CarbonImmutable;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\Auth\ApiKeyAuth;
 use Cline\Relay\Features\Auth\BasicAuth;
 use Cline\Relay\Features\Auth\BearerToken;
@@ -19,9 +19,9 @@ use Cline\Relay\Features\Auth\JwtAuth;
 use Cline\Relay\Features\Auth\QueryAuth;
 use Cline\Relay\Support\Attributes\Methods\Get;
 
-function createAuthTestRequest(): Request
+function createAuthTestRequest(): AbstractRequest
 {
-    return new #[Get()] class() extends Request
+    return new #[Get()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {
@@ -290,7 +290,7 @@ describe('QueryAuth', function (): void {
 describe('CallableAuth', function (): void {
     describe('Happy Paths', function (): void {
         it('uses callback to authenticate request with custom header', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request->withHeader('X-Custom', 'value'));
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request->withHeader('X-Custom', 'value'));
             $request = createAuthTestRequest();
 
             $authenticated = $auth->authenticate($request);
@@ -301,7 +301,7 @@ describe('CallableAuth', function (): void {
         });
 
         it('uses callback to authenticate request with query parameter', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request->withQuery('auth', 'token'));
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request->withQuery('auth', 'token'));
             $request = createAuthTestRequest();
 
             $authenticated = $auth->authenticate($request);
@@ -312,7 +312,7 @@ describe('CallableAuth', function (): void {
         });
 
         it('uses callback to add multiple headers', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request
                 ->withHeader('X-Header-1', 'value1')
                 ->withHeader('X-Header-2', 'value2'));
             $request = createAuthTestRequest();
@@ -327,7 +327,7 @@ describe('CallableAuth', function (): void {
         });
 
         it('uses callback to add both headers and query parameters', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request
                 ->withHeader('X-Auth', 'header-value')
                 ->withQuery('api_key', 'query-value'));
             $request = createAuthTestRequest();
@@ -341,7 +341,7 @@ describe('CallableAuth', function (): void {
         });
 
         it('creates immutable request through callback', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request->withHeader('X-Modified', 'yes'));
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request->withHeader('X-Modified', 'yes'));
             $original = createAuthTestRequest();
 
             $authenticated = $auth->authenticate($original);
@@ -353,7 +353,7 @@ describe('CallableAuth', function (): void {
 
     describe('Edge Cases', function (): void {
         it('handles callback that returns request unchanged', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request);
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request);
             $request = createAuthTestRequest();
 
             $authenticated = $auth->authenticate($request);
@@ -363,7 +363,7 @@ describe('CallableAuth', function (): void {
         });
 
         it('handles callback with complex logic using Bearer token', function (): void {
-            $auth = new CallableAuth(function (Request $request): Request {
+            $auth = new CallableAuth(function (AbstractRequest $request): AbstractRequest {
                 $token = base64_encode('username:password');
 
                 return $request->withBearerToken($token);
@@ -379,7 +379,7 @@ describe('CallableAuth', function (): void {
         });
 
         it('handles callback that chains multiple operations', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request
                 ->withHeader('X-Step-1', 'complete')
                 ->withQuery('step', '1')
                 ->withHeader('X-Step-2', 'complete')
@@ -395,7 +395,7 @@ describe('CallableAuth', function (): void {
         });
 
         it('preserves existing request data through callback', function (): void {
-            $auth = new CallableAuth(fn (Request $request): Request => $request->withHeader('X-New', 'added'));
+            $auth = new CallableAuth(fn (AbstractRequest $request): AbstractRequest => $request->withHeader('X-New', 'added'));
             $request = createAuthTestRequest()
                 ->withHeader('X-Existing', 'value')
                 ->withQuery('existing', 'param');

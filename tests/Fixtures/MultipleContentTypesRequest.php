@@ -9,7 +9,7 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Form;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Get;
@@ -20,7 +20,7 @@ use Cline\Relay\Support\Attributes\Methods\Get;
 #[Get()]
 #[Json()]
 #[Form()]
-final class MultipleContentTypesRequest extends Request
+final class MultipleContentTypesRequest extends AbstractRequest
 {
     public function endpoint(): string
     {

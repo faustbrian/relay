@@ -9,13 +9,13 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\SoapRequest;
+use Cline\Relay\Protocols\AbstractSoapRequest;
 use Override;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class GetStockQuoteRequest extends SoapRequest
+final class GetStockQuoteRequest extends AbstractSoapRequest
 {
     protected string $soapVersion = '1.2';
 

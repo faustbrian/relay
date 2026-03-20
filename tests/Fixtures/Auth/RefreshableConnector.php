@@ -9,20 +9,20 @@
 
 namespace Tests\Fixtures\Auth;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Features\OAuth2\AuthorizationCodeGrant;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Features\OAuth2\AuthorizationCodeGrantTrait;
 use Cline\Relay\Features\OAuth2\OAuthConfig;
-use Cline\Relay\Support\Contracts\OAuthAuthenticator as OAuthAuthenticatorContract;
+use Cline\Relay\Support\Contracts\OAuthAuthenticatorInterface as OAuthAuthenticatorContract;
 use Override;
 
 /**
- * Connector fixture that simulates OAuth token refresh.
+ * AbstractConnector fixture that simulates OAuth token refresh.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class RefreshableConnector extends Connector
+final class RefreshableConnector extends AbstractConnector
 {
-    use AuthorizationCodeGrant;
+    use AuthorizationCodeGrantTrait;
 
     public OAuthAuthenticatorContract $newAuth;
 

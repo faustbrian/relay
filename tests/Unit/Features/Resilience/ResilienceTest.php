@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Resilience\CircuitBreaker;
 use Cline\Relay\Features\Resilience\CircuitBreakerConfig;
@@ -115,7 +115,7 @@ describe('RetryHandler', function (): void {
         $config = new RetryConfig(delay: 100, multiplier: 2.0, maxDelay: 10_000);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -132,7 +132,7 @@ describe('RetryHandler', function (): void {
         $config = new RetryConfig(delay: 1_000, multiplier: 10.0, maxDelay: 5_000);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -147,7 +147,7 @@ describe('RetryHandler', function (): void {
         $config = new RetryConfig(times: 3);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -166,7 +166,7 @@ describe('RetryHandler', function (): void {
         $config = new RetryConfig(times: 2);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -183,7 +183,7 @@ describe('RetryHandler with Retry attribute', function (): void {
     test('getConfig returns RetryConfig from Retry attribute', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 5, delay: 200, multiplier: 3.0, maxDelay: 15_000, when: [500, 502, 503])] class() extends Request
+        $request = new #[Retry(times: 5, delay: 200, multiplier: 3.0, maxDelay: 15_000, when: [500, 502, 503])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -206,7 +206,7 @@ describe('RetryHandler with Retry attribute', function (): void {
     test('getConfig returns null when no Retry attribute and no default config', function (): void {
         $handler = new RetryHandler();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -225,7 +225,7 @@ describe('RetryHandler with Retry attribute', function (): void {
         $defaultConfig = new RetryConfig(times: 10, delay: 500);
         $handler = new RetryHandler($defaultConfig);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -244,7 +244,7 @@ describe('RetryHandler with Retry attribute', function (): void {
         $defaultConfig = new RetryConfig(delay: 1_000);
         $handler = new RetryHandler($defaultConfig);
 
-        $request = new #[Retry(times: 3, delay: 100)] class() extends Request
+        $request = new #[Retry(times: 3, delay: 100)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -262,7 +262,7 @@ describe('RetryHandler with Retry attribute', function (): void {
     test('shouldRetryResponse returns false when config is null', function (): void {
         $handler = new RetryHandler();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -284,7 +284,7 @@ describe('RetryHandler with callback', function (): void {
     test('shouldRetryResponse uses custom callback method when specified in attribute', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 3, callback: 'shouldRetry')] class() extends Request
+        $request = new #[Retry(times: 3, callback: 'shouldRetry')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -312,7 +312,7 @@ describe('RetryHandler with callback', function (): void {
     test('shouldRetryResponse ignores callback if method does not exist', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 3, callback: 'nonExistentMethod')] class() extends Request
+        $request = new #[Retry(times: 3, callback: 'nonExistentMethod')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -337,7 +337,7 @@ describe('RetryHandler with closure', function (): void {
         );
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -365,7 +365,7 @@ describe('RetryHandler with closure', function (): void {
         );
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -387,7 +387,7 @@ describe('RetryHandler with statusCodes', function (): void {
         $config = new RetryConfig(times: 3, statusCodes: [500, 502, 503]);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -409,7 +409,7 @@ describe('RetryHandler with statusCodes', function (): void {
     test('shouldRetryResponse uses statusCodes from Retry attribute', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 3, when: [429, 503])] class() extends Request
+        $request = new #[Retry(times: 3, when: [429, 503])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -428,7 +428,7 @@ describe('RetryHandler::shouldRetryException()', function (): void {
     test('returns false when config is null', function (): void {
         $handler = new RetryHandler();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -449,7 +449,7 @@ describe('RetryHandler::shouldRetryException()', function (): void {
         $config = new RetryConfig(times: 2);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -470,7 +470,7 @@ describe('RetryHandler::shouldRetryException()', function (): void {
         $config = new RetryConfig(times: 3);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -491,7 +491,7 @@ describe('RetryHandler::shouldRetryException()', function (): void {
         $config = new RetryConfig(times: 3, exceptions: [RuntimeException::class, LogicException::class]);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -516,7 +516,7 @@ describe('RetryHandler::shouldRetryException()', function (): void {
         $config = new RetryConfig(times: 3, exceptions: [RuntimeException::class]);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -537,7 +537,7 @@ describe('RetryHandler::shouldRetryException()', function (): void {
     test('uses exception types from Retry attribute', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 3, exceptions: [RuntimeException::class])] class() extends Request
+        $request = new #[Retry(times: 3, exceptions: [RuntimeException::class])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -559,7 +559,7 @@ describe('RetryHandler::sleep()', function (): void {
         $config = new RetryConfig(delay: 100); // 100ms
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -583,7 +583,7 @@ describe('RetryHandler::sleep()', function (): void {
     test('does not sleep when delay is zero', function (): void {
         $handler = new RetryHandler(); // No config, delay should be 0
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -605,7 +605,7 @@ describe('RetryHandler::sleep()', function (): void {
         $config = new RetryConfig(delay: 50, multiplier: 2.0);
         $handler = new RetryHandler($config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -627,7 +627,7 @@ describe('RetryHandler::sleep()', function (): void {
     test('sleep respects maxDelay from attribute', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 5, delay: 1_000, multiplier: 10.0, maxDelay: 3_000)] class() extends Request
+        $request = new #[Retry(times: 5, delay: 1_000, multiplier: 10.0, maxDelay: 3_000)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1137,7 +1137,7 @@ describe('RetryHandler with RetryPolicy', function (): void {
     test('uses RetryPolicy class for configuration', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends Request
+        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1157,7 +1157,7 @@ describe('RetryHandler with RetryPolicy', function (): void {
     test('uses RetryPolicy for shouldRetry decision', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends Request
+        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1175,7 +1175,7 @@ describe('RetryHandler with RetryPolicy', function (): void {
     test('RetryPolicy respects max attempts', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends Request
+        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1191,7 +1191,7 @@ describe('RetryHandler with RetryPolicy', function (): void {
     test('RetryPolicy handles exception retry', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends Request
+        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1207,7 +1207,7 @@ describe('RetryHandler with RetryPolicy', function (): void {
     test('calculateDelay uses RetryPolicy configuration', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends Request
+        $request = new #[Retry(policy: TestRetryPolicy::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1224,7 +1224,7 @@ describe('RetryHandler with RetryPolicy', function (): void {
     test('ignores invalid policy class and falls back to attribute defaults', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 7, delay: 300, policy: 'NonExistentClass')] class() extends Request
+        $request = new #[Retry(times: 7, delay: 300, policy: 'NonExistentClass')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1245,7 +1245,7 @@ describe('RetryHandler with RetryDecider', function (): void {
     test('uses RetryDecider class for retry decision', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 3, callback: TestRetryDecider::class)] class() extends Request
+        $request = new #[Retry(times: 3, callback: TestRetryDecider::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1262,7 +1262,7 @@ describe('RetryHandler with RetryDecider', function (): void {
     test('RetryDecider receives request, response, and attempt', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 5, callback: AttemptAwareRetryDecider::class)] class() extends Request
+        $request = new #[Retry(times: 5, callback: AttemptAwareRetryDecider::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -1279,7 +1279,7 @@ describe('RetryHandler with RetryDecider', function (): void {
     test('falls back to method when callback is not a RetryDecider class', function (): void {
         $handler = new RetryHandler();
 
-        $request = new #[Retry(times: 3, callback: 'shouldRetry')] class() extends Request
+        $request = new #[Retry(times: 3, callback: 'shouldRetry')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {

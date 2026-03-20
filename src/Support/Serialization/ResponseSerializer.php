@@ -10,7 +10,7 @@
 namespace Cline\Relay\Support\Serialization;
 
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\DataTransferObject;
+use Cline\Relay\Support\Contracts\DataTransferObjectInterface;
 use Cline\Relay\Support\Exceptions\InvalidDtoClassException;
 use Illuminate\Support\Collection;
 
@@ -29,14 +29,14 @@ final class ResponseSerializer
     /**
      * Deserialize response to a DTO.
      *
-     * @template T of DataTransferObject
+     * @template T of DataTransferObjectInterface
      *
      * @param  class-string<T> $dtoClass
      * @return T
      */
-    public function toDto(Response $response, string $dtoClass): DataTransferObject
+    public function toDto(Response $response, string $dtoClass): DataTransferObjectInterface
     {
-        throw_unless(is_subclass_of($dtoClass, DataTransferObject::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
+        throw_unless(is_subclass_of($dtoClass, DataTransferObjectInterface::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
 
         /** @var array<string, mixed> */
         $data = $response->json();
@@ -47,14 +47,14 @@ final class ResponseSerializer
     /**
      * Deserialize response data at a specific key to a DTO.
      *
-     * @template T of DataTransferObject
+     * @template T of DataTransferObjectInterface
      *
      * @param  class-string<T> $dtoClass
      * @return T
      */
-    public function toDtoFrom(Response $response, string $key, string $dtoClass): DataTransferObject
+    public function toDtoFrom(Response $response, string $key, string $dtoClass): DataTransferObjectInterface
     {
-        throw_unless(is_subclass_of($dtoClass, DataTransferObject::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
+        throw_unless(is_subclass_of($dtoClass, DataTransferObjectInterface::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
 
         /** @var array<string, mixed> */
         $data = $response->json($key);
@@ -65,14 +65,14 @@ final class ResponseSerializer
     /**
      * Deserialize response to a collection of DTOs.
      *
-     * @template T of DataTransferObject
+     * @template T of DataTransferObjectInterface
      *
      * @param  class-string<T> $dtoClass
      * @return array<T>
      */
     public function toDtoCollection(Response $response, string $dtoClass, ?string $key = null): array
     {
-        throw_unless(is_subclass_of($dtoClass, DataTransferObject::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
+        throw_unless(is_subclass_of($dtoClass, DataTransferObjectInterface::class), InvalidDtoClassException::mustImplementInterface($dtoClass));
 
         /** @var array<array<string, mixed>> */
         $items = $key !== null
@@ -81,7 +81,7 @@ final class ResponseSerializer
 
         return array_map(
             /** @param array<string, mixed> $item */
-            fn (array $item): DataTransferObject => $dtoClass::fromArray($item),
+            fn (array $item): DataTransferObjectInterface => $dtoClass::fromArray($item),
             $items,
         );
     }
@@ -89,7 +89,7 @@ final class ResponseSerializer
     /**
      * Deserialize response to a Laravel collection of DTOs.
      *
-     * @template T of DataTransferObject
+     * @template T of DataTransferObjectInterface
      *
      * @param  class-string<T>    $dtoClass
      * @return Collection<int, T>

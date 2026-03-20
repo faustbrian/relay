@@ -9,10 +9,10 @@
 
 namespace Cline\Relay\Features\Pagination;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Pagination\OffsetPagination;
-use Cline\Relay\Support\Contracts\Paginator;
+use Cline\Relay\Support\Contracts\PaginatorInterface;
 
 use function array_values;
 use function count;
@@ -26,7 +26,7 @@ use function is_int;
  *
  * @psalm-immutable
  */
-final readonly class OffsetPaginator implements Paginator
+final readonly class OffsetPaginator implements PaginatorInterface
 {
     public function __construct(
         private OffsetPagination $config,
@@ -48,7 +48,7 @@ final readonly class OffsetPaginator implements Paginator
         ];
     }
 
-    public function nextRequest(Request $request, Response $response): ?Request
+    public function nextRequest(AbstractRequest $request, Response $response): ?AbstractRequest
     {
         $nextPage = $this->getNextPage($response);
 

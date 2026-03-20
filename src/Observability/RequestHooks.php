@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Closure;
 use Throwable;
@@ -21,19 +21,19 @@ use Throwable;
  */
 final class RequestHooks
 {
-    /** @var array<Closure(Request): Request> */
+    /** @var array<Closure(AbstractRequest): AbstractRequest> */
     private array $beforeRequest = [];
 
-    /** @var array<Closure(Response, Request): Response> */
+    /** @var array<Closure(Response, AbstractRequest): Response> */
     private array $afterResponse = [];
 
-    /** @var array<Closure(Throwable, Request): void> */
+    /** @var array<Closure(Throwable, AbstractRequest): void> */
     private array $onError = [];
 
     /**
      * Register a before-request hook.
      *
-     * @param Closure(Request): Request $callback
+     * @param Closure(AbstractRequest): AbstractRequest $callback
      */
     public function beforeRequest(Closure $callback): self
     {
@@ -45,7 +45,7 @@ final class RequestHooks
     /**
      * Register an after-response hook.
      *
-     * @param Closure(Response, Request): Response $callback
+     * @param Closure(Response, AbstractRequest): Response $callback
      */
     public function afterResponse(Closure $callback): self
     {
@@ -57,7 +57,7 @@ final class RequestHooks
     /**
      * Register an error hook.
      *
-     * @param Closure(Throwable, Request): void $callback
+     * @param Closure(Throwable, AbstractRequest): void $callback
      */
     public function onError(Closure $callback): self
     {
@@ -69,7 +69,7 @@ final class RequestHooks
     /**
      * Execute before-request hooks.
      */
-    public function executeBeforeRequest(Request $request): Request
+    public function executeBeforeRequest(AbstractRequest $request): AbstractRequest
     {
         foreach ($this->beforeRequest as $hook) {
             $request = $hook($request);
@@ -81,7 +81,7 @@ final class RequestHooks
     /**
      * Execute after-response hooks.
      */
-    public function executeAfterResponse(Response $response, Request $request): Response
+    public function executeAfterResponse(Response $response, AbstractRequest $request): Response
     {
         foreach ($this->afterResponse as $hook) {
             $response = $hook($response, $request);
@@ -93,7 +93,7 @@ final class RequestHooks
     /**
      * Execute error hooks.
      */
-    public function executeOnError(Throwable $error, Request $request): void
+    public function executeOnError(Throwable $error, AbstractRequest $request): void
     {
         foreach ($this->onError as $hook) {
             $hook($error, $request);

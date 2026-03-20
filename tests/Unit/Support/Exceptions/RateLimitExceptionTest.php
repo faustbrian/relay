@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Exceptions\Client\RateLimitException;
 use GuzzleHttp\Psr7\Response as Psr7Response;
 
-function createRateLimitTestRequest_unique(string $endpoint = '/api/test'): Request
+function createRateLimitTestRequest_unique(string $endpoint = '/api/test'): AbstractRequest
 {
-    return new class($endpoint) extends Request
+    return new class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,
@@ -170,7 +170,7 @@ describe('RateLimitException', function (): void {
             $exception = RateLimitException::exceeded(30, 100, 5);
 
             // Assert - exceeded() uses a placeholder request since ClientException requires one
-            expect($exception->request())->toBeInstanceOf(Request::class)
+            expect($exception->request())->toBeInstanceOf(AbstractRequest::class)
                 ->and($exception->request()->endpoint())->toBe('');
         });
 

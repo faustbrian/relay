@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
@@ -18,7 +18,7 @@ use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
     nextCursorKey: 'meta.next_cursor',
 )]
 {{ attributes }}
-final class {{ class }} extends Request
+final class {{ class }} extends AbstractRequest
 {
     public function __construct(
         private readonly ?string $cursor = null,

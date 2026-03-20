@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Auth\BearerToken;
 use Cline\Relay\Features\Pagination\PaginatedResponse;
@@ -21,16 +21,16 @@ use Cline\Relay\Support\Attributes\Pagination\OffsetPagination;
 use Cline\Relay\Support\Attributes\Pagination\Pagination;
 use Cline\Relay\Support\Attributes\Pagination\SimplePagination;
 use Cline\Relay\Support\Attributes\ThrowOnError;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
+use Cline\Relay\Support\Exceptions\AbstractServerException;
 use Cline\Relay\Support\Exceptions\Client\ForbiddenException;
 use Cline\Relay\Support\Exceptions\Client\NotFoundException;
 use Cline\Relay\Support\Exceptions\Client\RateLimitException;
 use Cline\Relay\Support\Exceptions\Client\UnauthorizedException;
 use Cline\Relay\Support\Exceptions\Client\ValidationException;
-use Cline\Relay\Support\Exceptions\ClientException;
 use Cline\Relay\Support\Exceptions\MockClientException;
 use Cline\Relay\Support\Exceptions\Server\InternalServerException;
 use Cline\Relay\Support\Exceptions\Server\ServiceUnavailableException;
-use Cline\Relay\Support\Exceptions\ServerException;
 use Cline\Relay\Testing\MockClient;
 use Cline\Relay\Testing\MockConfig;
 use Cline\Relay\Testing\MockResponse;
@@ -45,7 +45,7 @@ use Psr\SimpleCache\CacheInterface;
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class TestableConnector extends Connector
+final class TestableConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -63,12 +63,12 @@ final class TestableConnector extends Connector
     }
 }
 
-// Connector with ThrowOnError attribute for client errors
+// AbstractConnector with ThrowOnError attribute for client errors
 /**
  * @author Brian Faust <brian@cline.sh>
  */
 #[ThrowOnError(clientErrors: true, serverErrors: false)]
-final class ThrowOnClientErrorConnector extends Connector
+final class ThrowOnClientErrorConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -81,12 +81,12 @@ final class ThrowOnClientErrorConnector extends Connector
     }
 }
 
-// Connector with ThrowOnError attribute for server errors
+// AbstractConnector with ThrowOnError attribute for server errors
 /**
  * @author Brian Faust <brian@cline.sh>
  */
 #[ThrowOnError(clientErrors: false, serverErrors: true)]
-final class ThrowOnServerErrorConnector extends Connector
+final class ThrowOnServerErrorConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -99,12 +99,12 @@ final class ThrowOnServerErrorConnector extends Connector
     }
 }
 
-// Connector with ThrowOnError for both client and server errors
+// AbstractConnector with ThrowOnError for both client and server errors
 /**
  * @author Brian Faust <brian@cline.sh>
  */
 #[ThrowOnError(clientErrors: true, serverErrors: true)]
-final class ThrowOnAllErrorsConnector extends Connector
+final class ThrowOnAllErrorsConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -117,11 +117,11 @@ final class ThrowOnAllErrorsConnector extends Connector
     }
 }
 
-// Connector with caching enabled
+// AbstractConnector with caching enabled
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CachedConnector extends Connector
+final class CachedConnector extends AbstractConnector
 {
     public function __construct(
         private readonly CacheInterface $cacheStore,
@@ -149,11 +149,11 @@ final class CachedConnector extends Connector
     }
 }
 
-// Connector with rate limiting enabled
+// AbstractConnector with rate limiting enabled
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class RateLimitedConnector extends Connector
+final class RateLimitedConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -171,12 +171,12 @@ final class RateLimitedConnector extends Connector
     }
 }
 
-// Request with ThrowOnError attribute
+// AbstractRequest with ThrowOnError attribute
 /**
  * @author Brian Faust <brian@cline.sh>
  */
 #[ThrowOnError(clientErrors: true, serverErrors: true)]
-final class ThrowOnErrorRequest extends Request
+final class ThrowOnErrorRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $endpoint = '/users',
@@ -194,11 +194,11 @@ final class ThrowOnErrorRequest extends Request
     }
 }
 
-// Request with response transformer
+// AbstractRequest with response transformer
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class TransformedRequest extends Request
+final class TransformedRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -234,7 +234,7 @@ final class TransformedRequest extends Request
  * @author Brian Faust <brian@cline.sh>
  */
 #[Pagination()]
-final class PagePaginationRequest extends Request
+final class PagePaginationRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -252,7 +252,7 @@ final class PagePaginationRequest extends Request
  * @author Brian Faust <brian@cline.sh>
  */
 #[CursorPagination()]
-final class CursorPaginationRequest extends Request
+final class CursorPaginationRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -270,7 +270,7 @@ final class CursorPaginationRequest extends Request
  * @author Brian Faust <brian@cline.sh>
  */
 #[OffsetPagination()]
-final class OffsetPaginationRequest extends Request
+final class OffsetPaginationRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -288,7 +288,7 @@ final class OffsetPaginationRequest extends Request
  * @author Brian Faust <brian@cline.sh>
  */
 #[LinkPagination()]
-final class LinkPaginationRequest extends Request
+final class LinkPaginationRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -306,7 +306,7 @@ final class LinkPaginationRequest extends Request
  * @author Brian Faust <brian@cline.sh>
  */
 #[SimplePagination()]
-final class SimplePaginationRequest extends Request
+final class SimplePaginationRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -408,7 +408,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(200, ['Content-Type' => 'application/json'], json_encode(['id' => 1, 'name' => 'John'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -438,7 +438,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(200, [], json_encode(['success' => true])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -467,7 +467,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(200, ['Content-Type' => 'application/json'], json_encode(['id' => 1, 'cached' => false])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -497,7 +497,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(200, ['Content-Type' => 'application/json'], json_encode(['id' => 1, 'call' => 2])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -543,7 +543,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(200, [], json_encode(['success' => true])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -680,7 +680,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(200, ['Content-Type' => 'application/json'], json_encode(['id' => 2])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -715,7 +715,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(200, ['Content-Type' => 'application/json'], json_encode(['id' => 2])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -741,7 +741,7 @@ describe('Connector', function (): void {
             test('forgetCache() returns false when cache is not enabled', function (): void {
                 // Arrange
                 $connector = new TestableConnector();
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -882,7 +882,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(401, ['Content-Type' => 'application/json'], json_encode(['error' => 'Unauthorized'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -907,7 +907,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(403, ['Content-Type' => 'application/json'], json_encode(['error' => 'Forbidden'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -932,7 +932,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(404, ['Content-Type' => 'application/json'], json_encode(['error' => 'Not Found'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -959,7 +959,7 @@ describe('Connector', function (): void {
                     ])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -984,7 +984,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(429, ['Content-Type' => 'application/json'], json_encode(['error' => 'Too Many Requests'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -1009,7 +1009,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(418, ['Content-Type' => 'application/json'], json_encode(['error' => "I'm a teapot"])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -1024,7 +1024,7 @@ describe('Connector', function (): void {
 
                 // Act & Assert
                 expect(fn (): Response => $connector->send($request))
-                    ->toThrow(ClientException::class);
+                    ->toThrow(AbstractClientException::class);
             });
 
             test('throws InternalServerException for 500 status when connector has ThrowOnError attribute', function (): void {
@@ -1034,7 +1034,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(500, ['Content-Type' => 'application/json'], json_encode(['error' => 'Internal Server Error'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -1059,7 +1059,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(503, ['Content-Type' => 'application/json'], json_encode(['error' => 'Service Unavailable'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -1084,7 +1084,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(502, ['Content-Type' => 'application/json'], json_encode(['error' => 'Bad Gateway'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -1099,7 +1099,7 @@ describe('Connector', function (): void {
 
                 // Act & Assert
                 expect(fn (): Response => $connector->send($request))
-                    ->toThrow(ServerException::class);
+                    ->toThrow(AbstractServerException::class);
             });
 
             test('request-level ThrowOnError attribute overrides connector-level attribute', function (): void {
@@ -1123,7 +1123,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(404, ['Content-Type' => 'application/json'], json_encode(['error' => 'Not Found'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -1151,7 +1151,7 @@ describe('Connector', function (): void {
                     new GuzzleResponse(500, ['Content-Type' => 'application/json'], json_encode(['error' => 'Internal Server Error'])),
                 ]));
 
-                $request = new class() extends Request
+                $request = new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -1182,7 +1182,7 @@ describe('Connector', function (): void {
                 new GuzzleResponse(204, []),
             ]));
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1210,7 +1210,7 @@ describe('Connector', function (): void {
                 new GuzzleResponse(200, ['Content-Type' => 'text/plain'], 'Plain text response'),
             ]));
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1275,7 +1275,7 @@ describe('Connector', function (): void {
                 new GuzzleResponse(200, [], json_encode(['success' => true])),
             ]));
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1315,7 +1315,7 @@ describe('Connector', function (): void {
                 ])),
             ]));
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1342,7 +1342,7 @@ describe('Connector', function (): void {
                 new GuzzleResponse(404, ['Content-Type' => 'application/json'], json_encode(['error' => 'Not Found'])),
             ]));
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1380,7 +1380,7 @@ describe('Connector', function (): void {
 
             $connector->withMockClient($mockClient);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1399,14 +1399,14 @@ describe('Connector', function (): void {
         });
 
         it('captures authenticated wire-ready headers in mocked requests', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
                     return 'https://api.example.com';
                 }
 
-                public function authenticate(Request $request): Request
+                public function authenticate(AbstractRequest $request): AbstractRequest
                 {
                     return new BearerToken('test-token')->authenticate($request);
                 }
@@ -1418,7 +1418,7 @@ describe('Connector', function (): void {
 
             $connector->withMockClient($mockClient);
 
-            $request = new #[Post(), Json()] class() extends Request
+            $request = new #[Post(), Json()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1444,7 +1444,7 @@ describe('Connector', function (): void {
             MockConfig::preventStrayRequests(true);
 
             $connector = new TestableConnector();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1473,7 +1473,7 @@ describe('Connector', function (): void {
             $connector = new TestableConnector();
             $connector->setHttpClient($httpClient);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {

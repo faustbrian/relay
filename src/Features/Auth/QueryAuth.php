@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 
 /**
  * Query parameter authentication.
@@ -19,14 +19,14 @@ use Cline\Relay\Support\Contracts\Authenticator;
  *
  * @psalm-immutable
  */
-final readonly class QueryAuth implements Authenticator
+final readonly class QueryAuth implements AuthenticatorInterface
 {
     public function __construct(
         private string $parameterName,
         private string $value,
     ) {}
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return $request->withQuery($this->parameterName, $this->value);
     }

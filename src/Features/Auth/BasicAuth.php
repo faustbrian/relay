@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 
 /**
  * HTTP Basic authentication.
@@ -19,14 +19,14 @@ use Cline\Relay\Support\Contracts\Authenticator;
  *
  * @psalm-immutable
  */
-final readonly class BasicAuth implements Authenticator
+final readonly class BasicAuth implements AuthenticatorInterface
 {
     public function __construct(
         private string $username,
         private string $password,
     ) {}
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return $request->withBasicAuth($this->username, $this->password);
     }

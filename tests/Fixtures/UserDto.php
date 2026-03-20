@@ -9,14 +9,14 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Support\Contracts\DataTransferObject;
+use Cline\Relay\Support\Contracts\DataTransferObjectInterface;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  *
  * @psalm-immutable
  */
-final readonly class UserDto implements DataTransferObject
+final readonly class UserDto implements DataTransferObjectInterface
 {
     public function __construct(
         public int $id,

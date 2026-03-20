@@ -14,4 +14,4 @@ namespace Cline\Relay\Support\Exceptions;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class GenericRequestException extends RequestException {}
+final class GenericRequestException extends AbstractRequestException {}

@@ -9,19 +9,19 @@
 
 namespace Cline\Relay\Features\OAuth2;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Form;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
 use function array_filter;
 
 /**
- * Request to exchange authorization code for access token.
+ * AbstractRequest to exchange authorization code for access token.
  *
  * @author Brian Faust <brian@cline.sh>
  */
 #[Post(), Form()]
-final class GetAccessTokenRequest extends Request
+final class GetAccessTokenRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $code,

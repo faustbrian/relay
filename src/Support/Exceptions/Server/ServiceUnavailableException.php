@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Server;
 
-use Cline\Relay\Support\Exceptions\ServerException;
+use Cline\Relay\Support\Exceptions\AbstractServerException;
 
 /**
  * Exception for 503 Service Unavailable responses.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class ServiceUnavailableException extends ServerException {}
+final class ServiceUnavailableException extends AbstractServerException {}

@@ -7,12 +7,12 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Support\Exceptions\RequestException;
+use Cline\Relay\Support\Exceptions\AbstractRequestException;
 use Facade\IgnitionContracts\ProvidesSolution;
 use Facade\IgnitionContracts\Solution;
 
 it('provides an ignition solution', function (): void {
-    $exception = new class() extends RequestException
+    $exception = new class() extends AbstractRequestException
     {
         public function __construct() {}
     };

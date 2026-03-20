@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Contracts\TracerInterface;
 
@@ -147,7 +147,7 @@ final class Tracer implements TracerInterface
     /**
      * Record request attributes for telemetry.
      */
-    public function recordRequest(Request $request): void
+    public function recordRequest(AbstractRequest $request): void
     {
         // Override in custom implementations for APM integration
     }

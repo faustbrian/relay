@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Caching\CacheConfig;
 use Cline\Relay\Features\Caching\CacheKeyGenerator;
@@ -94,9 +94,9 @@ function createInMemoryCache(): CacheInterface
     };
 }
 
-function createTestConnector(): Connector
+function createTestConnector(): AbstractConnector
 {
-    return new class() extends Connector
+    return new class() extends AbstractConnector
     {
         public function baseUrl(): string
         {
@@ -189,7 +189,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -214,7 +214,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -238,7 +238,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -262,7 +262,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new #[Cache(keyResolver: 'cacheKey')] class() extends Request
+        $request = new #[Cache(keyResolver: 'cacheKey')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -291,7 +291,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new #[Cache(keyResolver: 'user.{userId}')] class() extends Request
+        $request = new #[Cache(keyResolver: 'user.{userId}')] class() extends AbstractRequest
         {
             public function __construct(
                 public readonly int $userId = 123,
@@ -319,7 +319,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new #[Cache(keyResolver: 'user.{nonExistentProp}')] class() extends Request
+        $request = new #[Cache(keyResolver: 'user.{nonExistentProp}')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -343,7 +343,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -378,7 +378,7 @@ describe('CacheKeyGenerator', function (): void {
         $generator = new CacheKeyGenerator($config);
         $connector = createTestConnector();
 
-        $request = new #[Cache(keyResolver: TestCacheKeyResolver::class)] class() extends Request
+        $request = new #[Cache(keyResolver: TestCacheKeyResolver::class)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -405,7 +405,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -434,7 +434,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -458,7 +458,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -480,7 +480,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -509,7 +509,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request1 = new class() extends Request
+        $request1 = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -522,7 +522,7 @@ describe('RequestCache', function (): void {
             }
         };
 
-        $request2 = new class() extends Request
+        $request2 = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -551,7 +551,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request = new #[NoCache()] class() extends Request
+        $request = new #[NoCache()] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -585,7 +585,7 @@ describe('RequestCache', function (): void {
         $config = new CacheConfig(store: $store);
         $cache = new RequestCache($config);
 
-        $requestWithCache = new #[Cache(ttl: 300)] class() extends Request
+        $requestWithCache = new #[Cache(ttl: 300)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -593,7 +593,7 @@ describe('RequestCache', function (): void {
             }
         };
 
-        $requestWithoutCache = new class() extends Request
+        $requestWithoutCache = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -611,7 +611,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request = new #[Cache(tags: ['users', 'api'])] class() extends Request
+        $request = new #[Cache(tags: ['users', 'api'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -643,7 +643,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request1 = new #[Cache(tags: ['users'])] class() extends Request
+        $request1 = new #[Cache(tags: ['users'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -656,7 +656,7 @@ describe('RequestCache', function (): void {
             }
         };
 
-        $request2 = new #[Cache(tags: ['users', 'admin'])] class() extends Request
+        $request2 = new #[Cache(tags: ['users', 'admin'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -687,7 +687,7 @@ describe('RequestCache', function (): void {
         $connector = createTestConnector();
 
         // Create and cache a GET request with tags
-        $getRequest = new #[Cache(tags: ['users'])] class() extends Request
+        $getRequest = new #[Cache(tags: ['users'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -706,7 +706,7 @@ describe('RequestCache', function (): void {
         expect($cache->get($connector, $getRequest))->not->toBeNull();
 
         // Create a mutation request that invalidates the tag
-        $mutationRequest = new #[InvalidatesCache(tags: ['users'])] class() extends Request
+        $mutationRequest = new #[InvalidatesCache(tags: ['users'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -740,7 +740,7 @@ describe('RequestCache', function (): void {
         expect($store->has('api:user:2'))->toBeTrue();
 
         // Create a mutation request that invalidates specific keys
-        $mutationRequest = new #[InvalidatesCache(keys: ['api:user:1', 'api:user:2'])] class() extends Request
+        $mutationRequest = new #[InvalidatesCache(keys: ['api:user:1', 'api:user:2'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -768,7 +768,7 @@ describe('RequestCache', function (): void {
         $connector = createTestConnector();
 
         // Create and cache a GET request
-        $getRequest = new #[Cache(tags: ['users'])] class() extends Request
+        $getRequest = new #[Cache(tags: ['users'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -785,7 +785,7 @@ describe('RequestCache', function (): void {
         $cache->put($connector, $getRequest, $response);
 
         // Create a mutation request WITHOUT InvalidatesCache attribute
-        $mutationRequest = new class() extends Request
+        $mutationRequest = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -811,7 +811,7 @@ describe('RequestCache', function (): void {
         $cache = new RequestCache($config);
         $connector = createTestConnector();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -848,7 +848,7 @@ describe('RequestCache', function (): void {
         $connector = createTestConnector();
 
         // Create and cache a GET request with tags
-        $getRequest = new #[Cache(tags: ['users'])] class() extends Request
+        $getRequest = new #[Cache(tags: ['users'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -871,7 +871,7 @@ describe('RequestCache', function (): void {
         expect($store->has('api:user:special'))->toBeTrue();
 
         // Create a mutation request that invalidates both tags and specific keys
-        $mutationRequest = new #[InvalidatesCache(tags: ['users'], keys: ['api:user:special'])] class() extends Request
+        $mutationRequest = new #[InvalidatesCache(tags: ['users'], keys: ['api:user:special'])] class() extends AbstractRequest
         {
             public function endpoint(): string
             {

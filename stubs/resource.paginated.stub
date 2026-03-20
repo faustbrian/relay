@@ -2,14 +2,14 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractResource;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Pagination\PaginatedResponse;
 
 /**
  * {{ class }} resource with pagination support.
  */
-final class {{ class }} extends Resource
+final class {{ class }} extends AbstractResource
 {
     /**
      * List all resources with pagination.

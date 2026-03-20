@@ -10,7 +10,7 @@
 namespace Cline\Relay\Support\Attributes;
 
 use Attribute;
-use Cline\Relay\Support\Contracts\IdempotencyKeyGenerator;
+use Cline\Relay\Support\Contracts\IdempotencyKeyGeneratorInterface;
 
 /**
  * Mark a request as idempotent.
@@ -27,9 +27,9 @@ use Cline\Relay\Support\Contracts\IdempotencyKeyGenerator;
 final readonly class Idempotent
 {
     /**
-     * @param string                                            $header    The header name for the idempotency key
-     * @param null|class-string<IdempotencyKeyGenerator>|string $keyMethod Method name or IdempotencyKeyGenerator class for custom key generation
-     * @param bool                                              $enabled   Whether idempotency is enabled (useful for disabling on subclass)
+     * @param string                                                     $header    The header name for the idempotency key
+     * @param null|class-string<IdempotencyKeyGeneratorInterface>|string $keyMethod Method name or IdempotencyKeyGeneratorInterface class for custom key generation
+     * @param bool                                                       $enabled   Whether idempotency is enabled (useful for disabling on subclass)
      */
     public function __construct(
         public string $header = 'Idempotency-Key',

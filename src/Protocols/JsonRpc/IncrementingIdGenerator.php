@@ -14,7 +14,7 @@ namespace Cline\Relay\Protocols\JsonRpc;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class IncrementingIdGenerator implements IdGenerator
+final class IncrementingIdGenerator implements IdGeneratorInterface
 {
     public function __construct(
         private int $counter = 1,

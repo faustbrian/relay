@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Features\RateLimiting;
 
-use Cline\Relay\Support\Contracts\RateLimitStore;
+use Cline\Relay\Support\Contracts\RateLimitStoreInterface;
 use Illuminate\Support\Facades\Date;
 use Psr\SimpleCache\CacheInterface;
 
@@ -22,7 +22,7 @@ use function max;
  *
  * @psalm-immutable
  */
-final readonly class CacheStore implements RateLimitStore
+final readonly class CacheStore implements RateLimitStoreInterface
 {
     private const string PREFIX = 'relay:ratelimit:';
 

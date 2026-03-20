@@ -9,17 +9,17 @@
 
 namespace Cline\Relay\Features\OAuth2;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Get;
 
 /**
- * Request to get the authenticated user.
+ * AbstractRequest to get the authenticated user.
  *
  * @author Brian Faust <brian@cline.sh>
  */
 #[Get(), Json()]
-final class GetUserRequest extends Request
+final class GetUserRequest extends AbstractRequest
 {
     public function __construct(
         private readonly OAuthConfig $config,

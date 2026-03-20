@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Observability\Debugging\Debugger;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
@@ -15,10 +15,10 @@ use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Methods\Post;
 use GuzzleHttp\Psr7\Response as Psr7Response;
 
-function createDebugRequest(string $endpoint = '/users', string $method = 'GET'): Request
+function createDebugRequest(string $endpoint = '/users', string $method = 'GET'): AbstractRequest
 {
     return match ($method) {
-        'POST' => new #[Post(), Json()] class($endpoint) extends Request
+        'POST' => new #[Post(), Json()] class($endpoint) extends AbstractRequest
         {
             public function __construct(
                 private readonly string $ep,
@@ -39,7 +39,7 @@ function createDebugRequest(string $endpoint = '/users', string $method = 'GET')
                 return ['Authorization' => 'Bearer token123', 'X-Custom' => 'value'];
             }
         },
-        default => new #[Get()] class($endpoint) extends Request
+        default => new #[Get()] class($endpoint) extends AbstractRequest
         {
             public function __construct(
                 private readonly string $ep,
@@ -178,7 +178,7 @@ describe('Debugger', function (): void {
             $debugger = new Debugger();
             $debugger->setSensitiveHeaders(['X-Custom-Secret']);
 
-            $request = new #[Post(), Json()] class extends Request
+            $request = new #[Post(), Json()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -208,7 +208,7 @@ describe('Debugger', function (): void {
             $debugger = new Debugger();
             $debugger->setSensitiveBodyKeys(['my_secret_field']);
 
-            $request = new #[Post(), Json()] class extends Request
+            $request = new #[Post(), Json()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -237,7 +237,7 @@ describe('Debugger', function (): void {
         it('redacts nested sensitive keys', function (): void {
             $debugger = new Debugger();
 
-            $request = new #[Post(), Json()] class extends Request
+            $request = new #[Post(), Json()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {

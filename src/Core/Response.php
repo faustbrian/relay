@@ -9,6 +9,7 @@
 
 namespace Cline\Relay\Core;
 
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\RateLimiting\RateLimitInfo;
 use Cline\Relay\Support\Exceptions\FileWriteException;
 use Cline\Relay\Support\Exceptions\ResponseException;
@@ -68,7 +69,7 @@ final class Response
 
     public function __construct(
         private readonly ResponseInterface $psrResponse,
-        private readonly ?Request $request = null,
+        private readonly ?AbstractRequest $request = null,
     ) {}
 
     // ===== Factory Methods =====
@@ -94,7 +95,7 @@ final class Response
     /**
      * Create a new response instance with the given request attached.
      */
-    public function withRequest(Request $request): self
+    public function withRequest(AbstractRequest $request): self
     {
         $response = new self($this->psrResponse, $request);
         $response->duration = $this->duration;
@@ -208,7 +209,7 @@ final class Response
      */
     public function toDto(): mixed
     {
-        if (!$this->request instanceof Request) {
+        if (!$this->request instanceof AbstractRequest) {
             return null;
         }
 
@@ -226,7 +227,7 @@ final class Response
             throw ResponseException::cannotCreateDtoFromFailedResponse($this->status(), $this->body());
         }
 
-        throw_unless($this->request instanceof Request, ResponseException::noRequestAssociatedWithResponse());
+        throw_unless($this->request instanceof AbstractRequest, ResponseException::noRequestAssociatedWithResponse());
 
         $dto = $this->request->createDtoFromResponse($this);
 
@@ -335,7 +336,7 @@ final class Response
     /**
      * Get the original request.
      */
-    public function request(): ?Request
+    public function request(): ?AbstractRequest
     {
         return $this->request;
     }

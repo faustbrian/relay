@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Client;
 
-use Cline\Relay\Support\Exceptions\ClientException;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
 
 /**
  * Generic client exception for unhandled 4xx status codes.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class GenericClientException extends ClientException {}
+final class GenericClientException extends AbstractClientException {}

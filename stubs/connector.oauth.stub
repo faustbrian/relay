@@ -2,18 +2,18 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
-use Cline\Relay\Features\OAuth2\AuthorizationCodeGrant;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Features\OAuth2\AuthorizationCodeGrantTrait;
 use Cline\Relay\Features\OAuth2\OAuthConfig;
-use Cline\Relay\Support\Contracts\OAuthAuthenticator;
+use Cline\Relay\Support\Contracts\OAuthAuthenticatorInterface;
 
 /**
  * {{ connectorName }} API connector with OAuth2 authentication.
  */
-final class {{ class }} extends Connector
+final class {{ class }} extends AbstractConnector
 {
-    use AuthorizationCodeGrant;
+    use AuthorizationCodeGrantTrait;
 
     private ?OAuthAuthenticator $authenticator = null;
 

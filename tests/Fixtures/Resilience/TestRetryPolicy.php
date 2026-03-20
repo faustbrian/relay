@@ -9,9 +9,9 @@
 
 namespace Tests\Fixtures\Resilience;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\RetryPolicy;
+use Cline\Relay\Support\Contracts\RetryPolicyInterface;
 use RuntimeException;
 use Throwable;
 
@@ -24,7 +24,7 @@ use function in_array;
  *
  * @psalm-immutable
  */
-final readonly class TestRetryPolicy implements RetryPolicy
+final readonly class TestRetryPolicy implements RetryPolicyInterface
 {
     public function times(): int
     {
@@ -46,13 +46,13 @@ final readonly class TestRetryPolicy implements RetryPolicy
         return 10_000;
     }
 
-    public function shouldRetry(Request $request, Response $response, int $attempt): bool
+    public function shouldRetry(AbstractRequest $request, Response $response, int $attempt): bool
     {
         // Only retry on 500 and 503
         return in_array($response->status(), [500, 503], true);
     }
 
-    public function shouldRetryException(Request $request, Throwable $exception, int $attempt): bool
+    public function shouldRetryException(AbstractRequest $request, Throwable $exception, int $attempt): bool
     {
         // Only retry RuntimeException
         return $exception instanceof RuntimeException;

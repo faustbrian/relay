@@ -7,14 +7,14 @@ use App\Http\Integrations\{{ connector }}\Requests\Delete{{ resourceName }}Reque
 use App\Http\Integrations\{{ connector }}\Requests\Get{{ resourceName }}Request;
 use App\Http\Integrations\{{ connector }}\Requests\List{{ resourceName }}sRequest;
 use App\Http\Integrations\{{ connector }}\Requests\Update{{ resourceName }}Request;
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractResource;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Pagination\PaginatedResponse;
 
 /**
  * {{ class }} resource with CRUD operations.
  */
-final class {{ class }} extends Resource
+final class {{ class }} extends AbstractResource
 {
     /**
      * Get a single {{ resourceNameLower }}.

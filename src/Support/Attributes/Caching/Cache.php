@@ -10,7 +10,7 @@
 namespace Cline\Relay\Support\Attributes\Caching;
 
 use Attribute;
-use Cline\Relay\Support\Contracts\CacheKeyResolver;
+use Cline\Relay\Support\Contracts\CacheKeyResolverInterface;
 
 /**
  * Enable caching for a request.
@@ -23,9 +23,9 @@ use Cline\Relay\Support\Contracts\CacheKeyResolver;
 final readonly class Cache
 {
     /**
-     * @param int                                        $ttl         Time to live in seconds
-     * @param null|class-string<CacheKeyResolver>|string $keyResolver Custom cache key template, method name, or CacheKeyResolver class
-     * @param array<string>                              $tags        Cache tags for invalidation
+     * @param int                                                 $ttl         Time to live in seconds
+     * @param null|class-string<CacheKeyResolverInterface>|string $keyResolver Custom cache key template, method name, or CacheKeyResolverInterface class
+     * @param array<string>                                       $tags        Cache tags for invalidation
      */
     public function __construct(
         public int $ttl = 300,

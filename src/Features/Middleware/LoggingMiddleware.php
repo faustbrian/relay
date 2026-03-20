@@ -9,9 +9,9 @@
 
 namespace Cline\Relay\Features\Middleware;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\Middleware;
+use Cline\Relay\Support\Contracts\MiddlewareInterface;
 use Closure;
 use Psr\Log\LoggerInterface;
 
@@ -19,13 +19,13 @@ use function microtime;
 use function round;
 
 /**
- * Middleware that logs requests and responses.
+ * MiddlewareInterface that logs requests and responses.
  *
  * @author Brian Faust <brian@cline.sh>
  *
  * @psalm-immutable
  */
-final readonly class LoggingMiddleware implements Middleware
+final readonly class LoggingMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private LoggerInterface $logger,
@@ -33,7 +33,7 @@ final readonly class LoggingMiddleware implements Middleware
         private bool $logResponseBody = false,
     ) {}
 
-    public function handle(Request $request, Closure $next): Response
+    public function handle(AbstractRequest $request, Closure $next): Response
     {
         $startTime = microtime(true);
 

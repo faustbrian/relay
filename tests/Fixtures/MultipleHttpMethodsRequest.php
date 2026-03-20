@@ -9,7 +9,7 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
@@ -18,7 +18,7 @@ use Cline\Relay\Support\Attributes\Methods\Post;
  */
 #[Get()]
 #[Post()]
-final class MultipleHttpMethodsRequest extends Request
+final class MultipleHttpMethodsRequest extends AbstractRequest
 {
     public function endpoint(): string
     {

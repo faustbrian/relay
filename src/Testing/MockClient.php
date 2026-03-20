@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Testing;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Exceptions\MockClientException;
 use Closure;
@@ -46,10 +46,10 @@ final class MockClient
     /** @var array<Closure|Fixture|Response> */
     private array $sequenceResponses = [];
 
-    /** @var array<Request> */
+    /** @var array<AbstractRequest> */
     private array $sentRequests = [];
 
-    /** @var array<array{request: Request, response: Response}> */
+    /** @var array<array{request: AbstractRequest, response: Response}> */
     private array $history = [];
 
     private bool $sequentialMode = false;
@@ -131,7 +131,7 @@ final class MockClient
     /**
      * Set the recorder callback for fixture recording.
      *
-     * @param Closure(Request): Response $recorder
+     * @param Closure(AbstractRequest): Response $recorder
      */
     public function setRecorder(Closure $recorder): self
     {
@@ -143,7 +143,7 @@ final class MockClient
     /**
      * Resolve a response for a request.
      */
-    public function resolve(Request $request, string $baseUrl): Response
+    public function resolve(AbstractRequest $request, string $baseUrl): Response
     {
         $this->sentRequests[] = $request;
 
@@ -175,7 +175,7 @@ final class MockClient
     /**
      * Get all sent requests.
      *
-     * @return array<Request>
+     * @return array<AbstractRequest>
      */
     public function sentRequests(): array
     {
@@ -185,7 +185,7 @@ final class MockClient
     /**
      * Get the last sent request.
      */
-    public function lastRequest(): ?Request
+    public function lastRequest(): ?AbstractRequest
     {
         return $this->sentRequests !== [] ? end($this->sentRequests) : null;
     }
@@ -193,7 +193,7 @@ final class MockClient
     /**
      * Get the request/response history.
      *
-     * @return array<array{request: Request, response: Response}>
+     * @return array<array{request: AbstractRequest, response: Response}>
      */
     public function history(): array
     {
@@ -203,7 +203,7 @@ final class MockClient
     /**
      * Assert a request was sent.
      *
-     * @param Closure|string $callback Request class, endpoint, or callback
+     * @param Closure|string $callback AbstractRequest class, endpoint, or callback
      */
     public function assertSent(Closure|string $callback): void
     {
@@ -230,7 +230,7 @@ final class MockClient
     /**
      * Assert a request was not sent.
      *
-     * @param Closure|string $callback Request class, endpoint, or callback
+     * @param Closure|string $callback AbstractRequest class, endpoint, or callback
      */
     public function assertNotSent(Closure|string $callback): void
     {
@@ -306,7 +306,7 @@ final class MockClient
     /**
      * Find a matching response for a request.
      */
-    private function findResponse(Request $request, string $baseUrl): Closure|Fixture|Response
+    private function findResponse(AbstractRequest $request, string $baseUrl): Closure|Fixture|Response
     {
         // Try sequential mode first
         if ($this->sequentialMode && $this->sequenceResponses !== []) {

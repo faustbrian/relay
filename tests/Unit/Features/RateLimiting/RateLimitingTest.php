@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\RateLimiting\CacheStore;
 use Cline\Relay\Features\RateLimiting\MemoryStore;
@@ -22,9 +22,9 @@ use Illuminate\Support\Facades\Date;
 use Psr\SimpleCache\CacheInterface;
 use Tests\Fixtures\RateLimiting\TestBackoffStrategy;
 
-function createTestConnectorForRateLimiting(): Connector
+function createTestConnectorForRateLimiting(): AbstractConnector
 {
-    return new class() extends Connector
+    return new class() extends AbstractConnector
     {
         public function baseUrl(): string
         {
@@ -171,7 +171,7 @@ describe('RateLimiter', function (): void {
         $limiter = new RateLimiter($store, $config);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -193,7 +193,7 @@ describe('RateLimiter', function (): void {
         $limiter = new RateLimiter($store, $config);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -212,7 +212,7 @@ describe('RateLimiter', function (): void {
         $config = new RateLimitConfig(requests: 100, perSeconds: 60, backoff: 'exponential');
         $limiter = new RateLimiter($store, $config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -230,7 +230,7 @@ describe('RateLimiter', function (): void {
         $config = new RateLimitConfig(requests: 100, perSeconds: 60, backoff: 'linear');
         $limiter = new RateLimiter($store, $config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -248,7 +248,7 @@ describe('RateLimiter', function (): void {
         $config = new RateLimitConfig(requests: 100, perSeconds: 60, backoff: 'unknown');
         $limiter = new RateLimiter($store, $config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -270,7 +270,7 @@ describe('RateLimiter', function (): void {
         );
         $limiter = new RateLimiter($store, $config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -295,7 +295,7 @@ describe('RateLimiter', function (): void {
         );
         $limiter = new RateLimiter($store, $config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -312,7 +312,7 @@ describe('RateLimiter', function (): void {
         $limiter = new RateLimiter($store);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -338,7 +338,7 @@ describe('RateLimiter::getState()', function (): void {
         $limiter = new RateLimiter($store, $config);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -363,7 +363,7 @@ describe('RateLimiter::getState()', function (): void {
         $limiter = new RateLimiter($store);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -381,7 +381,7 @@ describe('RateLimiter::getState()', function (): void {
         $limiter = new RateLimiter($store);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new #[RateLimit(requests: 10, perSeconds: 60)] class() extends Request
+        $request = new #[RateLimit(requests: 10, perSeconds: 60)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -402,7 +402,7 @@ describe('RateLimiter::getRetryConfig()', function (): void {
         $store = new MemoryStore();
         $limiter = new RateLimiter($store);
 
-        $request = new #[RateLimit(requests: 10, perSeconds: 60, retry: true, maxRetries: 3)] class() extends Request
+        $request = new #[RateLimit(requests: 10, perSeconds: 60, retry: true, maxRetries: 3)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -423,7 +423,7 @@ describe('RateLimiter::getRetryConfig()', function (): void {
         $store = new MemoryStore();
         $limiter = new RateLimiter($store);
 
-        $request = new #[RateLimit(requests: 10, perSeconds: 60, retry: false)] class() extends Request
+        $request = new #[RateLimit(requests: 10, perSeconds: 60, retry: false)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -440,7 +440,7 @@ describe('RateLimiter::getRetryConfig()', function (): void {
         $store = new MemoryStore();
         $limiter = new RateLimiter($store);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -458,7 +458,7 @@ describe('RateLimiter::getRetryConfig()', function (): void {
         $config = new RateLimitConfig(requests: 10, perSeconds: 60, retry: false);
         $limiter = new RateLimiter($store, $config);
 
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -479,7 +479,7 @@ describe('RateLimiter with RateLimit attribute', function (): void {
         $limiter = new RateLimiter($store, $defaultConfig);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new #[RateLimit(requests: 2, perSeconds: 60)] class() extends Request
+        $request = new #[RateLimit(requests: 2, perSeconds: 60)] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -498,7 +498,7 @@ describe('RateLimiter with RateLimit attribute', function (): void {
         $store = new MemoryStore();
         $limiter = new RateLimiter($store);
 
-        $request = new #[RateLimit(requests: 50, perSeconds: 120, retry: true, maxRetries: 5, backoff: 'exponential', )] class() extends Request
+        $request = new #[RateLimit(requests: 50, perSeconds: 120, retry: true, maxRetries: 5, backoff: 'exponential', )] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -521,7 +521,7 @@ describe('RateLimiter with RateLimit attribute', function (): void {
         $limiter = new RateLimiter($store);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'custom-api-key')] class() extends Request
+        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'custom-api-key')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -544,7 +544,7 @@ describe('RateLimiter custom key resolution', function (): void {
         $limiter = new RateLimiter($store);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{userId}')] class() extends Request
+        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{userId}')] class() extends AbstractRequest
         {
             public function __construct(
                 public readonly string $userId = 'user123',
@@ -569,7 +569,7 @@ describe('RateLimiter custom key resolution', function (): void {
         $limiter = new RateLimiter($store);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'tenant-{tenantId}-user-{userId}')] class() extends Request
+        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'tenant-{tenantId}-user-{userId}')] class() extends AbstractRequest
         {
             public function __construct(
                 public readonly string $tenantId = 'tenant456',
@@ -595,7 +595,7 @@ describe('RateLimiter custom key resolution', function (): void {
         $limiter = new RateLimiter($store);
         $connector = createTestConnectorForRateLimiting();
 
-        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{nonExistentProperty}')] class() extends Request
+        $request = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{nonExistentProperty}')] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -617,7 +617,7 @@ describe('RateLimiter custom key resolution', function (): void {
         $connector = createTestConnectorForRateLimiting();
 
         // Create two separate request instances with different user IDs
-        $request1 = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{userId}')] class('user1') extends Request
+        $request1 = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{userId}')] class('user1') extends AbstractRequest
         {
             public function __construct(
                 public readonly string $userId,
@@ -629,7 +629,7 @@ describe('RateLimiter custom key resolution', function (): void {
             }
         };
 
-        $request2 = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{userId}')] class('user2') extends Request
+        $request2 = new #[RateLimit(requests: 2, perSeconds: 60, key: 'user-{userId}')] class('user2') extends AbstractRequest
         {
             public function __construct(
                 public readonly string $userId,
@@ -764,7 +764,7 @@ describe('RateLimitException', function (): void {
     });
 
     it('can be created from response', function (): void {
-        $request = new class() extends Request
+        $request = new class() extends AbstractRequest
         {
             public function endpoint(): string
             {

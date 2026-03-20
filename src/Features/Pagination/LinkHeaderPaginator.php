@@ -9,10 +9,10 @@
 
 namespace Cline\Relay\Features\Pagination;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Pagination\LinkPagination;
-use Cline\Relay\Support\Contracts\Paginator;
+use Cline\Relay\Support\Contracts\PaginatorInterface;
 
 use const PHP_URL_QUERY;
 
@@ -35,7 +35,7 @@ use function preg_match;
  *
  * @psalm-immutable
  */
-final readonly class LinkHeaderPaginator implements Paginator
+final readonly class LinkHeaderPaginator implements PaginatorInterface
 {
     public function __construct(
         private LinkPagination $config,
@@ -64,7 +64,7 @@ final readonly class LinkHeaderPaginator implements Paginator
         return $params;
     }
 
-    public function nextRequest(Request $request, Response $response): ?Request
+    public function nextRequest(AbstractRequest $request, Response $response): ?AbstractRequest
     {
         $nextPage = $this->getNextPage($response);
 

@@ -9,7 +9,7 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\SoapRequest;
+use Cline\Relay\Protocols\AbstractSoapRequest;
 use Override;
 
 /**
@@ -17,7 +17,7 @@ use Override;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class WsdlSoapRequest extends SoapRequest
+final class WsdlSoapRequest extends AbstractSoapRequest
 {
     public function __construct(
         private readonly string $wsdlPath,

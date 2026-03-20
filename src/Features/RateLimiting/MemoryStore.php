@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Features\RateLimiting;
 
-use Cline\Relay\Support\Contracts\RateLimitStore;
+use Cline\Relay\Support\Contracts\RateLimitStoreInterface;
 use Illuminate\Support\Facades\Date;
 
 use function max;
@@ -19,7 +19,7 @@ use function max;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class MemoryStore implements RateLimitStore
+final class MemoryStore implements RateLimitStoreInterface
 {
     /** @var array<string, array{count: int, window_start: int, window_size: int}> */
     private array $buckets = [];

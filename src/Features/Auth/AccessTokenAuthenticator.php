@@ -10,8 +10,8 @@
 namespace Cline\Relay\Features\Auth;
 
 use Carbon\CarbonImmutable;
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\OAuthAuthenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\OAuthAuthenticatorInterface;
 use Cline\Relay\Support\Exceptions\AuthenticatorSerializationException;
 use DateTimeImmutable;
 
@@ -30,7 +30,7 @@ use function unserialize;
  *
  * @psalm-immutable
  */
-final readonly class AccessTokenAuthenticator implements OAuthAuthenticator
+final readonly class AccessTokenAuthenticator implements OAuthAuthenticatorInterface
 {
     public function __construct(
         private string $accessToken,
@@ -64,7 +64,7 @@ final readonly class AccessTokenAuthenticator implements OAuthAuthenticator
         );
     }
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return $request->withBearerToken($this->accessToken);
     }

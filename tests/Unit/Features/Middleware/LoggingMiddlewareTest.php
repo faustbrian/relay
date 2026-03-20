@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Middleware\LoggingMiddleware;
 use Illuminate\Support\Sleep;
@@ -77,7 +77,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -112,7 +112,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger, logRequestBody: true);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -142,7 +142,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger, logResponseBody: true);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -173,7 +173,7 @@ describe('LoggingMiddleware', function (): void {
                 logResponseBody: true,
             );
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -207,7 +207,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -236,7 +236,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -264,7 +264,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -297,7 +297,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger, logRequestBody: false);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -326,7 +326,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger, logResponseBody: false);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -350,7 +350,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger, logRequestBody: true);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -379,7 +379,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger, logResponseBody: true);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -406,7 +406,7 @@ describe('LoggingMiddleware', function (): void {
             $middleware = new LoggingMiddleware($this->mockLogger);
 
             foreach (['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] as $method) {
-                $request = new class($method) extends Request
+                $request = new class($method) extends AbstractRequest
                 {
                     public function __construct(
                         private readonly string $httpMethod,
@@ -438,7 +438,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -467,7 +467,7 @@ describe('LoggingMiddleware', function (): void {
             // Arrange
             $middleware = new LoggingMiddleware($this->mockLogger);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {

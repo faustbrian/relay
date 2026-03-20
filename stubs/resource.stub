@@ -2,12 +2,12 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractResource;
 
 /**
  * {{ class }} resource.
  */
-final class {{ class }} extends Resource
+final class {{ class }} extends AbstractResource
 {
     //
 }

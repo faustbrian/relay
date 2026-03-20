@@ -7,11 +7,11 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Pagination\PaginatedResponse;
-use Cline\Relay\Support\Contracts\Paginator;
+use Cline\Relay\Support\Contracts\PaginatorInterface;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator as LaravelPaginator;
 use Illuminate\Support\Collection;
@@ -23,7 +23,7 @@ use Tests\Fixtures\MockableTrait;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class TestPaginator implements Paginator
+final class TestPaginator implements PaginatorInterface
 {
     public function getItems(Response $response): array
     {
@@ -55,7 +55,7 @@ final class TestPaginator implements Paginator
         return null;
     }
 
-    public function nextRequest(Request $request, Response $response): ?Request
+    public function nextRequest(AbstractRequest $request, Response $response): ?AbstractRequest
     {
         $nextPage = $this->getNextPage($response);
 
@@ -78,7 +78,7 @@ final class TestPaginator implements Paginator
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class AfterPaginator implements Paginator
+final class AfterPaginator implements PaginatorInterface
 {
     public function getItems(Response $response): array
     {
@@ -101,7 +101,7 @@ final class AfterPaginator implements Paginator
         return $after !== null ? ['after' => $after] : null;
     }
 
-    public function nextRequest(Request $request, Response $response): ?Request
+    public function nextRequest(AbstractRequest $request, Response $response): ?AbstractRequest
     {
         $nextPage = $this->getNextPage($response);
 
@@ -124,7 +124,7 @@ final class AfterPaginator implements Paginator
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class BodyCursorPaginator implements Paginator
+final class BodyCursorPaginator implements PaginatorInterface
 {
     public function getItems(Response $response): array
     {
@@ -143,7 +143,7 @@ final class BodyCursorPaginator implements Paginator
         return $cursor !== null ? ['cursor' => $cursor] : null;
     }
 
-    public function nextRequest(Request $request, Response $response): ?Request
+    public function nextRequest(AbstractRequest $request, Response $response): ?AbstractRequest
     {
         $cursor = $response->json('result.meta.page.cursor.next');
 
@@ -162,7 +162,7 @@ final class BodyCursorPaginator implements Paginator
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class PaginationTestConnector extends Connector
+final class PaginationTestConnector extends AbstractConnector
 {
     use MockableTrait;
 
@@ -177,7 +177,7 @@ final class PaginationTestConnector extends Connector
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class TestRequest extends Request
+final class TestRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -194,14 +194,14 @@ final class TestRequest extends Request
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class TestBodyPaginationRequest extends Request
+final class TestBodyPaginationRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
         return '/rpc';
     }
 
-    public function body(): ?array
+    public function body(): array
     {
         return [
             'jsonrpc' => '2.0',
@@ -774,7 +774,7 @@ describe('PaginatedResponse', function (): void {
 
         test('stops iteration when getNextPage returns null', function (): void {
             // Arrange
-            $paginator = new class() implements Paginator
+            $paginator = new class() implements PaginatorInterface
             {
                 private int $callCount = 0;
 
@@ -797,7 +797,7 @@ describe('PaginatedResponse', function (): void {
                     return null;
                 }
 
-                public function nextRequest(Request $request, Response $response): ?Request
+                public function nextRequest(AbstractRequest $request, Response $response): ?AbstractRequest
                 {
                     ++$this->callCount;
 

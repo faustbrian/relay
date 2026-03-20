@@ -2,14 +2,14 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Protocols\SoapRequest;
+use Cline\Relay\Protocols\AbstractSoapRequest;
 use Override;
 
 /**
  * {{ class }} SOAP request.
  */
 {{ attributes }}
-final class {{ class }} extends SoapRequest
+final class {{ class }} extends AbstractSoapRequest
 {
     public function __construct(
         private readonly array $params = [],

@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Stream;
 
@@ -12,7 +12,7 @@ use Cline\Relay\Support\Attributes\Stream;
 #[Get()]
 #[Stream()]
 {{ attributes }}
-final class {{ class }} extends Request
+final class {{ class }} extends AbstractRequest
 {
     public function __construct(
         private readonly string $resourceId,

@@ -9,14 +9,14 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Methods\Get;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
 #[Get()]
-final class NoContentTypeRequest extends Request
+final class NoContentTypeRequest extends AbstractRequest
 {
     public function endpoint(): string
     {

@@ -9,9 +9,9 @@
 
 namespace Tests\Fixtures\Resilience;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\RetryDecider;
+use Cline\Relay\Support\Contracts\RetryDeciderInterface;
 
 /**
  * Test retry decider that uses attempt count.
@@ -20,9 +20,9 @@ use Cline\Relay\Support\Contracts\RetryDecider;
  *
  * @psalm-immutable
  */
-final readonly class AttemptAwareRetryDecider implements RetryDecider
+final readonly class AttemptAwareRetryDecider implements RetryDeciderInterface
 {
-    public function __invoke(Request $request, Response $response, int $attempt): bool
+    public function __invoke(AbstractRequest $request, Response $response, int $attempt): bool
     {
         // Only retry if attempt < 3
         return $attempt < 3;

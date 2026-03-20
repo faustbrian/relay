@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Support\Contracts;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 /**
  * Interface for request signing implementations.
@@ -21,10 +21,10 @@ interface RequestSignerInterface
     /**
      * Sign a request.
      */
-    public function sign(Request $request): Request;
+    public function sign(AbstractRequest $request): AbstractRequest;
 
     /**
      * Verify a request signature.
      */
-    public function verify(Request $request, string $signature, ?string $timestamp = null): bool;
+    public function verify(AbstractRequest $request, string $signature, ?string $timestamp = null): bool;
 }

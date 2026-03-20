@@ -9,42 +9,42 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
-use Cline\Relay\Support\Contracts\OAuthAuthenticator;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
+use Cline\Relay\Support\Contracts\OAuthAuthenticatorInterface;
 use Closure;
 
 /**
- * Authenticator that automatically refreshes expired OAuth tokens.
+ * AuthenticatorInterface that automatically refreshes expired OAuth tokens.
  *
- * This authenticator wraps an OAuthAuthenticator and automatically refreshes
+ * This authenticator wraps an OAuthAuthenticatorInterface and automatically refreshes
  * the access token when it has expired. The connector must use the
  * AuthorizationCodeGrant trait to support token refresh.
  *
  * @author Brian Faust <brian@cline.sh>
  *
- * @phpstan-type ConnectorWithOAuth Connector
+ * @phpstan-type ConnectorWithOAuth AbstractConnector
  */
-final class AutoRefreshAuthenticator implements Authenticator
+final class AutoRefreshAuthenticator implements AuthenticatorInterface
 {
     /**
-     * @param Connector                              $connector     The connector with OAuth support (must use AuthorizationCodeGrant trait)
-     * @param OAuthAuthenticator                     $authenticator The current authenticator
-     * @param null|Closure(OAuthAuthenticator): void $onRefresh     Callback when token is refreshed (e.g., to save to cache)
+     * @param AbstractConnector                               $connector     The connector with OAuth support (must use AuthorizationCodeGrant trait)
+     * @param OAuthAuthenticatorInterface                     $authenticator The current authenticator
+     * @param null|Closure(OAuthAuthenticatorInterface): void $onRefresh     Callback when token is refreshed (e.g., to save to cache)
      *
      * @phpstan-param ConnectorWithOAuth $connector
      */
     public function __construct(
-        private readonly Connector $connector,
-        private OAuthAuthenticator $authenticator,
+        private readonly AbstractConnector $connector,
+        private OAuthAuthenticatorInterface $authenticator,
         private readonly ?Closure $onRefresh = null,
     ) {}
 
     /**
      * Authenticate the request, refreshing the token if expired.
      */
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         if ($this->authenticator->hasExpired() && $this->authenticator->isRefreshable()) {
             $this->refresh();
@@ -56,7 +56,7 @@ final class AutoRefreshAuthenticator implements Authenticator
     /**
      * Get the current authenticator.
      */
-    public function getAuthenticator(): OAuthAuthenticator
+    public function getAuthenticator(): OAuthAuthenticatorInterface
     {
         return $this->authenticator;
     }
@@ -67,7 +67,7 @@ final class AutoRefreshAuthenticator implements Authenticator
     public function refresh(): void
     {
         /**
-         * @var OAuthAuthenticator $newAuthenticator
+         * @var OAuthAuthenticatorInterface $newAuthenticator
          *
          * @phpstan-ignore method.notFound (Method exists via AuthorizationCodeGrant trait)
          */

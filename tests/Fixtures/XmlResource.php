@@ -9,11 +9,11 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractResource;
 use Cline\Relay\Support\Attributes\ContentTypes\Xml;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
 #[Xml()]
-final class XmlResource extends Resource {}
+final class XmlResource extends AbstractResource {}

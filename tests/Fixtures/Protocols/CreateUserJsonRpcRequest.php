@@ -9,13 +9,13 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\JsonRpcRequest;
+use Cline\Relay\Protocols\AbstractJsonRpcRequest;
 use Override;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CreateUserJsonRpcRequest extends JsonRpcRequest
+final class CreateUserJsonRpcRequest extends AbstractJsonRpcRequest
 {
     public function __construct(
         private readonly array $userData,

@@ -9,12 +9,12 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\JsonRpcRequest;
+use Cline\Relay\Protocols\AbstractJsonRpcRequest;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class ListOrdersJsonRpcRequest extends JsonRpcRequest
+final class ListOrdersJsonRpcRequest extends AbstractJsonRpcRequest
 {
     protected ?string $methodPrefix = 'app';
 }

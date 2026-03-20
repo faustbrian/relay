@@ -9,12 +9,12 @@
 
 namespace Cline\Relay\Features\RateLimiting;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\RateLimiting\RateLimitInfo;
 use Cline\Relay\Support\Attributes\RateLimiting\RateLimit;
-use Cline\Relay\Support\Contracts\BackoffStrategy;
-use Cline\Relay\Support\Contracts\RateLimitStore;
+use Cline\Relay\Support\Contracts\BackoffStrategyInterface;
+use Cline\Relay\Support\Contracts\RateLimitStoreInterface;
 use Cline\Relay\Support\Exceptions\Client\RateLimitException;
 use Illuminate\Support\Facades\Date;
 use ReflectionClass;
@@ -36,7 +36,7 @@ use function preg_replace_callback;
 final readonly class RateLimiter
 {
     public function __construct(
-        private RateLimitStore $store,
+        private RateLimitStoreInterface $store,
         private ?RateLimitConfig $defaultConfig = null,
     ) {}
 
@@ -45,7 +45,7 @@ final readonly class RateLimiter
      *
      * @throws RateLimitException If rate limited and retry is disabled
      */
-    public function check(Connector $connector, Request $request): void
+    public function check(AbstractConnector $connector, AbstractRequest $request): void
     {
         $config = $this->getConfigForRequest($request);
 
@@ -70,7 +70,7 @@ final readonly class RateLimiter
     /**
      * Get the rate limit state for a request.
      */
-    public function getState(Connector $connector, Request $request): ?RateLimitInfo
+    public function getState(AbstractConnector $connector, AbstractRequest $request): ?RateLimitInfo
     {
         $config = $this->getConfigForRequest($request);
 
@@ -90,7 +90,7 @@ final readonly class RateLimiter
     /**
      * Get the retry configuration for a request.
      */
-    public function getRetryConfig(Request $request): ?RateLimitConfig
+    public function getRetryConfig(AbstractRequest $request): ?RateLimitConfig
     {
         $config = $this->getConfigForRequest($request);
 
@@ -104,10 +104,10 @@ final readonly class RateLimiter
     /**
      * Calculate backoff time for a retry attempt.
      */
-    public function calculateBackoff(Request $request, RateLimitConfig $config, int $attempt, int $retryAfter = 0): int
+    public function calculateBackoff(AbstractRequest $request, RateLimitConfig $config, int $attempt, int $retryAfter = 0): int
     {
-        // Check if backoff is a BackoffStrategy class
-        if (class_exists($config->backoff) && is_a($config->backoff, BackoffStrategy::class, true)) {
+        // Check if backoff is a BackoffStrategyInterface class
+        if (class_exists($config->backoff) && is_a($config->backoff, BackoffStrategyInterface::class, true)) {
             $strategy = new ($config->backoff)();
 
             return $strategy->calculateDelay($request, $attempt, $retryAfter);
@@ -123,7 +123,7 @@ final readonly class RateLimiter
     /**
      * Get the rate limit configuration for a request.
      */
-    private function getConfigForRequest(Request $request): ?RateLimitConfig
+    private function getConfigForRequest(AbstractRequest $request): ?RateLimitConfig
     {
         $attribute = $this->getRateLimitAttribute($request);
 
@@ -143,7 +143,7 @@ final readonly class RateLimiter
     /**
      * Resolve the rate limit key for a request.
      */
-    private function resolveKey(Connector $connector, Request $request): string
+    private function resolveKey(AbstractConnector $connector, AbstractRequest $request): string
     {
         $attribute = $this->getRateLimitAttribute($request);
 
@@ -158,7 +158,7 @@ final readonly class RateLimiter
     /**
      * Resolve a custom key with placeholder substitution.
      */
-    private function resolveCustomKey(Request $request, string $keyTemplate): string
+    private function resolveCustomKey(AbstractRequest $request, string $keyTemplate): string
     {
         return preg_replace_callback('/\{(\w+)\}/', function (array $matches) use ($request): string {
             $property = $matches[1];
@@ -181,7 +181,7 @@ final readonly class RateLimiter
     /**
      * Get the RateLimit attribute from a request.
      */
-    private function getRateLimitAttribute(Request $request): ?RateLimit
+    private function getRateLimitAttribute(AbstractRequest $request): ?RateLimit
     {
         $reflection = new ReflectionClass($request);
         $attributes = $reflection->getAttributes(RateLimit::class);

@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Support\Security;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Psr\SimpleCache\CacheInterface;
 
@@ -56,7 +56,7 @@ final readonly class IdempotencyManager
     /**
      * Add idempotency key to request.
      */
-    public function addToRequest(Request $request, ?string $key = null): Request
+    public function addToRequest(AbstractRequest $request, ?string $key = null): AbstractRequest
     {
         $key ??= $request->idempotencyKey() ?? $this->generateKey();
 

@@ -9,9 +9,9 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\JsonRpcRequest;
+use Cline\Relay\Protocols\AbstractJsonRpcRequest;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class NoParamsJsonRpcRequest extends JsonRpcRequest {}
+final class NoParamsJsonRpcRequest extends AbstractJsonRpcRequest {}

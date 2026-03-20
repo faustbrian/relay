@@ -10,8 +10,8 @@
 namespace Cline\Relay\Support\Attributes\Resilience;
 
 use Attribute;
-use Cline\Relay\Support\Contracts\RetryDecider;
-use Cline\Relay\Support\Contracts\RetryPolicy;
+use Cline\Relay\Support\Contracts\RetryDeciderInterface;
+use Cline\Relay\Support\Contracts\RetryPolicyInterface;
 use Throwable;
 
 /**
@@ -25,14 +25,14 @@ use Throwable;
 final readonly class Retry
 {
     /**
-     * @param int                                    $times      Maximum retry attempts
-     * @param int                                    $delay      Initial delay in milliseconds
-     * @param float                                  $multiplier Exponential backoff multiplier
-     * @param int                                    $maxDelay   Maximum delay in milliseconds
-     * @param null|array<int>                        $when       Status codes to retry on
-     * @param null|array<class-string<Throwable>>    $exceptions Exception types to retry on
-     * @param null|class-string<RetryDecider>|string $callback   Method name or RetryDecider class for custom retry logic
-     * @param null|class-string<RetryPolicy>         $policy     RetryPolicy class that encapsulates all retry configuration
+     * @param int                                             $times      Maximum retry attempts
+     * @param int                                             $delay      Initial delay in milliseconds
+     * @param float                                           $multiplier Exponential backoff multiplier
+     * @param int                                             $maxDelay   Maximum delay in milliseconds
+     * @param null|array<int>                                 $when       Status codes to retry on
+     * @param null|array<class-string<Throwable>>             $exceptions Exception types to retry on
+     * @param null|class-string<RetryDeciderInterface>|string $callback   Method name or RetryDeciderInterface class for custom retry logic
+     * @param null|class-string<RetryPolicyInterface>         $policy     RetryPolicyInterface class that encapsulates all retry configuration
      */
     public function __construct(
         public int $times = 3,

@@ -9,8 +9,8 @@
 
 namespace Tests\Fixtures\Caching;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\CacheKeyResolver;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\CacheKeyResolverInterface;
 
 /**
  * Test cache key resolver for unit tests.
@@ -19,9 +19,9 @@ use Cline\Relay\Support\Contracts\CacheKeyResolver;
  *
  * @psalm-immutable
  */
-final readonly class TestCacheKeyResolver implements CacheKeyResolver
+final readonly class TestCacheKeyResolver implements CacheKeyResolverInterface
 {
-    public function resolve(Request $request): string
+    public function resolve(AbstractRequest $request): string
     {
         return 'test-resolver:'.$request->endpoint();
     }

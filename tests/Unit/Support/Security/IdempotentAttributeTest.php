@@ -7,14 +7,14 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Idempotent;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
 describe('Idempotent Attribute', function (): void {
     describe('isIdempotent()', function (): void {
         it('returns true for requests with #[Idempotent] attribute', function (): void {
-            $request = new #[Post(), Idempotent()] class extends Request
+            $request = new #[Post(), Idempotent()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -26,7 +26,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('returns false for requests without #[Idempotent] attribute', function (): void {
-            $request = new #[Post()] class extends Request
+            $request = new #[Post()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -38,7 +38,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('returns false when enabled is false', function (): void {
-            $request = new #[Post(), Idempotent(enabled: false)] class extends Request
+            $request = new #[Post(), Idempotent(enabled: false)] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -52,7 +52,7 @@ describe('Idempotent Attribute', function (): void {
 
     describe('idempotencyHeader()', function (): void {
         it('returns default header name', function (): void {
-            $request = new #[Post(), Idempotent()] class extends Request
+            $request = new #[Post(), Idempotent()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -64,7 +64,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('returns custom header name', function (): void {
-            $request = new #[Post(), Idempotent(header: 'X-Request-Id')] class extends Request
+            $request = new #[Post(), Idempotent(header: 'X-Request-Id')] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -78,7 +78,7 @@ describe('Idempotent Attribute', function (): void {
 
     describe('initialize()', function (): void {
         it('generates idempotency key on initialize', function (): void {
-            $request = new #[Post(), Idempotent()] class extends Request
+            $request = new #[Post(), Idempotent()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -95,7 +95,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('adds idempotency key to headers', function (): void {
-            $request = new #[Post(), Idempotent()] class extends Request
+            $request = new #[Post(), Idempotent()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -112,7 +112,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('uses custom header name', function (): void {
-            $request = new #[Post(), Idempotent(header: 'X-Idempotency-Key')] class extends Request
+            $request = new #[Post(), Idempotent(header: 'X-Idempotency-Key')] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -129,7 +129,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('uses custom key method when provided', function (): void {
-            $request = new #[Post(), Idempotent(keyMethod: 'generateKey')] class extends Request
+            $request = new #[Post(), Idempotent(keyMethod: 'generateKey')] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -148,7 +148,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('preserves manually set idempotency key', function (): void {
-            $request = new #[Post(), Idempotent()] class extends Request
+            $request = new #[Post(), Idempotent()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -164,7 +164,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('does not generate key when not idempotent', function (): void {
-            $request = new #[Post()] class extends Request
+            $request = new #[Post()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -179,7 +179,7 @@ describe('Idempotent Attribute', function (): void {
         });
 
         it('does not generate key when disabled', function (): void {
-            $request = new #[Post(), Idempotent(enabled: false)] class extends Request
+            $request = new #[Post(), Idempotent(enabled: false)] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {

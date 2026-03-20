@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Core\AbstractResource;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Testing\MockConnector;
 use Cline\Relay\Testing\MockResponse;
@@ -19,12 +19,12 @@ describe('Resource', function (): void {
         $connector = new MockConnector();
         $connector->addResponse(MockResponse::json(['id' => 1, 'name' => 'Test']));
 
-        $resource = new class($connector) extends Resource
+        $resource = new class($connector) extends AbstractResource
         {
             public function get(int $id): Response
             {
                 return $this->send(
-                    new class($id) extends Request
+                    new class($id) extends AbstractRequest
                     {
                         public function __construct(
                             private readonly int $id,
@@ -50,9 +50,9 @@ describe('Resource', function (): void {
     it('provides access to the connector', function (): void {
         $connector = new MockConnector();
 
-        $resource = new class($connector) extends Resource
+        $resource = new class($connector) extends AbstractResource
         {
-            public function getConnector(): Connector
+            public function getConnector(): AbstractConnector
             {
                 return $this->connector();
             }
@@ -69,12 +69,12 @@ describe('Resource', function (): void {
             MockResponse::json(['id' => 2], 201),
         ]);
 
-        $resource = new class($connector) extends Resource
+        $resource = new class($connector) extends AbstractResource
         {
             public function list(): array
             {
                 $response = $this->send(
-                    new class() extends Request
+                    new class() extends AbstractRequest
                     {
                         public function endpoint(): string
                         {
@@ -89,7 +89,7 @@ describe('Resource', function (): void {
             public function get(int $id): array
             {
                 $response = $this->send(
-                    new class($id) extends Request
+                    new class($id) extends AbstractRequest
                     {
                         public function __construct(
                             private readonly int $id,
@@ -108,7 +108,7 @@ describe('Resource', function (): void {
             public function create(array $data): int
             {
                 $response = $this->send(
-                    new class($data) extends Request
+                    new class($data) extends AbstractRequest
                     {
                         public function __construct(
                             private readonly array $data,

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Observability\Debugging\Debugger;
 
@@ -16,7 +16,7 @@ describe('Debugger', function (): void {
         test('formats request with query params correctly', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -47,7 +47,7 @@ describe('Debugger', function (): void {
         test('formats request with headers correctly', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -77,7 +77,7 @@ describe('Debugger', function (): void {
         test('formats request with body correctly', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -321,7 +321,7 @@ describe('Debugger', function (): void {
         test('redacts sensitive headers in request output', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -358,7 +358,7 @@ describe('Debugger', function (): void {
         test('redacts sensitive body keys in request output', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -400,7 +400,7 @@ describe('Debugger', function (): void {
             $debugger = new Debugger();
             $debugger->setSensitiveHeaders(['X-Custom-Secret']);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -435,7 +435,7 @@ describe('Debugger', function (): void {
             $debugger = new Debugger();
             $debugger->setSensitiveBodyKeys(['custom_secret']);
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -499,7 +499,7 @@ describe('Debugger', function (): void {
         test('formats request with empty query params', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -528,7 +528,7 @@ describe('Debugger', function (): void {
         test('formats request with no headers', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -551,7 +551,7 @@ describe('Debugger', function (): void {
         test('redacts nested sensitive body keys', function (): void {
             // Arrange
             $debugger = new Debugger();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -590,7 +590,7 @@ describe('Debugger', function (): void {
             $psrResponse = new GuzzleHttp\Psr7\Response(200, [
                 'X-Multiple' => ['value1', 'value2'],
             ], json_encode(['id' => 1]));
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {

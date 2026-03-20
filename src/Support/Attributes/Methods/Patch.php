@@ -19,7 +19,7 @@ use Attribute;
  * @psalm-immutable
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class Patch implements HttpMethod
+final readonly class Patch implements HttpMethodInterface
 {
     public function method(): string
     {

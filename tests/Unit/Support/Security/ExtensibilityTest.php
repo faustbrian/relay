@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Methods\Post;
 use Cline\Relay\Support\Security\IdempotencyManager;
 use Cline\Relay\Support\Security\RequestSigner;
 use Cline\Relay\Testing\MockResponse;
 use Psr\SimpleCache\CacheInterface;
 
-function createExtensibilityRequest(string $endpoint = '/users'): Request
+function createExtensibilityRequest(string $endpoint = '/users'): AbstractRequest
 {
-    return new #[Post()] class($endpoint) extends Request
+    return new #[Post()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,

@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Exceptions\MockConnectorException;
@@ -16,9 +16,9 @@ use Cline\Relay\Testing\MockConnector;
 use Cline\Relay\Testing\MockResponse;
 use Cline\Relay\Testing\RequestRecorder;
 
-function createMockRequest(string $endpoint = '/users'): Request
+function createMockRequest(string $endpoint = '/users'): AbstractRequest
 {
-    return new #[Get()] class($endpoint) extends Request
+    return new #[Get()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,
@@ -250,7 +250,7 @@ describe('MockConnector', function (): void {
 
     it('uses closure to generate dynamic responses', function (): void {
         $connector = new MockConnector();
-        $connector->addResponse(fn (Request $request): Response => MockResponse::json([
+        $connector->addResponse(fn (AbstractRequest $request): Response => MockResponse::json([
             'endpoint' => $request->endpoint(),
         ]));
 
@@ -503,13 +503,13 @@ describe('RequestRecorder', function (): void {
 
 describe('Connector::fake()', function (): void {
     it('creates a mock connector', function (): void {
-        $connector = Connector::fake();
+        $connector = AbstractConnector::fake();
 
         expect($connector)->toBeInstanceOf(MockConnector::class);
     });
 
     it('creates mock connector with responses', function (): void {
-        $connector = Connector::fake([
+        $connector = AbstractConnector::fake([
             MockResponse::json(['id' => 1]),
             MockResponse::json(['id' => 2]),
         ]);
@@ -522,8 +522,8 @@ describe('Connector::fake()', function (): void {
     });
 
     it('supports closure responses', function (): void {
-        $connector = Connector::fake([
-            fn (Request $request): Response => MockResponse::json([
+        $connector = AbstractConnector::fake([
+            fn (AbstractRequest $request): Response => MockResponse::json([
                 'path' => $request->endpoint(),
             ]),
         ]);
@@ -534,7 +534,7 @@ describe('Connector::fake()', function (): void {
     });
 
     it('supports assertions', function (): void {
-        $connector = Connector::fake([
+        $connector = AbstractConnector::fake([
             MockResponse::json([]),
         ]);
 

@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Methods\Post;
@@ -27,15 +27,17 @@ afterEach(function (): void {
 
     $fixturePath = 'tests/Fixtures/Saloon/mock-client-fixture.json';
 
-    if (file_exists($fixturePath)) {
-        unlink($fixturePath);
+    if (!file_exists($fixturePath)) {
+        return;
     }
+
+    unlink($fixturePath);
 });
 
-function createMockClientTestRequest(string $endpoint = '/users', string $method = 'GET'): Request
+function createMockClientTestRequest(string $endpoint = '/users', string $method = 'GET'): AbstractRequest
 {
     if ($method === 'POST') {
-        return new #[Post()] class($endpoint) extends Request
+        return new #[Post()] class($endpoint) extends AbstractRequest
         {
             public function __construct(
                 private readonly string $ep,
@@ -48,7 +50,7 @@ function createMockClientTestRequest(string $endpoint = '/users', string $method
         };
     }
 
-    return new #[Get()] class($endpoint) extends Request
+    return new #[Get()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,
@@ -147,7 +149,7 @@ describe('MockClient Response Mapping', function (): void {
     it('uses closure to generate dynamic response', function (): void {
         $request = createMockClientTestRequest('/users/42');
         $mockClient = new MockClient([
-            $request::class => fn (Request $r): Response => MockResponse::json([
+            $request::class => fn (AbstractRequest $r): Response => MockResponse::json([
                 'endpoint' => $r->endpoint(),
             ]),
         ]);
@@ -299,7 +301,7 @@ describe('MockClient Request Tracking', function (): void {
     });
 
     it('attaches the request to mocked responses', function (): void {
-        $request = new #[Get()] class('/users') extends Request
+        $request = new #[Get()] class('/users') extends AbstractRequest
         {
             public function __construct(
                 private readonly string $ep,
@@ -408,7 +410,7 @@ describe('MockClient Assertions', function (): void {
 
         $mockClient->resolve(createMockClientTestRequest('/users'), 'https://api.example.com');
 
-        $mockClient->assertSent(fn (Request $request, Response $response): bool => $request->endpoint() === '/users' && $response->json('id') === 1);
+        $mockClient->assertSent(fn (AbstractRequest $request, Response $response): bool => $request->endpoint() === '/users' && $response->json('id') === 1);
 
         expect(true)->toBeTrue();
     });
@@ -426,7 +428,7 @@ describe('MockClient Assertions', function (): void {
 
         $mockClient->resolve(createMockClientTestRequest('/users'), 'https://api.example.com');
 
-        $mockClient->assertSent(fn (Request $r): bool => $r->endpoint() === '/posts');
+        $mockClient->assertSent(fn (AbstractRequest $r): bool => $r->endpoint() === '/posts');
     })->throws(MockClientException::class, 'No request matched');
 
     it('asserts request was not sent by class', function (): void {
@@ -458,7 +460,7 @@ describe('MockClient Assertions', function (): void {
 
         $mockClient->resolve(createMockClientTestRequest('/users'), 'https://api.example.com');
 
-        $mockClient->assertNotSent(fn (Request $r): bool => $r->endpoint() === '/posts');
+        $mockClient->assertNotSent(fn (AbstractRequest $r): bool => $r->endpoint() === '/posts');
 
         expect(true)->toBeTrue();
     });
@@ -470,7 +472,7 @@ describe('MockClient Assertions', function (): void {
 
         $mockClient->resolve(createMockClientTestRequest('/users'), 'https://api.example.com');
 
-        $mockClient->assertNotSent(fn (Request $r): bool => $r->endpoint() === '/users');
+        $mockClient->assertNotSent(fn (AbstractRequest $r): bool => $r->endpoint() === '/users');
     })->throws(MockClientException::class, 'should not have been sent');
 
     it('asserts sent count', function (): void {
@@ -501,7 +503,7 @@ describe('MockClient Assertions', function (): void {
         // Count by filtering the sentRequests
         $userRequests = array_filter(
             $mockClient->sentRequests(),
-            fn (Request $r): bool => $r->endpoint() === '/users',
+            fn (AbstractRequest $r): bool => $r->endpoint() === '/users',
         );
 
         expect(count($userRequests))->toBe(2);
@@ -670,7 +672,7 @@ describe('MockClient Fixture Integration', function (): void {
         $mockClient = new MockClient();
 
         // Set recorder
-        $result = $mockClient->setRecorder(fn (Request $req): Response => new Response(
+        $result = $mockClient->setRecorder(fn (AbstractRequest $req): Response => new Response(
             new Psr7Response(200, [], json_encode(['recorded' => true])),
             $req,
         ));
@@ -682,7 +684,7 @@ describe('MockClient Fixture Integration', function (): void {
         MockConfig::throwOnMissingFixtures(false);
 
         // Set up recorder that captures the request endpoint
-        Fixture::setRecorder(fn (Request $req): Response => new Response(
+        Fixture::setRecorder(fn (AbstractRequest $req): Response => new Response(
             new Psr7Response(200, [], json_encode(['endpoint' => $req->endpoint()])),
             $req,
         ));

@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability\Debugging;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Closure;
 use Psr\Http\Message\RequestInterface;
@@ -31,7 +31,7 @@ final class DebuggingState
 
     private bool $die = false;
 
-    /** @var null|Closure(Request, ?RequestInterface): void */
+    /** @var null|Closure(AbstractRequest, ?RequestInterface): void */
     private ?Closure $requestHandler = null;
 
     /** @var null|Closure(Response, ResponseInterface): void */
@@ -70,7 +70,7 @@ final class DebuggingState
     /**
      * Set custom request handler.
      *
-     * @param null|Closure(Request, ?RequestInterface): void $handler
+     * @param null|Closure(AbstractRequest, ?RequestInterface): void $handler
      */
     public function setRequestHandler(?Closure $handler): self
     {
@@ -126,11 +126,11 @@ final class DebuggingState
     /**
      * Output request debug info.
      *
-     * @param Request               $request    The Relay request
+     * @param AbstractRequest       $request    The Relay request
      * @param string                $baseUrl    The base URL
      * @param null|RequestInterface $psrRequest The PSR-7 request (optional for backwards compatibility)
      */
-    public function outputRequest(Request $request, string $baseUrl, ?RequestInterface $psrRequest = null): void
+    public function outputRequest(AbstractRequest $request, string $baseUrl, ?RequestInterface $psrRequest = null): void
     {
         if (!$this->debugRequest) {
             return;

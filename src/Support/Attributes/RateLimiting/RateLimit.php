@@ -10,7 +10,7 @@
 namespace Cline\Relay\Support\Attributes\RateLimiting;
 
 use Attribute;
-use Cline\Relay\Support\Contracts\BackoffStrategy;
+use Cline\Relay\Support\Contracts\BackoffStrategyInterface;
 
 /**
  * Configure rate limiting for a request.
@@ -23,12 +23,12 @@ use Cline\Relay\Support\Contracts\BackoffStrategy;
 final readonly class RateLimit
 {
     /**
-     * @param int                                  $requests   Maximum number of requests allowed
-     * @param int                                  $perSeconds Time window in seconds
-     * @param null|string                          $key        Shared limiter key (supports placeholders)
-     * @param bool                                 $retry      Auto-retry when rate limited
-     * @param int                                  $maxRetries Maximum retry attempts
-     * @param class-string<BackoffStrategy>|string $backoff    Backoff strategy name or BackoffStrategy class
+     * @param int                                           $requests   Maximum number of requests allowed
+     * @param int                                           $perSeconds Time window in seconds
+     * @param null|string                                   $key        Shared limiter key (supports placeholders)
+     * @param bool                                          $retry      Auto-retry when rate limited
+     * @param int                                           $maxRetries Maximum retry attempts
+     * @param class-string<BackoffStrategyInterface>|string $backoff    Backoff strategy name or BackoffStrategyInterface class
      */
     public function __construct(
         public int $requests,

@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Transport\Pool;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
+use Cline\Relay\Support\Exceptions\AbstractRequestException;
 use Cline\Relay\Support\Exceptions\GenericRequestException;
-use Cline\Relay\Support\Exceptions\RequestException;
 use Closure;
 use Generator;
 use GuzzleHttp\Client;
@@ -35,7 +35,7 @@ use function mb_rtrim;
 use function sprintf;
 
 /**
- * Request pool for concurrent execution.
+ * AbstractRequest pool for concurrent execution.
  *
  * @author Brian Faust <brian@cline.sh>
  */
@@ -52,11 +52,11 @@ final class Pool
     private ?HandlerStack $handler = null;
 
     /**
-     * @param Connector                  $connector The connector to use
-     * @param array<int|string, Request> $requests  Array of requests (optionally keyed)
+     * @param AbstractConnector                  $connector The connector to use
+     * @param array<int|string, AbstractRequest> $requests  Array of requests (optionally keyed)
      */
     public function __construct(
-        private readonly Connector $connector,
+        private readonly AbstractConnector $connector,
         private readonly array $requests,
     ) {}
 
@@ -83,7 +83,7 @@ final class Pool
     /**
      * Set the response callback.
      *
-     * @param Closure(Response, Request, int|string): void $callback
+     * @param Closure(Response, AbstractRequest, int|string): void $callback
      */
     public function onResponse(Closure $callback): self
     {
@@ -95,7 +95,7 @@ final class Pool
     /**
      * Set the error callback.
      *
-     * @param Closure(RequestException, Request, int|string): void $callback
+     * @param Closure(AbstractRequestException, AbstractRequest, int|string): void $callback
      */
     public function onError(Closure $callback): self
     {
@@ -244,7 +244,7 @@ final class Pool
     /**
      * Build the full URL for a request.
      */
-    private function buildUrl(Request $request): string
+    private function buildUrl(AbstractRequest $request): string
     {
         $baseUrl = mb_rtrim($this->connector->resolveBaseUrl(), '/');
         $endpoint = mb_ltrim($request->endpoint(), '/');
@@ -264,7 +264,7 @@ final class Pool
      *
      * @return array<string, string>
      */
-    private function mergeHeaders(Request $request): array
+    private function mergeHeaders(AbstractRequest $request): array
     {
         $headers = [
             ...$this->connector->defaultHeaders(),
@@ -287,7 +287,7 @@ final class Pool
     /**
      * Build the request body.
      */
-    private function buildBody(Request $request): ?string
+    private function buildBody(AbstractRequest $request): ?string
     {
         $body = $request->body();
 

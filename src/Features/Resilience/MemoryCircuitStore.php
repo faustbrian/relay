@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Features\Resilience;
 
-use Cline\Relay\Support\Contracts\CircuitBreakerStore;
+use Cline\Relay\Support\Contracts\CircuitBreakerStoreInterface;
 use Illuminate\Support\Facades\Date;
 
 use function array_filter;
@@ -20,7 +20,7 @@ use function count;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class MemoryCircuitStore implements CircuitBreakerStore
+final class MemoryCircuitStore implements CircuitBreakerStoreInterface
 {
     /** @var array<string, array{state: CircuitState, failures: array<int>, successes: int, opened_at: ?int, half_open_attempts: int}> */
     private array $circuits = [];

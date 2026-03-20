@@ -52,9 +52,9 @@ This guide provides comprehensive examples for migrating from Saloon v3 to Relay
 
 | Saloon | Relay | Notes |
 |--------|-------|-------|
-| `Connector` extends `Saloon\Http\Connector` | `Connector` extends `Cline\Relay\Core\Connector` | Similar structure |
-| `Request` extends `Saloon\Http\Request` | `Request` extends `Cline\Relay\Core\Request` | Uses PHP attributes |
-| `BaseResource` extends `Saloon\Http\BaseResource` | `Resource` extends `Cline\Relay\Core\Resource` | Simplified |
+| `Connector` extends `Saloon\Http\Connector` | `Connector` extends `Cline\Relay\Core\AbstractConnector` | Similar structure |
+| `Request` extends `Saloon\Http\Request` | `Request` extends `Cline\Relay\Core\AbstractRequest` | Uses PHP attributes |
+| `BaseResource` extends `Saloon\Http\BaseResource` | `Resource` extends `Cline\Relay\Core\AbstractResource` | Simplified |
 | `protected Method $method = Method::POST` | `#[Post]` attribute | Declarative |
 | `use HasJsonBody` trait | `#[Json]` attribute | Declarative |
 | `resolveEndpoint()` | `endpoint()` | Method name change |
@@ -77,7 +77,7 @@ use Saloon\Http\Connector;
 use Saloon\Traits\Plugins\AcceptsJson;
 use Saloon\Traits\Plugins\AlwaysThrowOnErrors;
 
-final class ExampleConnector extends Connector
+final class ExampleConnector extends AbstractConnector
 {
     use AlwaysThrowOnErrors;
     use AcceptsJson;
@@ -103,11 +103,11 @@ final class ExampleConnector extends Connector
 
 namespace Support\Relay\Example;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Support\Attributes\ThrowOnError;
 
 #[ThrowOnError]
-final class ExampleConnector extends Connector
+final class ExampleConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -140,7 +140,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Traits\Body\HasJsonBody;
 
-final class CreateResourceRequest extends Request implements HasBody
+final class CreateResourceRequest extends AbstractRequest implements HasBody
 {
     use HasJsonBody;
 
@@ -169,13 +169,13 @@ final class CreateResourceRequest extends Request implements HasBody
 
 namespace Support\Relay\Example\Requests;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
 #[Post]
 #[Json]
-final class CreateResourceRequest extends Request
+final class CreateResourceRequest extends AbstractRequest
 {
     public function __construct(
         private readonly array $data,
@@ -198,7 +198,7 @@ final class CreateResourceRequest extends Request
 #### Saloon
 
 ```php
-final class GetResourceRequest extends Request
+final class GetResourceRequest extends AbstractRequest
 {
     protected Method $method = Method::GET;
 
@@ -224,7 +224,7 @@ final class GetResourceRequest extends Request
 use Cline\Relay\Support\Attributes\Methods\Get;
 
 #[Get]
-final class GetResourceRequest extends Request
+final class GetResourceRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $id,
@@ -277,10 +277,10 @@ final class FortnoxInvoiceResource extends BaseResource
 
 namespace Support\Relay\Fortnox\Resource;
 
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractResource;
 use Cline\Relay\Core\Response;
 
-final class FortnoxInvoiceResource extends Resource
+final class FortnoxInvoiceResource extends AbstractResource
 {
     public function retrieve(string $documentNumber): Response
     {
@@ -315,9 +315,9 @@ use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Traits\OAuth2\AuthorizationCodeGrant;
 
-final class FortnoxAuthConnector extends Connector
+final class FortnoxAuthConnector extends AbstractConnector
 {
-    use AuthorizationCodeGrant;
+    use AuthorizationCodeGrantTrait;
 
     public function resolveBaseUrl(): string
     {
@@ -357,7 +357,7 @@ use Saloon\Http\Auth\AccessTokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\PendingRequest;
 
-final class FortnoxApiConnector extends Connector
+final class FortnoxApiConnector extends AbstractConnector
 {
     use AlwaysThrowOnErrors;
     use AcceptsJson;
@@ -399,18 +399,18 @@ final class FortnoxApiConnector extends Connector
 
 namespace Support\Relay\Fortnox;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\Auth\BasicAuth;
-use Cline\Relay\Features\OAuth2\AuthorizationCodeGrant;
+use Cline\Relay\Features\OAuth2\AuthorizationCodeGrantTrait;
 use Cline\Relay\Features\OAuth2\OAuthConfig;
 use Cline\Relay\Support\Attributes\ThrowOnError;
 use Illuminate\Support\Str;
 
 #[ThrowOnError]
-final class FortnoxAuthConnector extends Connector
+final class FortnoxAuthConnector extends AbstractConnector
 {
-    use AuthorizationCodeGrant;
+    use AuthorizationCodeGrantTrait;
 
     public function baseUrl(): string
     {
@@ -451,13 +451,13 @@ final class FortnoxAuthConnector extends Connector
 
 namespace Support\Relay\Fortnox;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\Auth\AccessTokenAuthenticator;
 use Cline\Relay\Support\Attributes\ThrowOnError;
 
 #[ThrowOnError]
-final class FortnoxApiConnector extends Connector
+final class FortnoxApiConnector extends AbstractConnector
 {
     private ?AccessTokenAuthenticator $authenticator = null;
 
@@ -543,9 +543,9 @@ use Saloon\Http\Auth\BasicAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Traits\OAuth2\ClientCredentialsGrant;
 
-final class PostiAuthConnector extends Connector
+final class PostiAuthConnector extends AbstractConnector
 {
-    use ClientCredentialsGrant;
+    use ClientCredentialsGrantTrait;
     use AcceptsJson;
     use AlwaysThrowOnErrors;
 
@@ -579,17 +579,17 @@ final class PostiAuthConnector extends Connector
 
 namespace Support\Relay\Posti;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\Auth\BasicAuth;
-use Cline\Relay\Features\OAuth2\ClientCredentialsGrant;
+use Cline\Relay\Features\OAuth2\ClientCredentialsGrantTrait;
 use Cline\Relay\Features\OAuth2\OAuthConfig;
 use Cline\Relay\Support\Attributes\ThrowOnError;
 
 #[ThrowOnError]
-final class PostiAuthConnector extends Connector
+final class PostiAuthConnector extends AbstractConnector
 {
-    use ClientCredentialsGrant;
+    use ClientCredentialsGrantTrait;
 
     public function baseUrl(): string
     {
@@ -643,7 +643,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Traits\Body\HasJsonBody;
 
-final class Ropo24GetAccessTokenRequest extends Request implements HasBody
+final class Ropo24GetAccessTokenRequest extends AbstractRequest implements HasBody
 {
     use HasJsonBody;
 
@@ -679,7 +679,7 @@ use Saloon\Http\Auth\TokenAuthenticator;
 use Saloon\Http\Connector;
 use Saloon\Http\PendingRequest;
 
-final class Ropo24Connector extends Connector
+final class Ropo24Connector extends AbstractConnector
 {
     use AlwaysThrowOnErrors;
     use AcceptsJson;
@@ -714,13 +714,13 @@ final class Ropo24Connector extends Connector
 
 namespace Support\Relay\Ropo24\Requests;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
 #[Post]
 #[Json]
-final class Ropo24GetAccessTokenRequest extends Request
+final class Ropo24GetAccessTokenRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $cid,
@@ -748,13 +748,13 @@ final class Ropo24GetAccessTokenRequest extends Request
 
 namespace Support\Relay\Ropo24;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\Auth\BearerToken;
 use Cline\Relay\Support\Attributes\ThrowOnError;
 
 #[ThrowOnError]
-final class Ropo24Connector extends Connector
+final class Ropo24Connector extends AbstractConnector
 {
     private ?string $token = null;
 
@@ -829,7 +829,7 @@ use Saloon\Http\Response;
 use Saloon\PaginationPlugin\Contracts\HasPagination;
 use Saloon\PaginationPlugin\PagedPaginator;
 
-final class FortnoxApiConnector extends Connector implements HasPagination
+final class FortnoxApiConnector extends AbstractConnector implements HasPagination
 {
     public function paginate(Request $request): PagedPaginator
     {
@@ -865,7 +865,7 @@ final class FortnoxApiConnector extends Connector implements HasPagination
 
 namespace Support\Relay\Fortnox\Requests;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Pagination\Pagination;
 
@@ -878,7 +878,7 @@ use Cline\Relay\Support\Attributes\Pagination\Pagination;
     totalPagesPath: 'MetaInformation.@TotalPages',
     currentPagePath: 'MetaInformation.@CurrentPage',
 )]
-final class ListInvoicesRequest extends Request
+final class ListInvoicesRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -913,7 +913,7 @@ use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
     perPageParam: 'limit',
     perPage: 100,
 )]
-final class ListItemsRequest extends Request
+final class ListItemsRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -934,7 +934,7 @@ use Cline\Relay\Support\Attributes\Pagination\OffsetPagination;
     limit: 100,
     totalPath: 'total',
 )]
-final class SearchRequest extends Request
+final class SearchRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -1086,9 +1086,9 @@ $response = $request->send();
 
 namespace Support\Relay\Matkahuolto;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 
-final class MatkahuoltoConnector extends Connector
+final class MatkahuoltoConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -1101,7 +1101,7 @@ final class MatkahuoltoConnector extends Connector
 use Cline\Relay\Support\Attributes\Methods\Get;
 
 #[Get]
-final class TrackingInfoRequest extends Request
+final class TrackingInfoRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $parcelNumber,
@@ -1156,7 +1156,7 @@ use Saloon\Http\Request;
 use Saloon\Traits\Body\HasJsonBody;
 use Saloon\Traits\Request\HasConnector;
 
-final class EuropaCheckVatNumberRequest extends Request implements HasBody
+final class EuropaCheckVatNumberRequest extends AbstractRequest implements HasBody
 {
     use HasConnector;
     use HasJsonBody;
@@ -1199,13 +1199,13 @@ $response = $request->send();
 
 namespace Support\Relay\Europa\Requests;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
 #[Post]
 #[Json]
-final class EuropaCheckVatNumberRequest extends Request
+final class EuropaCheckVatNumberRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $countryCode,
@@ -1260,7 +1260,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Traits\Plugins\HasTimeout;
 
-final class Ropo24StatusUpdatesRequest extends Request
+final class Ropo24StatusUpdatesRequest extends AbstractRequest
 {
     use HasTimeout;
 
@@ -1283,13 +1283,13 @@ final class Ropo24StatusUpdatesRequest extends Request
 
 namespace Support\Relay\Ropo24\Requests;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Resilience\Timeout;
 
 #[Get]
 #[Timeout(seconds: 240, connect: 60)]
-final class Ropo24StatusUpdatesRequest extends Request
+final class Ropo24StatusUpdatesRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -1302,14 +1302,14 @@ final class Ropo24StatusUpdatesRequest extends Request
 
 ```php
 // Saloon
-final class SlowApiConnector extends Connector
+final class SlowApiConnector extends AbstractConnector
 {
     protected int $connectTimeout = 30;
     protected int $requestTimeout = 120;
 }
 
 // Relay
-final class SlowApiConnector extends Connector
+final class SlowApiConnector extends AbstractConnector
 {
     public function timeout(): int
     {
@@ -1340,7 +1340,7 @@ use Saloon\Enums\Method;
 use Saloon\Http\Request;
 use Saloon\Http\Response;
 
-final class Ropo24StatusUpdatesRequest extends Request
+final class Ropo24StatusUpdatesRequest extends AbstractRequest
 {
     protected Method $method = Method::GET;
 
@@ -1368,12 +1368,12 @@ $statuses = $response->dto(); // Returns array of Ropo24StatusData
 
 namespace Support\Relay\Ropo24\Requests;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Methods\Get;
 
 #[Get]
-final class Ropo24StatusUpdatesRequest extends Request
+final class Ropo24StatusUpdatesRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -1478,7 +1478,7 @@ final class EuropaCheckVatNumberData extends Data
 // Or use request's createDtoFromResponse
 #[Post]
 #[Json]
-final class EuropaCheckVatNumberRequest extends Request
+final class EuropaCheckVatNumberRequest extends AbstractRequest
 {
     public function createDtoFromResponse(Response $response): EuropaCheckVatNumberData
     {
@@ -1505,7 +1505,7 @@ use Cline\Relay\Support\Attributes\Resilience\Retry;
     multiplier: 2.0,       // exponential backoff
     retryOn: [500, 502, 503, 504],
 )]
-final class UnstableApiRequest extends Request
+final class UnstableApiRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -1525,7 +1525,7 @@ use Cline\Relay\Support\Attributes\Resilience\CircuitBreaker;
     recoveryTime: 30,      // seconds
     sampleWindow: 60,      // seconds
 )]
-final class ExternalServiceRequest extends Request
+final class ExternalServiceRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -1625,7 +1625,7 @@ use Cline\Relay\Support\Attributes\Caching\NoCache;
 // Cache GET request for 1 hour
 #[Get]
 #[Cache(ttl: 3600, tags: ['invoices'])]
-final class GetInvoiceRequest extends Request
+final class GetInvoiceRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $id,
@@ -1641,7 +1641,7 @@ final class GetInvoiceRequest extends Request
 #[Post]
 #[Json]
 #[InvalidatesCache(tags: ['invoices'])]
-final class CreateInvoiceRequest extends Request
+final class CreateInvoiceRequest extends AbstractRequest
 {
     // ...
 }
@@ -1649,7 +1649,7 @@ final class CreateInvoiceRequest extends Request
 // Skip caching for specific request
 #[Get]
 #[NoCache]
-final class GetRealtimeDataRequest extends Request
+final class GetRealtimeDataRequest extends AbstractRequest
 {
     // ...
 }
@@ -1660,7 +1660,7 @@ final class GetRealtimeDataRequest extends Request
 ```php
 use Psr\SimpleCache\CacheInterface;
 
-final class CachedApiConnector extends Connector
+final class CachedApiConnector extends AbstractConnector
 {
     public function __construct(
         private readonly CacheInterface $cacheStore,
@@ -1723,7 +1723,7 @@ use Saloon\RateLimitPlugin\Contracts\RateLimitStore;
 use Saloon\RateLimitPlugin\Limit;
 use Saloon\RateLimitPlugin\Traits\HasRateLimits;
 
-final class RateLimitedConnector extends Connector
+final class RateLimitedConnector extends AbstractConnector
 {
     use HasRateLimits;
 
@@ -1747,10 +1747,10 @@ final class RateLimitedConnector extends Connector
 
 ```php
 use Cline\Relay\Features\RateLimiting\RateLimitConfig;
-use Cline\Relay\Support\Contracts\RateLimitStore;
+use Cline\Relay\Support\Contracts\RateLimitStoreInterface;
 use Cline\Relay\Features\RateLimiting\LaravelStore;
 
-final class RateLimitedConnector extends Connector
+final class RateLimitedConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -1793,7 +1793,7 @@ use Cline\Relay\Support\Attributes\RateLimiting\RateLimit;
     maxRetries: 3,
     backoff: 'exponential',
 )]
-final class BulkImportRequest extends Request
+final class BulkImportRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -1829,7 +1829,7 @@ Saloon uses Guzzle middleware via `HandlerStack`. Relay provides a cleaner middl
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 
-final class LoggingConnector extends Connector
+final class LoggingConnector extends AbstractConnector
 {
     public function resolveBaseUrl(): string
     {
@@ -1859,7 +1859,7 @@ use Cline\Relay\Features\Middleware\LoggingMiddleware;
 use Cline\Relay\Features\Middleware\TimingMiddleware;
 use GuzzleHttp\HandlerStack;
 
-final class LoggingConnector extends Connector
+final class LoggingConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -1887,12 +1887,12 @@ $loggingMiddleware = new LoggingMiddleware(
 **Creating custom middleware:**
 
 ```php
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\Middleware;
+use Cline\Relay\Support\Contracts\MiddlewareInterface;
 use Closure;
 
-final readonly class AddCorrelationIdMiddleware implements Middleware
+final readonly class AddCorrelationIdMiddleware implements MiddlewareInterface
 {
     public function __construct(
         private string $correlationId,
@@ -1949,9 +1949,9 @@ $pipeline->push(function (Request $request, Closure $next): Response {
 
 ## Migration Checklist
 
-- [ ] Replace `Saloon\Http\Connector` with `Cline\Relay\Core\Connector`
-- [ ] Replace `Saloon\Http\Request` with `Cline\Relay\Core\Request`
-- [ ] Replace `Saloon\Http\BaseResource` with `Cline\Relay\Core\Resource`
+- [ ] Replace `Saloon\Http\Connector` with `Cline\Relay\Core\AbstractConnector`
+- [ ] Replace `Saloon\Http\Request` with `Cline\Relay\Core\AbstractRequest`
+- [ ] Replace `Saloon\Http\BaseResource` with `Cline\Relay\Core\AbstractResource`
 - [ ] Replace `resolveEndpoint()` with `endpoint()`
 - [ ] Replace `resolveBaseUrl()` with `baseUrl()`
 - [ ] Replace `protected Method $method` with HTTP method attributes (`#[Get]`, `#[Post]`, etc.)
@@ -2035,9 +2035,9 @@ Create a connector for the JSONPlaceholder API:
 
 namespace App\Http\Connectors;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 
-class JsonPlaceholderConnector extends Connector
+class JsonPlaceholderConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -2056,10 +2056,10 @@ Create a request to fetch posts:
 namespace App\Http\Requests;
 
 use Cline\Relay\Support\Attributes\Methods\Get;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 #[Get]
-class GetPostsRequest extends Request
+class GetPostsRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -2095,10 +2095,10 @@ $posts = $response->collect();
 namespace App\Http\Requests;
 
 use Cline\Relay\Support\Attributes\Methods\Get;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 #[Get]
-class GetPostRequest extends Request
+class GetPostRequest extends AbstractRequest
 {
     public function __construct(
         private readonly int $postId,
@@ -2127,11 +2127,11 @@ namespace App\Http\Requests;
 
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Post;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 #[Post]
 #[Json]
-class CreatePostRequest extends Request
+class CreatePostRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $title,
@@ -2163,10 +2163,10 @@ class CreatePostRequest extends Request
 namespace App\Http\Requests;
 
 use Cline\Relay\Support\Attributes\Methods\Get;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 #[Get]
-class GetPostsRequest extends Request
+class GetPostsRequest extends AbstractRequest
 {
     public function __construct(
         private readonly ?int $userId = null,
@@ -2221,7 +2221,7 @@ $status = $response->status();
 ## Error Handling
 
 ```php
-use Cline\Relay\Support\Exceptions\RequestException;
+use Cline\Relay\Support\Exceptions\AbstractRequestException;
 
 try {
     $response = $connector->send(new GetPostRequest(9999));
@@ -2267,10 +2267,10 @@ $response = $connector->delete('/posts/1');
 namespace App\Http\Connectors;
 
 use Cline\Relay\Features\Auth\BearerToken;
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 
-class GitHubConnector extends Connector
+class GitHubConnector extends AbstractConnector
 {
     public function __construct(
         private readonly string $token,
@@ -2352,9 +2352,9 @@ This guide covers advanced Relay features including DTO mapping, GraphQL support
 ### Creating DTOs
 
 ```php
-use Cline\Relay\Support\Contracts\DataTransferObject;
+use Cline\Relay\Support\Contracts\DataTransferObjectInterface;
 
-class User implements DataTransferObject
+class User implements DataTransferObjectInterface
 {
     public function __construct(
         public readonly int $id,
@@ -2389,7 +2389,7 @@ use Cline\Relay\Support\Attributes\Dto;
 
 #[Get]
 #[Dto(User::class)]
-class GetUserRequest extends Request
+class GetUserRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -2404,7 +2404,7 @@ $user = $connector->send(new GetUserRequest(1))->dto();
 
 ```php
 #[Dto(User::class, dataKey: 'data.user')]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 ```
 
 ### Manual DTO Mapping
@@ -2422,9 +2422,9 @@ $users = $response->dtoCollection(User::class, 'data');
 ### GraphQL Request
 
 ```php
-use Cline\Relay\Protocols\GraphQL\GraphQLRequest;
+use Cline\Relay\Protocols\GraphQL\AbstractGraphQLRequest;
 
-class GetUserQuery extends GraphQLRequest
+class GetUserQuery extends AbstractGraphQLRequest
 {
     public function __construct(private readonly int $userId) {}
 
@@ -2472,7 +2472,7 @@ use Cline\Relay\Support\Attributes\Stream;
 
 #[Get]
 #[Stream]
-class DownloadFileRequest extends Request
+class DownloadFileRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -2516,7 +2516,7 @@ use Cline\Relay\Support\Attributes\Idempotent;
 
 #[Post]
 #[Idempotent]
-class CreatePaymentRequest extends Request {}
+class CreatePaymentRequest extends AbstractRequest {}
 // Automatically adds: Idempotency-Key: <generated-uuid>
 ```
 
@@ -2524,7 +2524,7 @@ class CreatePaymentRequest extends Request {}
 
 ```php
 #[Idempotent(keyMethod: 'generateKey')]
-class CreateOrderRequest extends Request
+class CreateOrderRequest extends AbstractRequest
 {
     public function generateKey(): string
     {
@@ -2558,7 +2558,7 @@ $request = (new CreateOrderRequest())
 use Cline\Relay\Support\Attributes\Protocols\JsonRpc;
 
 #[JsonRpc]
-class CalculateRequest extends Request
+class CalculateRequest extends AbstractRequest
 {
     public function body(): array
     {
@@ -2576,7 +2576,7 @@ class CalculateRequest extends Request
 use Cline\Relay\Support\Attributes\Protocols\Soap;
 
 #[Soap(version: '1.2')]
-class GetStockQuoteRequest extends Request {}
+class GetStockQuoteRequest extends AbstractRequest {}
 ```
 
 ## Request Lifecycle Hooks
@@ -2584,7 +2584,7 @@ class GetStockQuoteRequest extends Request {}
 ### Before Send
 
 ```php
-class AuditedRequest extends Request
+class AuditedRequest extends AbstractRequest
 {
     public function beforeSend(): void
     {
@@ -2598,7 +2598,7 @@ class AuditedRequest extends Request
 ### After Response
 
 ```php
-class MetricsRequest extends Request
+class MetricsRequest extends AbstractRequest
 {
     public function afterResponse(Response $response): void
     {
@@ -2610,7 +2610,7 @@ class MetricsRequest extends Request
 ### On Error
 
 ```php
-class AlertingRequest extends Request
+class AlertingRequest extends AbstractRequest
 {
     public function onError(RequestException $exception): void
     {
@@ -2628,7 +2628,7 @@ class AlertingRequest extends Request
 ### Abstract Base Connector
 
 ```php
-abstract class ApiConnector extends Connector
+abstract class ApiConnector extends AbstractConnector
 {
     abstract protected function apiKey(): string;
 
@@ -2658,7 +2658,7 @@ trait HasRetryPolicy
     }
 }
 
-class ResilientConnector extends Connector
+class ResilientConnector extends AbstractConnector
 {
     use HasRetryPolicy;
 }
@@ -2667,7 +2667,7 @@ class ResilientConnector extends Connector
 ## Full Example
 
 ```php
-class AdvancedConnector extends Connector
+class AdvancedConnector extends AbstractConnector
 {
     public function getUser(int $id): User
     {
@@ -2705,25 +2705,25 @@ use Cline\Relay\Support\Attributes\Methods\Head;
 use Cline\Relay\Support\Attributes\Methods\Options;
 
 #[Get]
-class GetUsersRequest extends Request {}
+class GetUsersRequest extends AbstractRequest {}
 
 #[Post]
-class CreateUserRequest extends Request {}
+class CreateUserRequest extends AbstractRequest {}
 
 #[Put]
-class ReplaceUserRequest extends Request {}
+class ReplaceUserRequest extends AbstractRequest {}
 
 #[Patch]
-class UpdateUserRequest extends Request {}
+class UpdateUserRequest extends AbstractRequest {}
 
 #[Delete]
-class DeleteUserRequest extends Request {}
+class DeleteUserRequest extends AbstractRequest {}
 
 #[Head]
-class HeadUserRequest extends Request {}
+class HeadUserRequest extends AbstractRequest {}
 
 #[Options]
-class OptionsUserRequest extends Request {}
+class OptionsUserRequest extends AbstractRequest {}
 ```
 
 ## Content Type Attributes
@@ -2735,7 +2735,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Json;
 
 #[Post]
 #[Json]
-class CreateUserRequest extends Request
+class CreateUserRequest extends AbstractRequest
 {
     public function body(): array
     {
@@ -2751,7 +2751,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Form;
 
 #[Post]
 #[Form]
-class LoginRequest extends Request {}
+class LoginRequest extends AbstractRequest {}
 ```
 
 ### Multipart
@@ -2761,7 +2761,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Multipart;
 
 #[Post]
 #[Multipart]
-class UploadRequest extends Request {}
+class UploadRequest extends AbstractRequest {}
 ```
 
 ### XML
@@ -2771,7 +2771,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Xml;
 
 #[Post]
 #[Xml]
-class CreateOrderRequest extends Request {}
+class CreateOrderRequest extends AbstractRequest {}
 ```
 
 ### YAML
@@ -2781,10 +2781,10 @@ use Cline\Relay\Support\Attributes\ContentTypes\Yaml;
 
 #[Post]
 #[Yaml]
-class CreateConfigRequest extends Request {}
+class CreateConfigRequest extends AbstractRequest {}
 
 #[Yaml('text/yaml')]
-class CreateConfigRequest extends Request {}
+class CreateConfigRequest extends AbstractRequest {}
 ```
 
 ## Protocol Attributes
@@ -2795,7 +2795,7 @@ class CreateConfigRequest extends Request {}
 use Cline\Relay\Support\Attributes\Protocols\GraphQL;
 
 #[GraphQL]
-class GetUserQuery extends Request
+class GetUserQuery extends AbstractRequest
 {
     public function body(): array
     {
@@ -2813,10 +2813,10 @@ class GetUserQuery extends Request
 use Cline\Relay\Support\Attributes\Protocols\JsonRpc;
 
 #[JsonRpc]
-class CallMethodRequest extends Request {}
+class CallMethodRequest extends AbstractRequest {}
 
 #[JsonRpc(version: '1.0')]
-class LegacyCallRequest extends Request {}
+class LegacyCallRequest extends AbstractRequest {}
 ```
 
 ### SOAP
@@ -2825,10 +2825,10 @@ class LegacyCallRequest extends Request {}
 use Cline\Relay\Support\Attributes\Protocols\Soap;
 
 #[Soap]
-class SoapRequest extends Request {}
+class SoapRequest extends AbstractRequest {}
 
 #[Soap(version: '1.2')]
-class Soap12Request extends Request {}
+class Soap12Request extends AbstractRequest {}
 ```
 
 ### XML-RPC
@@ -2837,7 +2837,7 @@ class Soap12Request extends Request {}
 use Cline\Relay\Support\Attributes\Protocols\XmlRpc;
 
 #[XmlRpc]
-class XmlRpcRequest extends Request {}
+class XmlRpcRequest extends AbstractRequest {}
 ```
 
 ## Error Handling Attributes
@@ -2849,17 +2849,17 @@ use Cline\Relay\Support\Attributes\ThrowOnError;
 
 #[Get]
 #[ThrowOnError]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 
 #[ThrowOnError(clientErrors: true, serverErrors: false)]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 
 #[ThrowOnError(clientErrors: false, serverErrors: true)]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 
 // Also works on connectors
 #[ThrowOnError]
-class StrictConnector extends Connector {}
+class StrictConnector extends AbstractConnector {}
 ```
 
 ## Caching Attributes
@@ -2871,10 +2871,10 @@ use Cline\Relay\Support\Attributes\Caching\Cache;
 
 #[Get]
 #[Cache(ttl: 3600)]
-class GetUsersRequest extends Request {}
+class GetUsersRequest extends AbstractRequest {}
 
 #[Cache(ttl: 3600, tags: ['users', 'list'])]
-class GetUsersRequest extends Request {}
+class GetUsersRequest extends AbstractRequest {}
 ```
 
 ### NoCache
@@ -2884,7 +2884,7 @@ use Cline\Relay\Support\Attributes\Caching\NoCache;
 
 #[Get]
 #[NoCache]
-class GetCurrentUserRequest extends Request {}
+class GetCurrentUserRequest extends AbstractRequest {}
 ```
 
 ### InvalidatesCache
@@ -2894,7 +2894,7 @@ use Cline\Relay\Support\Attributes\Caching\InvalidatesCache;
 
 #[Post]
 #[InvalidatesCache(tags: ['users', 'list'])]
-class CreateUserRequest extends Request {}
+class CreateUserRequest extends AbstractRequest {}
 ```
 
 ## Rate Limiting Attributes
@@ -2906,7 +2906,7 @@ use Cline\Relay\Support\Attributes\RateLimiting\RateLimit;
 
 #[Get]
 #[RateLimit(maxAttempts: 10, decaySeconds: 60)]
-class SearchRequest extends Request {}
+class SearchRequest extends AbstractRequest {}
 ```
 
 ### ConcurrencyLimit
@@ -2916,7 +2916,7 @@ use Cline\Relay\Support\Attributes\RateLimiting\ConcurrencyLimit;
 
 #[Get]
 #[ConcurrencyLimit(max: 5)]
-class HeavyRequest extends Request {}
+class HeavyRequest extends AbstractRequest {}
 ```
 
 ## Resilience Attributes
@@ -2928,19 +2928,19 @@ use Cline\Relay\Support\Attributes\Resilience\Retry;
 
 #[Get]
 #[Retry(times: 3)]
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 
 #[Retry(times: 3, delay: 100)]
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 
 #[Retry(times: 3, delay: 100, multiplier: 2.0, maxDelay: 30000)]
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 
 #[Retry(times: 3, when: [429, 503])]
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 
 #[Retry(times: 3, callback: 'shouldRetry')]
-class GetDataRequest extends Request
+class GetDataRequest extends AbstractRequest
 {
     public function shouldRetry(Response $response): bool
     {
@@ -2956,10 +2956,10 @@ use Cline\Relay\Support\Attributes\Resilience\Timeout;
 
 #[Get]
 #[Timeout(seconds: 5)]
-class QuickRequest extends Request {}
+class QuickRequest extends AbstractRequest {}
 
 #[Timeout(seconds: 30, connectSeconds: 5)]
-class SlowRequest extends Request {}
+class SlowRequest extends AbstractRequest {}
 ```
 
 ### CircuitBreaker
@@ -2973,7 +2973,7 @@ use Cline\Relay\Support\Attributes\Resilience\CircuitBreaker;
     resetTimeout: 30,
     successThreshold: 2,
 )]
-class UnreliableApiRequest extends Request {}
+class UnreliableApiRequest extends AbstractRequest {}
 ```
 
 ## Pagination Attributes
@@ -2991,7 +2991,7 @@ use Cline\Relay\Support\Attributes\Pagination\Pagination;
     totalPagesKey: 'meta.last_page',
     totalKey: 'meta.total',
 )]
-class GetUsersRequest extends Request {}
+class GetUsersRequest extends AbstractRequest {}
 ```
 
 ### Simple Pagination
@@ -3006,7 +3006,7 @@ use Cline\Relay\Support\Attributes\Pagination\SimplePagination;
     dataKey: 'data',
     hasMoreKey: 'meta.has_more',
 )]
-class GetPostsRequest extends Request {}
+class GetPostsRequest extends AbstractRequest {}
 ```
 
 ### Cursor Pagination
@@ -3021,7 +3021,7 @@ use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
     nextKey: 'meta.next_cursor',
     dataKey: 'data',
 )]
-class GetFeedRequest extends Request {}
+class GetFeedRequest extends AbstractRequest {}
 ```
 
 ### Offset Pagination
@@ -3036,7 +3036,7 @@ use Cline\Relay\Support\Attributes\Pagination\OffsetPagination;
     dataKey: 'data',
     totalKey: 'meta.total',
 )]
-class SearchRequest extends Request {}
+class SearchRequest extends AbstractRequest {}
 ```
 
 ### Link Pagination
@@ -3046,7 +3046,7 @@ use Cline\Relay\Support\Attributes\Pagination\LinkPagination;
 
 #[Get]
 #[LinkPagination]
-class GetRepositoriesRequest extends Request {}
+class GetRepositoriesRequest extends AbstractRequest {}
 ```
 
 ## Network Attributes
@@ -3061,10 +3061,10 @@ use Cline\Relay\Support\Attributes\Network\Proxy;
     http: 'http://proxy.example.com:8080',
     https: 'https://proxy.example.com:8080',
 )]
-class ProxiedRequest extends Request {}
+class ProxiedRequest extends AbstractRequest {}
 
 #[Proxy(http: 'http://user:pass@proxy.example.com:8080')]
-class AuthenticatedProxyRequest extends Request {}
+class AuthenticatedProxyRequest extends AbstractRequest {}
 ```
 
 ### SSL
@@ -3074,10 +3074,10 @@ use Cline\Relay\Support\Attributes\Network\Ssl;
 
 #[Get]
 #[Ssl(verify: false)]
-class InsecureRequest extends Request {}
+class InsecureRequest extends AbstractRequest {}
 
 #[Ssl(verify: '/path/to/ca-bundle.crt')]
-class CustomCertRequest extends Request {}
+class CustomCertRequest extends AbstractRequest {}
 ```
 
 ### ForceIpResolve
@@ -3087,11 +3087,11 @@ use Cline\Relay\Support\Attributes\Network\ForceIpResolve;
 
 #[Get]
 #[ForceIpResolve(version: 'v4')]
-class IPv4OnlyRequest extends Request {}
+class IPv4OnlyRequest extends AbstractRequest {}
 
 #[Get]
 #[ForceIpResolve(version: 'v6')]
-class IPv6OnlyRequest extends Request {}
+class IPv6OnlyRequest extends AbstractRequest {}
 ```
 
 ## Idempotency Attribute
@@ -3101,13 +3101,13 @@ use Cline\Relay\Support\Attributes\Idempotent;
 
 #[Post]
 #[Idempotent]
-class CreatePaymentRequest extends Request {}
+class CreatePaymentRequest extends AbstractRequest {}
 
 #[Idempotent(header: 'X-Request-ID')]
-class CreateOrderRequest extends Request {}
+class CreateOrderRequest extends AbstractRequest {}
 
 #[Idempotent(keyMethod: 'generateKey')]
-class CreateOrderRequest extends Request
+class CreateOrderRequest extends AbstractRequest
 {
     public function generateKey(): string
     {
@@ -3123,10 +3123,10 @@ use Cline\Relay\Support\Attributes\Stream;
 
 #[Get]
 #[Stream]
-class DownloadFileRequest extends Request {}
+class DownloadFileRequest extends AbstractRequest {}
 
 #[Stream(bufferSize: 16384)]
-class LargeDownloadRequest extends Request {}
+class LargeDownloadRequest extends AbstractRequest {}
 ```
 
 ## DTO Mapping Attribute
@@ -3136,10 +3136,10 @@ use Cline\Relay\Support\Attributes\Dto;
 
 #[Get]
 #[Dto(User::class)]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 
 #[Dto(User::class, dataKey: 'data.user')]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 ```
 
 ## Combining Attributes
@@ -3157,7 +3157,7 @@ use Cline\Relay\Support\Attributes\ThrowOnError;
 #[Timeout(seconds: 10)]
 #[Retry(times: 3, sleepMs: 500, when: [429, 503])]
 #[ThrowOnError]
-class CreatePaymentRequest extends Request
+class CreatePaymentRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $customerId,
@@ -3209,10 +3209,10 @@ Implement the `authenticate()` method in your connector:
 
 ```php
 use Cline\Relay\Features\Auth\BearerToken;
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 
-class GitHubConnector extends Connector
+class GitHubConnector extends AbstractConnector
 {
     public function __construct(
         private readonly string $token,
@@ -3371,7 +3371,7 @@ $jwt->setToken($newToken, $newExpiresAt);
 ```php
 use Cline\Relay\Features\Auth\DigestAuth;
 
-class MyConnector extends Connector
+class MyConnector extends AbstractConnector
 {
     private DigestAuth $digestAuth;
 
@@ -3450,11 +3450,11 @@ $auth = AccessTokenAuthenticator::unserialize($serialized);
 
 ```php
 use Cline\Relay\Features\Auth\AutoRefreshAuthenticator;
-use Cline\Relay\Features\OAuth2\AuthorizationCodeGrant;
+use Cline\Relay\Features\OAuth2\AuthorizationCodeGrantTrait;
 
-class MyConnector extends Connector
+class MyConnector extends AbstractConnector
 {
-    use AuthorizationCodeGrant;
+    use AuthorizationCodeGrantTrait;
 
     private AutoRefreshAuthenticator $auth;
 
@@ -3505,10 +3505,10 @@ public function authenticate(Request $request): Request
 
 namespace App\Auth;
 
-use Cline\Relay\Support\Contracts\Authenticator;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
+use Cline\Relay\Core\AbstractRequest;
 
-class HmacAuth implements Authenticator
+class HmacAuth implements AuthenticatorInterface
 {
     public function __construct(
         private readonly string $apiKey,
@@ -3548,15 +3548,15 @@ namespace App\Http\Connectors;
 
 use Cline\Relay\Features\Auth\ApiKeyAuth;
 use Cline\Relay\Features\Auth\AutoRefreshAuthenticator;
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Support\Contracts\OAuthAuthenticator;
-use Cline\Relay\Features\OAuth2\ClientCredentialsGrant;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Support\Contracts\OAuthAuthenticatorInterface;
+use Cline\Relay\Features\OAuth2\ClientCredentialsGrantTrait;
 use Cline\Relay\Features\OAuth2\OAuthConfig;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
-class MultiAuthConnector extends Connector
+class MultiAuthConnector extends AbstractConnector
 {
-    use ClientCredentialsGrant;
+    use ClientCredentialsGrantTrait;
 
     private ?AutoRefreshAuthenticator $auth = null;
 
@@ -3621,10 +3621,10 @@ Caching in Relay:
 
 ```php
 use Cline\Relay\Features\Caching\CacheConfig;
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Psr\SimpleCache\CacheInterface;
 
-class GitHubConnector extends Connector
+class GitHubConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -3682,7 +3682,7 @@ use Cline\Relay\Support\Attributes\Methods\Get;
 
 #[Get]
 #[Cache(ttl: 3600)]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 ```
 
 ### Cache with Tags
@@ -3690,7 +3690,7 @@ class GetUserRequest extends Request {}
 ```php
 #[Get]
 #[Cache(ttl: 3600, tags: ['users', 'profile'])]
-class GetUserProfileRequest extends Request {}
+class GetUserProfileRequest extends AbstractRequest {}
 ```
 
 ### Disable Cache
@@ -3700,7 +3700,7 @@ use Cline\Relay\Support\Attributes\Caching\NoCache;
 
 #[Get]
 #[NoCache]
-class GetCurrentStatusRequest extends Request {}
+class GetCurrentStatusRequest extends AbstractRequest {}
 ```
 
 ### Invalidate Cache
@@ -3711,14 +3711,14 @@ use Cline\Relay\Support\Attributes\Methods\Post;
 
 #[Post]
 #[InvalidatesCache(tags: ['users'])]
-class CreateUserRequest extends Request {}
+class CreateUserRequest extends AbstractRequest {}
 ```
 
 ## Custom Cache Keys
 
 ```php
 #[Cache(keyResolver: 'cacheKey')]
-class GetUserRequest extends Request
+class GetUserRequest extends AbstractRequest
 {
     public function cacheKey(): string
     {
@@ -3730,10 +3730,10 @@ class GetUserRequest extends Request
 ### Cache Key Resolver Class
 
 ```php
-use Cline\Relay\Support\Contracts\CacheKeyResolver;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Support\Contracts\CacheKeyResolverInterface;
+use Cline\Relay\Core\AbstractRequest;
 
-class UserCacheKeyResolver implements CacheKeyResolver
+class UserCacheKeyResolver implements CacheKeyResolverInterface
 {
     public function resolve(Request $request): string
     {
@@ -3745,7 +3745,7 @@ class UserCacheKeyResolver implements CacheKeyResolver
 }
 
 #[Cache(ttl: 3600, keyResolver: UserCacheKeyResolver::class)]
-class GetUserDashboardRequest extends Request {}
+class GetUserDashboardRequest extends AbstractRequest {}
 ```
 
 ## Checking Cache Status
@@ -3842,39 +3842,39 @@ public function cache(): ?CacheInterface
 ```php
 // Static data - long TTL
 #[Cache(ttl: 86400)]
-class GetCountriesRequest extends Request {}
+class GetCountriesRequest extends AbstractRequest {}
 
 // User data - medium TTL
 #[Cache(ttl: 3600)]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 
 // Frequently changing - short TTL
 #[Cache(ttl: 60)]
-class GetPricesRequest extends Request {}
+class GetPricesRequest extends AbstractRequest {}
 ```
 
 ### Use Tags for Related Data
 
 ```php
 #[Cache(ttl: 3600, tags: ['users'])]
-class GetUsersRequest extends Request {}
+class GetUsersRequest extends AbstractRequest {}
 
 #[Cache(ttl: 3600, tags: ['users', 'user-profile'])]
-class GetUserProfileRequest extends Request {}
+class GetUserProfileRequest extends AbstractRequest {}
 
 #[Post]
 #[InvalidatesCache(tags: ['users'])]
-class UpdateUserRequest extends Request {}
+class UpdateUserRequest extends AbstractRequest {}
 ```
 
 ### Don't Cache Sensitive Data
 
 ```php
 #[NoCache]
-class GetAccessTokenRequest extends Request {}
+class GetAccessTokenRequest extends AbstractRequest {}
 
 #[NoCache]
-class GetPaymentDetailsRequest extends Request {}
+class GetPaymentDetailsRequest extends AbstractRequest {}
 ```
 
 ## Full Example
@@ -3885,11 +3885,11 @@ class GetPaymentDetailsRequest extends Request {}
 namespace App\Http\Connectors;
 
 use Cline\Relay\Features\Caching\CacheConfig;
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Core\Response;
 use Psr\SimpleCache\CacheInterface;
 
-class CachedApiConnector extends Connector
+class CachedApiConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -3953,9 +3953,9 @@ Extend the `Connector` class and implement the `baseUrl()` method:
 
 namespace App\Http\Connectors;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 
-class StripeConnector extends Connector
+class StripeConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -4034,7 +4034,7 @@ Implement the `authenticate()` method:
 
 ```php
 use Cline\Relay\Features\Auth\BearerToken;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 public function authenticate(Request $request): Request
 {
@@ -4178,7 +4178,7 @@ $allUsers = $paginator->collect('data');
 use Cline\Relay\Support\Attributes\ThrowOnError;
 
 #[ThrowOnError(clientErrors: true, serverErrors: true)]
-class GitHubConnector extends Connector
+class GitHubConnector extends AbstractConnector
 {
     // All 4xx and 5xx responses will throw exceptions
 }
@@ -4187,8 +4187,8 @@ class GitHubConnector extends Connector
 ### Custom Exception Handling
 
 ```php
-use Cline\Relay\Support\Exceptions\ClientException;
-use Cline\Relay\Support\Exceptions\ServerException;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
+use Cline\Relay\Support\Exceptions\AbstractServerException;
 
 protected function createClientException(Request $request, Response $response): ClientException
 {
@@ -4231,7 +4231,7 @@ $connector->assertSentCount(2);
 ## Macros
 
 ```php
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 
 Connector::macro('withDebugHeaders', function () {
     return $this->send(
@@ -4252,13 +4252,13 @@ namespace App\Http\Connectors;
 use Cline\Relay\Support\Attributes\ThrowOnError;
 use Cline\Relay\Features\Auth\BearerToken;
 use Cline\Relay\Features\Caching\CacheConfig;
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Features\RateLimiting\RateLimitConfig;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Psr\SimpleCache\CacheInterface;
 
 #[ThrowOnError(clientErrors: true, serverErrors: true)]
-class GitHubConnector extends Connector
+class GitHubConnector extends AbstractConnector
 {
     public function __construct(
         private readonly string $token,
@@ -4368,7 +4368,7 @@ Wiretap::disable();
 ### With Ray
 
 ```php
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -4519,7 +4519,7 @@ Log all requests and responses using PSR-3 loggers.
 ```php
 use Cline\Relay\Features\Middleware\LoggingMiddleware;
 
-class MyConnector extends Connector
+class MyConnector extends AbstractConnector
 {
     public function middleware(): array
     {
@@ -4990,7 +4990,7 @@ Middleware wraps request/response processing, allowing you to:
 use Cline\Relay\Features\Middleware\HeaderMiddleware;
 use GuzzleHttp\HandlerStack;
 
-class MyConnector extends Connector
+class MyConnector extends AbstractConnector
 {
     public function middleware(): HandlerStack
     {
@@ -5012,7 +5012,7 @@ class MyConnector extends Connector
 use Cline\Relay\Features\Middleware\LoggingMiddleware;
 use Psr\Log\LoggerInterface;
 
-class MyConnector extends Connector
+class MyConnector extends AbstractConnector
 {
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -5046,7 +5046,7 @@ use Cline\Relay\Features\Middleware\HeaderMiddleware;
 use Cline\Relay\Features\Middleware\LoggingMiddleware;
 use Cline\Relay\Features\Middleware\TimingMiddleware;
 
-class MyConnector extends Connector
+class MyConnector extends AbstractConnector
 {
     public function middleware(): HandlerStack
     {
@@ -5292,7 +5292,7 @@ class ErrorMiddleware
 
 namespace App\Http\Connectors;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Features\Middleware\HeaderMiddleware;
 use Cline\Relay\Features\Middleware\LoggingMiddleware;
 use Cline\Relay\Features\Middleware\TimingMiddleware;
@@ -5300,7 +5300,7 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
 use Psr\Log\LoggerInterface;
 
-class ApiConnector extends Connector
+class ApiConnector extends AbstractConnector
 {
     private array $history = [];
 
@@ -5379,7 +5379,7 @@ use Cline\Relay\Support\Attributes\Pagination\Pagination;
     totalPagesKey: 'meta.last_page',
     totalKey: 'meta.total',
 )]
-class GetUsersRequest extends Request
+class GetUsersRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -5402,7 +5402,7 @@ use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
     nextKey: 'meta.next_cursor',
     dataKey: 'data',
 )]
-class GetTimelineRequest extends Request
+class GetTimelineRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -5423,7 +5423,7 @@ use Cline\Relay\Support\Attributes\Pagination\OffsetPagination;
     dataKey: 'data',
     totalKey: 'meta.total',
 )]
-class SearchRequest extends Request
+class SearchRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -5441,7 +5441,7 @@ use Cline\Relay\Support\Attributes\Pagination\LinkPagination;
 
 #[Get]
 #[LinkPagination(dataKey: '')]
-class GetRepositoriesRequest extends Request
+class GetRepositoriesRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -5538,9 +5538,9 @@ $simplePaginator = $paginated->toLaravelSimplePaginator(
 Implement the `Paginator` contract for custom pagination strategies:
 
 ```php
-use Cline\Relay\Support\Contracts\Paginator;
+use Cline\Relay\Support\Contracts\PaginatorInterface;
 
-class KeysetPaginator implements Paginator
+class KeysetPaginator implements PaginatorInterface
 {
     public function getNextPage(Response $response): ?array
     {
@@ -5789,10 +5789,10 @@ Relay provides client-side rate limiting to prevent exceeding API quotas and han
 ## Connector-Level Rate Limiting
 
 ```php
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Features\RateLimiting\RateLimitConfig;
 
-class TwitterConnector extends Connector
+class TwitterConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -5866,7 +5866,7 @@ use Cline\Relay\Support\Attributes\RateLimiting\ConcurrencyLimit;
 #[Get]
 #[RateLimit(maxAttempts: 10, decaySeconds: 60)]
 #[ConcurrencyLimit(max: 5)]
-class SearchRequest extends Request
+class SearchRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -5924,15 +5924,15 @@ if ($rateLimit) {
 #[Get]
 #[RateLimit(maxAttempts: 100, decaySeconds: 60)]
 #[Retry(times: 3, sleepMs: 1000, when: [429])]
-class SearchRequest extends Request {}
+class SearchRequest extends AbstractRequest {}
 ```
 
 ## Custom Backoff Strategy
 
 ```php
-use Cline\Relay\Support\Contracts\BackoffStrategy;
+use Cline\Relay\Support\Contracts\BackoffStrategyInterface;
 
-class FibonacciBackoffStrategy implements BackoffStrategy
+class FibonacciBackoffStrategy implements BackoffStrategyInterface
 {
     public function calculateDelay(Request $request, int $attempt, int $retryAfter = 0): int
     {
@@ -5956,7 +5956,7 @@ class FibonacciBackoffStrategy implements BackoffStrategy
 }
 
 #[RateLimit(requests: 100, perSeconds: 60, backoff: FibonacciBackoffStrategy::class)]
-class ApiRequest extends Request {}
+class ApiRequest extends AbstractRequest {}
 ```
 
 ## Rate Limit Buckets
@@ -5966,11 +5966,11 @@ Use different buckets for different endpoints:
 ```php
 #[Get]
 #[RateLimit(maxAttempts: 10, decaySeconds: 60, key: 'search')]
-class SearchRequest extends Request {}
+class SearchRequest extends AbstractRequest {}
 
 #[Get]
 #[RateLimit(maxAttempts: 100, decaySeconds: 60, key: 'read')]
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 ```
 
 ## Best Practices
@@ -5994,10 +5994,10 @@ Extend the `Request` class and add an HTTP method attribute:
 namespace App\Http\Requests;
 
 use Cline\Relay\Support\Attributes\Methods\Get;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 #[Get]
-class GetUsersRequest extends Request
+class GetUsersRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -6018,26 +6018,26 @@ use Cline\Relay\Support\Attributes\Methods\Head;
 use Cline\Relay\Support\Attributes\Methods\Options;
 
 #[Get]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 
 #[Post]
-class CreateUserRequest extends Request {}
+class CreateUserRequest extends AbstractRequest {}
 
 #[Put]
-class ReplaceUserRequest extends Request {}
+class ReplaceUserRequest extends AbstractRequest {}
 
 #[Patch]
-class UpdateUserRequest extends Request {}
+class UpdateUserRequest extends AbstractRequest {}
 
 #[Delete]
-class DeleteUserRequest extends Request {}
+class DeleteUserRequest extends AbstractRequest {}
 ```
 
 ## Dynamic Endpoints
 
 ```php
 #[Get]
-class GetUserRequest extends Request
+class GetUserRequest extends AbstractRequest
 {
     public function __construct(
         private readonly int $userId,
@@ -6057,7 +6057,7 @@ $connector->send(new GetUserRequest(123));
 
 ```php
 #[Get]
-class GetRepositoryRequest extends Request
+class GetRepositoryRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $owner,
@@ -6077,7 +6077,7 @@ $connector->send(new GetRepositoryRequest('laravel', 'laravel'));
 
 ```php
 #[Get]
-class ListUsersRequest extends Request
+class ListUsersRequest extends AbstractRequest
 {
     public function __construct(
         private readonly int $page = 1,
@@ -6120,7 +6120,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Json;
 
 #[Post]
 #[Json]
-class CreateUserRequest extends Request
+class CreateUserRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $name,
@@ -6153,7 +6153,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Json;
 
 #[Post]
 #[Json]
-class CreateUserRequest extends Request
+class CreateUserRequest extends AbstractRequest
 {
     public function body(): array
     {
@@ -6169,7 +6169,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Form;
 
 #[Post]
 #[Form]
-class LoginRequest extends Request
+class LoginRequest extends AbstractRequest
 {
     public function body(): array
     {
@@ -6185,7 +6185,7 @@ use Cline\Relay\Support\Attributes\ContentTypes\Multipart;
 
 #[Post]
 #[Multipart]
-class UploadFileRequest extends Request
+class UploadFileRequest extends AbstractRequest
 {
     public function body(): array
     {
@@ -6204,14 +6204,14 @@ use Cline\Relay\Support\Attributes\ContentTypes\Xml;
 
 #[Post]
 #[Xml]
-class CreateOrderRequest extends Request {}
+class CreateOrderRequest extends AbstractRequest {}
 ```
 
 ## Headers
 
 ```php
 #[Get]
-class GetUserRequest extends Request
+class GetUserRequest extends AbstractRequest
 {
     public function headers(): array
     {
@@ -6254,15 +6254,15 @@ use Cline\Relay\Support\Attributes\Idempotent;
 #[Post]
 #[Json]
 #[Idempotent]
-class CreatePaymentRequest extends Request {}
+class CreatePaymentRequest extends AbstractRequest {}
 
 // Custom header name
 #[Idempotent(header: 'X-Request-ID')]
-class CreatePaymentRequest extends Request {}
+class CreatePaymentRequest extends AbstractRequest {}
 
 // Custom key generation
 #[Idempotent(keyMethod: 'generateKey')]
-class CreatePaymentRequest extends Request
+class CreatePaymentRequest extends AbstractRequest
 {
     public function generateKey(): string
     {
@@ -6282,7 +6282,7 @@ $request = (new CreatePaymentRequest())
 
 ```php
 #[Get]
-class GetUserRequest extends Request
+class GetUserRequest extends AbstractRequest
 {
     protected function boot(): void
     {
@@ -6297,7 +6297,7 @@ class GetUserRequest extends Request
 use Cline\Relay\Core\Response;
 
 #[Get]
-class GetUserRequest extends Request
+class GetUserRequest extends AbstractRequest
 {
     public function transformResponse(Response $response): Response
     {
@@ -6310,7 +6310,7 @@ class GetUserRequest extends Request
 
 ```php
 #[Get]
-class GetUserRequest extends Request
+class GetUserRequest extends AbstractRequest
 {
     protected function boot(): void
     {
@@ -6343,11 +6343,11 @@ use Cline\Relay\Support\Attributes\ThrowOnError;
 
 #[Get]
 #[ThrowOnError]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 
 // Or be specific
 #[ThrowOnError(clientErrors: true, serverErrors: false)]
-class GetUserRequest extends Request {}
+class GetUserRequest extends AbstractRequest {}
 ```
 
 ## Accessing Attributes
@@ -6377,7 +6377,7 @@ $request->dd();   // Dump and die
 ## Macros
 
 ```php
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 
 Request::macro('withCorrelationId', function (string $id) {
     return $this->withHeader('X-Correlation-ID', $id);
@@ -6397,14 +6397,14 @@ use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Idempotent;
 use Cline\Relay\Support\Attributes\Methods\Post;
 use Cline\Relay\Support\Attributes\ThrowOnError;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 
 #[Post]
 #[Json]
 #[Idempotent(keyMethod: 'generateIdempotencyKey')]
 #[ThrowOnError]
-class CreateOrderRequest extends Request
+class CreateOrderRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $customerId,
@@ -6467,7 +6467,7 @@ use Cline\Relay\Support\Attributes\Resilience\Retry;
 
 #[Get]
 #[Retry(times: 3)]
-class GetDataRequest extends Request
+class GetDataRequest extends AbstractRequest
 {
     public function endpoint(): string
     {
@@ -6480,7 +6480,7 @@ class GetDataRequest extends Request
 
 ```php
 #[Retry(times: 3, delay: 1000)] // 1 second between retries
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 ```
 
 ### Exponential Backoff
@@ -6490,21 +6490,21 @@ class GetDataRequest extends Request {}
 // Retry 1: wait 100ms
 // Retry 2: wait 200ms
 // Retry 3: wait 400ms
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 ```
 
 ### Retry on Specific Status Codes
 
 ```php
 #[Retry(times: 3, delay: 500, when: [429, 500, 502, 503, 504])]
-class GetDataRequest extends Request {}
+class GetDataRequest extends AbstractRequest {}
 ```
 
 ### Custom Retry Condition
 
 ```php
 #[Retry(times: 3, callback: 'shouldRetry')]
-class GetDataRequest extends Request
+class GetDataRequest extends AbstractRequest
 {
     public function shouldRetry(Response $response, int $attempt): bool
     {
@@ -6526,20 +6526,20 @@ use Cline\Relay\Support\Attributes\Resilience\Timeout;
 
 #[Get]
 #[Timeout(seconds: 5)]
-class QuickCheckRequest extends Request {}
+class QuickCheckRequest extends AbstractRequest {}
 ```
 
 ### Connection and Request Timeout
 
 ```php
 #[Timeout(seconds: 30, connectSeconds: 5)]
-class SlowEndpointRequest extends Request {}
+class SlowEndpointRequest extends AbstractRequest {}
 ```
 
 ### Connector-Level Timeout
 
 ```php
-class MyConnector extends Connector
+class MyConnector extends AbstractConnector
 {
     public function timeout(): int
     {
@@ -6567,7 +6567,7 @@ use Cline\Relay\Support\Attributes\Resilience\CircuitBreaker;
     failureThreshold: 5,
     resetTimeout: 30,
 )]
-class UnreliableApiRequest extends Request {}
+class UnreliableApiRequest extends AbstractRequest {}
 ```
 
 ### Circuit Breaker with Success Threshold
@@ -6578,7 +6578,7 @@ class UnreliableApiRequest extends Request {}
     resetTimeout: 30,
     successThreshold: 3,  // Require 3 successes to close
 )]
-class UnreliableApiRequest extends Request {}
+class UnreliableApiRequest extends AbstractRequest {}
 ```
 
 ### Circuit Breaker States
@@ -6590,9 +6590,9 @@ class UnreliableApiRequest extends Request {}
 ### Circuit Breaker Policy
 
 ```php
-use Cline\Relay\Support\Contracts\CircuitBreakerPolicy;
+use Cline\Relay\Support\Contracts\CircuitBreakerPolicyInterface;
 
-class ApiCircuitBreakerPolicy implements CircuitBreakerPolicy
+class ApiCircuitBreakerPolicy implements CircuitBreakerPolicyInterface
 {
     public function failureThreshold(): int { return 5; }
     public function resetTimeout(): int { return 30; }
@@ -6610,7 +6610,7 @@ class ApiCircuitBreakerPolicy implements CircuitBreakerPolicy
 }
 
 #[CircuitBreaker(policy: ApiCircuitBreakerPolicy::class)]
-class ApiRequest extends Request {}
+class ApiRequest extends AbstractRequest {}
 ```
 
 ## Combining Resilience Patterns
@@ -6620,7 +6620,7 @@ class ApiRequest extends Request {}
 #[Timeout(seconds: 10)]
 #[Retry(times: 3, sleepMs: 500, multiplier: 2, when: [500, 502, 503])]
 #[CircuitBreaker(failureThreshold: 5, resetTimeout: 60)]
-class ResilientRequest extends Request {}
+class ResilientRequest extends AbstractRequest {}
 ```
 
 Execution order:
@@ -6650,7 +6650,7 @@ try {
 Isolate failures by using separate connectors:
 
 ```php
-class PaymentConnector extends Connector
+class PaymentConnector extends AbstractConnector
 {
     public function rateLimit(): ?RateLimitConfig
     {
@@ -6658,7 +6658,7 @@ class PaymentConnector extends Connector
     }
 }
 
-class InventoryConnector extends Connector
+class InventoryConnector extends AbstractConnector
 {
     // Independent from payment service failures
     public function rateLimit(): ?RateLimitConfig

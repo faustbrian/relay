@@ -9,17 +9,25 @@
 
 namespace Tests\Fixtures\Protocols\Microservice;
 
-use Cline\Relay\Core\JsonRpc\JsonRpcMicroserviceRequest;
+use Cline\Relay\Core\JsonRpc\AbstractJsonRpcMicroserviceRequest;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CreateUserMicroserviceRequest extends JsonRpcMicroserviceRequest
+final class CreateUserMicroserviceRequest extends AbstractJsonRpcMicroserviceRequest
 {
     /**
-     * @param array<string, mixed>|CreateUserData|null $data
+     * @param null|array<string, mixed>|CreateUserData $data
      */
     public function __construct(
-        protected array|CreateUserData|null $data = null,
+        private readonly array|CreateUserData|null $data = null,
     ) {}
+
+    /**
+     * @return null|array<string, mixed>|CreateUserData
+     */
+    protected function resolveData(): array|CreateUserData|null
+    {
+        return $this->data;
+    }
 }

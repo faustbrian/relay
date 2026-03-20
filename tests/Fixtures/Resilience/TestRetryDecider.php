@@ -9,9 +9,9 @@
 
 namespace Tests\Fixtures\Resilience;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\RetryDecider;
+use Cline\Relay\Support\Contracts\RetryDeciderInterface;
 
 use function in_array;
 
@@ -22,9 +22,9 @@ use function in_array;
  *
  * @psalm-immutable
  */
-final readonly class TestRetryDecider implements RetryDecider
+final readonly class TestRetryDecider implements RetryDeciderInterface
 {
-    public function __invoke(Request $request, Response $response, int $attempt): bool
+    public function __invoke(AbstractRequest $request, Response $response, int $attempt): bool
     {
         // Only retry on 429 and 503
         return in_array($response->status(), [429, 503], true);

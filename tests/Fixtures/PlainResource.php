@@ -9,9 +9,9 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractResource;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class PlainResource extends Resource {}
+final class PlainResource extends AbstractResource {}

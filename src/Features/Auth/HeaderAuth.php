@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 
 /**
  * Custom header authentication.
@@ -19,14 +19,14 @@ use Cline\Relay\Support\Contracts\Authenticator;
  *
  * @psalm-immutable
  */
-final readonly class HeaderAuth implements Authenticator
+final readonly class HeaderAuth implements AuthenticatorInterface
 {
     public function __construct(
         private string $headerName,
         private string $value,
     ) {}
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return $request->withHeader($this->headerName, $this->value);
     }

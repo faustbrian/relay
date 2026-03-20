@@ -7,20 +7,20 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Middleware\HeaderMiddleware;
 use Cline\Relay\Features\Middleware\MiddlewarePipeline;
 use Cline\Relay\Features\Middleware\TimingMiddleware;
 use Cline\Relay\Support\Attributes\Methods\Get;
-use Cline\Relay\Support\Contracts\Middleware;
+use Cline\Relay\Support\Contracts\MiddlewareInterface;
 use Cline\Relay\Testing\MockResponse;
 use GuzzleHttp\Psr7\Response as Psr7Response;
 use Illuminate\Support\Sleep;
 
-function createMiddlewareRequest(): Request
+function createMiddlewareRequest(): AbstractRequest
 {
-    return new #[Get()] class() extends Request
+    return new #[Get()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {
@@ -34,7 +34,7 @@ describe('MiddlewarePipeline', function (): void {
         $pipeline = new MiddlewarePipeline();
         $order = [];
 
-        $pipeline->push(function (Request $request, Closure $next) use (&$order): Response {
+        $pipeline->push(function (AbstractRequest $request, Closure $next) use (&$order): Response {
             $order[] = 'first_before';
             $response = $next($request);
             $order[] = 'first_after';
@@ -42,7 +42,7 @@ describe('MiddlewarePipeline', function (): void {
             return $response;
         });
 
-        $pipeline->push(function (Request $request, Closure $next) use (&$order): Response {
+        $pipeline->push(function (AbstractRequest $request, Closure $next) use (&$order): Response {
             $order[] = 'second_before';
             $response = $next($request);
             $order[] = 'second_after';
@@ -50,7 +50,7 @@ describe('MiddlewarePipeline', function (): void {
             return $response;
         });
 
-        $core = function (Request $request) use (&$order): Response {
+        $core = function (AbstractRequest $request) use (&$order): Response {
             $order[] = 'core';
 
             return MockResponse::json([]);
@@ -92,9 +92,9 @@ describe('MiddlewarePipeline', function (): void {
     it('works with class-based middleware', function (): void {
         $pipeline = new MiddlewarePipeline();
 
-        $middleware = new class() implements Middleware
+        $middleware = new class() implements MiddlewareInterface
         {
-            public function handle(Request $request, Closure $next): Response
+            public function handle(AbstractRequest $request, Closure $next): Response
             {
                 return $next($request->withHeader('X-Middleware', 'applied'));
             }
@@ -103,7 +103,7 @@ describe('MiddlewarePipeline', function (): void {
         $pipeline->push($middleware);
 
         $capturedRequest = null;
-        $pipeline->process(createMiddlewareRequest(), function (Request $request) use (&$capturedRequest): Response {
+        $pipeline->process(createMiddlewareRequest(), function (AbstractRequest $request) use (&$capturedRequest): Response {
             $capturedRequest = $request;
 
             return MockResponse::json([]);
@@ -116,7 +116,7 @@ describe('MiddlewarePipeline', function (): void {
     it('can modify response', function (): void {
         $pipeline = new MiddlewarePipeline();
 
-        $pipeline->push(fn (Request $request, Closure $next): Response => $next($request)->withHeader('X-Modified', 'true'));
+        $pipeline->push(fn (AbstractRequest $request, Closure $next): Response => $next($request)->withHeader('X-Modified', 'true'));
 
         $response = $pipeline->process(
             createMiddlewareRequest(),
@@ -154,7 +154,7 @@ describe('TimingMiddleware', function (): void {
 
         $response = $middleware->handle(
             createMiddlewareRequest(),
-            function (Request $request): Response {
+            function (AbstractRequest $request): Response {
                 Sleep::usleep(10_000); // 10ms
 
                 return new Response(
@@ -177,7 +177,7 @@ describe('HeaderMiddleware', function (): void {
         $capturedRequest = null;
         $middleware->handle(
             createMiddlewareRequest(),
-            function (Request $request) use (&$capturedRequest): Response {
+            function (AbstractRequest $request) use (&$capturedRequest): Response {
                 $capturedRequest = $request;
 
                 return MockResponse::json([]);

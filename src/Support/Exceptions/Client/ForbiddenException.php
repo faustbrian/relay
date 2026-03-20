@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Client;
 
-use Cline\Relay\Support\Exceptions\ClientException;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
 
 /**
  * Exception for 403 Forbidden responses.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class ForbiddenException extends ClientException {}
+final class ForbiddenException extends AbstractClientException {}

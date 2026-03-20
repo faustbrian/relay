@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Exceptions\GenericRequestException;
@@ -15,9 +15,9 @@ use GuzzleHttp\Exception\RequestException as GuzzleException;
 use GuzzleHttp\Psr7\Request as Psr7Request;
 use GuzzleHttp\Psr7\Response as Psr7Response;
 
-function createExceptionTestRequest(string $endpoint = '/api/test'): Request
+function createExceptionTestRequest(string $endpoint = '/api/test'): AbstractRequest
 {
-    return new #[Get()] class($endpoint) extends Request
+    return new #[Get()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,

@@ -10,8 +10,8 @@
 namespace Cline\Relay\Features\Auth;
 
 use Carbon\CarbonImmutable;
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 use Closure;
 use DateTimeImmutable;
 
@@ -22,7 +22,7 @@ use DateTimeImmutable;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class JwtAuth implements Authenticator
+final class JwtAuth implements AuthenticatorInterface
 {
     /** @var null|Closure(): string */
     private ?Closure $tokenProvider = null;
@@ -56,7 +56,7 @@ final class JwtAuth implements Authenticator
         return $instance;
     }
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return $request->withBearerToken($this->getToken());
     }

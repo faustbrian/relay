@@ -8,7 +8,7 @@
  */
 
 use Carbon\CarbonImmutable;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\Auth\AccessTokenAuthenticator;
 use Cline\Relay\Features\Auth\AutoRefreshAuthenticator;
 use Cline\Relay\Support\Attributes\Methods\Get;
@@ -27,7 +27,7 @@ describe('AutoRefreshAuthenticator', function (): void {
         $connector = new MockConnector();
         $autoRefresh = new AutoRefreshAuthenticator($connector, $authenticator);
 
-        $request = new #[Get()] class() extends Request
+        $request = new #[Get()] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -106,7 +106,7 @@ describe('AutoRefreshAuthenticator', function (): void {
 
         $autoRefresh = new AutoRefreshAuthenticator($connector, $authenticator);
 
-        $request = new #[Get()] class() extends Request
+        $request = new #[Get()] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -131,7 +131,7 @@ describe('AutoRefreshAuthenticator', function (): void {
 
         $autoRefresh = new AutoRefreshAuthenticator($connector, $authenticator);
 
-        $request = new #[Get()] class() extends Request
+        $request = new #[Get()] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -164,7 +164,7 @@ describe('AutoRefreshAuthenticator', function (): void {
 
         $autoRefresh = new AutoRefreshAuthenticator($connector, $expiredAuth);
 
-        $request = new #[Get()] class() extends Request
+        $request = new #[Get()] class() extends AbstractRequest
         {
             public function endpoint(): string
             {
@@ -208,7 +208,7 @@ describe('AutoRefreshAuthenticator', function (): void {
             },
         );
 
-        $request = new #[Get()] class() extends Request
+        $request = new #[Get()] class() extends AbstractRequest
         {
             public function endpoint(): string
             {

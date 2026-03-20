@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Observability\Debugging\DebuggingState;
 use Cline\Relay\Support\Attributes\Methods\Get;
@@ -77,7 +77,7 @@ describe('HasDebugging trait', function (): void {
 
     describe('Request debugging', function (): void {
         it('enables full debugging with debug()', function (): void {
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -94,7 +94,7 @@ describe('HasDebugging trait', function (): void {
         });
 
         it('enables request debugging only', function (): void {
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -109,7 +109,7 @@ describe('HasDebugging trait', function (): void {
         });
 
         it('enables response debugging only', function (): void {
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -129,7 +129,7 @@ describe('HasDebugging trait', function (): void {
             $connector = new MockConnector();
             $called = false;
 
-            $connector->debugRequest(handler: function (Request $request, ?RequestInterface $psrRequest) use (&$called): void {
+            $connector->debugRequest(handler: function (AbstractRequest $request, ?RequestInterface $psrRequest) use (&$called): void {
                 $called = true;
             });
 
@@ -191,7 +191,7 @@ describe('DebuggingState', function (): void {
 
         it('sets custom request handler', function (): void {
             $state = new DebuggingState();
-            $handler = function (Request $request, string $baseUrl): void {};
+            $handler = function (AbstractRequest $request, string $baseUrl): void {};
 
             $result = $state->setRequestHandler($handler);
 
@@ -213,7 +213,7 @@ describe('DebuggingState', function (): void {
             $state = new DebuggingState();
             $state->enableRequestDebugging();
 
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -232,7 +232,7 @@ describe('DebuggingState', function (): void {
         it('does not output request when debugging disabled', function (): void {
             $state = new DebuggingState();
 
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -254,13 +254,13 @@ describe('DebuggingState', function (): void {
             $capturedPsrRequest = null;
 
             $state->enableRequestDebugging();
-            $state->setRequestHandler(function (Request $request, ?RequestInterface $psrRequest) use (&$called, &$capturedRequest, &$capturedPsrRequest): void {
+            $state->setRequestHandler(function (AbstractRequest $request, ?RequestInterface $psrRequest) use (&$called, &$capturedRequest, &$capturedPsrRequest): void {
                 $called = true;
                 $capturedRequest = $request;
                 $capturedPsrRequest = $psrRequest;
             });
 
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {

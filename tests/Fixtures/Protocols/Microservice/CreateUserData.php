@@ -13,6 +13,7 @@ use Cline\Struct\AbstractData;
 
 /**
  * @author Brian Faust <brian@cline.sh>
+ * @psalm-immutable
  */
 final readonly class CreateUserData extends AbstractData
 {

@@ -9,8 +9,8 @@
 
 namespace Tests\Fixtures\RateLimiting;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\BackoffStrategy;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\BackoffStrategyInterface;
 
 /**
  * Test backoff strategy for unit tests.
@@ -19,9 +19,9 @@ use Cline\Relay\Support\Contracts\BackoffStrategy;
  *
  * @psalm-immutable
  */
-final readonly class TestBackoffStrategy implements BackoffStrategy
+final readonly class TestBackoffStrategy implements BackoffStrategyInterface
 {
-    public function calculateDelay(Request $request, int $attempt, int $retryAfter = 0): int
+    public function calculateDelay(AbstractRequest $request, int $attempt, int $retryAfter = 0): int
     {
         // If retry-after is set, respect it
         if ($retryAfter > 0) {

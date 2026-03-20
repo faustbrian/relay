@@ -9,13 +9,13 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\JsonRpcRequest;
+use Cline\Relay\Protocols\AbstractJsonRpcRequest;
 use Override;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomEndpointJsonRpcRequest extends JsonRpcRequest
+final class CustomEndpointJsonRpcRequest extends AbstractJsonRpcRequest
 {
     #[Override()]
     public function endpoint(): string

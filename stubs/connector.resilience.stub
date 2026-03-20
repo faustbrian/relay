@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Features\Resilience\CircuitBreakerConfig;
 use Cline\Relay\Features\Resilience\RetryConfig;
 use Cline\Relay\Support\Attributes\ThrowOnError;
@@ -11,7 +11,7 @@ use Cline\Relay\Support\Attributes\ThrowOnError;
  * {{ connectorName }} API connector with circuit breaker and retry.
  */
 #[ThrowOnError()]
-final class {{ class }} extends Connector
+final class {{ class }} extends AbstractConnector
 {
     public function __construct(
         private readonly string $baseUrl = 'https://api.example.com',

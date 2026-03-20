@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Client;
 
-use Cline\Relay\Support\Exceptions\ClientException;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
 
 /**
  * Exception for 404 Not Found responses.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class NotFoundException extends ClientException {}
+final class NotFoundException extends AbstractClientException {}

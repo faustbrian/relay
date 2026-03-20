@@ -9,9 +9,9 @@
 
 namespace Cline\Relay\Features\Middleware;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\Middleware;
+use Cline\Relay\Support\Contracts\MiddlewareInterface;
 use Closure;
 
 use function array_reduce;
@@ -27,15 +27,15 @@ use function count;
  */
 final class MiddlewarePipeline
 {
-    /** @var array<Closure|Middleware> */
+    /** @var array<Closure|MiddlewareInterface> */
     private array $middleware = [];
 
     /**
      * Add middleware to the pipeline.
      *
-     * @param Closure(Request, Closure): Response|Middleware $middleware
+     * @param Closure(AbstractRequest, Closure): Response|MiddlewareInterface $middleware
      */
-    public function push(Middleware|Closure $middleware): self
+    public function push(MiddlewareInterface|Closure $middleware): self
     {
         $this->middleware[] = $middleware;
 
@@ -45,9 +45,9 @@ final class MiddlewarePipeline
     /**
      * Add middleware to the beginning of the pipeline.
      *
-     * @param Closure(Request, Closure): Response|Middleware $middleware
+     * @param Closure(AbstractRequest, Closure): Response|MiddlewareInterface $middleware
      */
-    public function prepend(Middleware|Closure $middleware): self
+    public function prepend(MiddlewareInterface|Closure $middleware): self
     {
         array_unshift($this->middleware, $middleware);
 
@@ -57,14 +57,14 @@ final class MiddlewarePipeline
     /**
      * Process the request through all middleware.
      *
-     * @param Closure(Request): Response $core
+     * @param Closure(AbstractRequest): Response $core
      */
-    public function process(Request $request, Closure $core): Response
+    public function process(AbstractRequest $request, Closure $core): Response
     {
         $pipeline = array_reduce(
             array_reverse($this->middleware),
-            fn (Closure $next, Middleware|Closure $middleware): Closure => function (Request $request) use ($middleware, $next): Response {
-                $response = $middleware instanceof Middleware
+            fn (Closure $next, MiddlewareInterface|Closure $middleware): Closure => function (AbstractRequest $request) use ($middleware, $next): Response {
+                $response = $middleware instanceof MiddlewareInterface
                     ? $middleware->handle($request, $next)
                     : $middleware($request, $next);
 

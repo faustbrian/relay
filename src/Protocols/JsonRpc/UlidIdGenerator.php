@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class UlidIdGenerator implements IdGenerator
+final class UlidIdGenerator implements IdGeneratorInterface
 {
     public function generate(): string
     {

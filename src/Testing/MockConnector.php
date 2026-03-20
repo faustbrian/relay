@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Testing;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Exceptions\MockConnectorException;
 use Closure;
@@ -27,15 +27,15 @@ use function throw_if;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class MockConnector extends Connector
+final class MockConnector extends AbstractConnector
 {
     /** @var array<Closure|Response> */
     private array $responses = [];
 
-    /** @var array<Request> */
+    /** @var array<AbstractRequest> */
     private array $sentRequests = [];
 
-    /** @var array<array{request: Request, response: Response}> */
+    /** @var array<array{request: AbstractRequest, response: Response}> */
     private array $history = [];
 
     private bool $sequentialMode = true;
@@ -48,7 +48,7 @@ final class MockConnector extends Connector
     /**
      * Add a response to be returned.
      *
-     * @param Closure(Request): Response|Response $response
+     * @param Closure(AbstractRequest): Response|Response $response
      */
     public function addResponse(Response|Closure $response): self
     {
@@ -86,7 +86,7 @@ final class MockConnector extends Connector
      * Send a request and return the next mock response.
      */
     #[Override()]
-    public function send(Request $request): Response
+    public function send(AbstractRequest $request): Response
     {
         $this->sentRequests[] = $request;
 
@@ -117,7 +117,7 @@ final class MockConnector extends Connector
     /**
      * Get all sent requests.
      *
-     * @return array<Request>
+     * @return array<AbstractRequest>
      */
     public function sentRequests(): array
     {
@@ -127,7 +127,7 @@ final class MockConnector extends Connector
     /**
      * Get the last sent request.
      */
-    public function lastRequest(): ?Request
+    public function lastRequest(): ?AbstractRequest
     {
         return $this->sentRequests !== [] ? end($this->sentRequests) : null;
     }
@@ -135,7 +135,7 @@ final class MockConnector extends Connector
     /**
      * Get the request/response history.
      *
-     * @return array<array{request: Request, response: Response}>
+     * @return array<array{request: AbstractRequest, response: Response}>
      */
     public function history(): array
     {

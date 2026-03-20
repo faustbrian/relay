@@ -9,10 +9,10 @@
 
 namespace Cline\Relay\Features\Pagination;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\Paginator;
+use Cline\Relay\Support\Contracts\PaginatorInterface;
 use Generator;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator as LaravelPaginator;
@@ -41,9 +41,9 @@ final class PaginatedResponse implements IteratorAggregate
     private int $pagesLoaded = 0;
 
     public function __construct(
-        private readonly Connector $connector,
-        private readonly Request $request,
-        private readonly Paginator $paginator,
+        private readonly AbstractConnector $connector,
+        private readonly AbstractRequest $request,
+        private readonly PaginatorInterface $paginator,
         private readonly Response $initialResponse,
     ) {}
 
@@ -143,7 +143,7 @@ final class PaginatedResponse implements IteratorAggregate
     }
 
     /**
-     * Convert to Laravel's simple Paginator (no total).
+     * Convert to Laravel's simple PaginatorInterface (no total).
      *
      * @param  array<string, mixed>         $options
      * @return LaravelPaginator<int, mixed>
@@ -198,7 +198,7 @@ final class PaginatedResponse implements IteratorAggregate
         while ($this->shouldContinue($currentResponse)) {
             $nextRequest = $this->paginator->nextRequest($this->request, $currentResponse);
 
-            if ($nextRequest === null) {
+            if (!$nextRequest instanceof AbstractRequest) {
                 break;
             }
 

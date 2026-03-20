@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 
 /**
  * Bearer token authentication.
@@ -19,13 +19,13 @@ use Cline\Relay\Support\Contracts\Authenticator;
  *
  * @psalm-immutable
  */
-final readonly class BearerToken implements Authenticator
+final readonly class BearerToken implements AuthenticatorInterface
 {
     public function __construct(
         private string $token,
     ) {}
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return $request->withBearerToken($this->token);
     }

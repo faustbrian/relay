@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Client;
 
-use Cline\Relay\Support\Exceptions\ClientException;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
 
 /**
  * Exception for 422 Unprocessable Entity responses.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class ValidationException extends ClientException {}
+final class ValidationException extends AbstractClientException {}

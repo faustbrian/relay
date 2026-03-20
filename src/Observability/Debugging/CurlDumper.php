@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability\Debugging;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Exceptions\JsonEncodingException;
 
 use function array_keys;
@@ -128,7 +128,7 @@ final class CurlDumper
     /**
      * Dump a request to a curl command.
      */
-    public function dump(Request $request, string $baseUrl): string
+    public function dump(AbstractRequest $request, string $baseUrl): string
     {
         $parts = ['curl'];
 
@@ -216,7 +216,7 @@ final class CurlDumper
     /**
      * Dump to a multi-line format for readability.
      */
-    public function dumpMultiline(Request $request, string $baseUrl): string
+    public function dumpMultiline(AbstractRequest $request, string $baseUrl): string
     {
         $parts = ['curl'];
 

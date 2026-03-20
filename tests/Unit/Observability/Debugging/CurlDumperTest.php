@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Observability\Debugging\CurlDumper;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Delete;
@@ -15,9 +15,9 @@ use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Methods\Post;
 use Cline\Relay\Support\Attributes\Methods\Put;
 
-function createCurlDumperGetRequest(string $endpoint = '/api/users'): Request
+function createCurlDumperGetRequest(string $endpoint = '/api/users'): AbstractRequest
 {
-    return new #[Get()] class($endpoint) extends Request
+    return new #[Get()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,
@@ -30,9 +30,9 @@ function createCurlDumperGetRequest(string $endpoint = '/api/users'): Request
     };
 }
 
-function createCurlDumperPostRequest(string $endpoint = '/api/users'): Request
+function createCurlDumperPostRequest(string $endpoint = '/api/users'): AbstractRequest
 {
-    return new #[Post()] #[Json()] class($endpoint) extends Request
+    return new #[Post()] #[Json()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,
@@ -50,9 +50,9 @@ function createCurlDumperPostRequest(string $endpoint = '/api/users'): Request
     };
 }
 
-function createCurlDumperPutRequest(): Request
+function createCurlDumperPutRequest(): AbstractRequest
 {
-    return new #[Put()] #[Json()] class() extends Request
+    return new #[Put()] #[Json()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {
@@ -66,9 +66,9 @@ function createCurlDumperPutRequest(): Request
     };
 }
 
-function createCurlDumperDeleteRequest(): Request
+function createCurlDumperDeleteRequest(): AbstractRequest
 {
-    return new #[Delete()] class() extends Request
+    return new #[Delete()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {
@@ -77,9 +77,9 @@ function createCurlDumperDeleteRequest(): Request
     };
 }
 
-function createCurlDumperRequestWithQuery(): Request
+function createCurlDumperRequestWithQuery(): AbstractRequest
 {
-    return new #[Get()] class() extends Request
+    return new #[Get()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {
@@ -93,9 +93,9 @@ function createCurlDumperRequestWithQuery(): Request
     };
 }
 
-function createCurlDumperRequestWithHeaders(): Request
+function createCurlDumperRequestWithHeaders(): AbstractRequest
 {
-    return new #[Get()] class() extends Request
+    return new #[Get()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {
@@ -112,9 +112,9 @@ function createCurlDumperRequestWithHeaders(): Request
     };
 }
 
-function createCurlDumperRequestWithContentTypeHeader(): Request
+function createCurlDumperRequestWithContentTypeHeader(): AbstractRequest
 {
-    return new #[Post()] #[Json()] class() extends Request
+    return new #[Post()] #[Json()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {
@@ -447,7 +447,7 @@ describe('CurlDumper', function (): void {
         });
 
         it('handles special characters in body', function (): void {
-            $request = new #[Post()] #[Json()] class() extends Request
+            $request = new #[Post()] #[Json()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -469,7 +469,7 @@ describe('CurlDumper', function (): void {
         });
 
         it('handles special characters in URL', function (): void {
-            $request = new #[Get()] class() extends Request
+            $request = new #[Get()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {

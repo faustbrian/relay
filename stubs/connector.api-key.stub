@@ -2,14 +2,14 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Features\Auth\HeaderAuth;
 
 /**
  * {{ connectorName }} API connector with API key authentication.
  */
-final class {{ class }} extends Connector
+final class {{ class }} extends AbstractConnector
 {
     public function __construct(
         private readonly string $baseUrl = 'https://api.example.com',

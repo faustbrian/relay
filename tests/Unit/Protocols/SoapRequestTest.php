@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Protocols\SoapRequest;
+use Cline\Relay\Protocols\AbstractSoapRequest;
 use Tests\Fixtures\Protocols\GetStockQuoteRequest;
 use Tests\Fixtures\Protocols\GetWeatherRequest;
 use Tests\Fixtures\Protocols\NestedParamsRequest;
@@ -30,7 +30,7 @@ describe('SoapRequest', function (): void {
 
     describe('headers', function (): void {
         it('includes SOAPAction header for SOAP 1.1', function (): void {
-            $request = new class() extends SoapRequest
+            $request = new class() extends AbstractSoapRequest
             {
                 protected string $soapVersion = '1.1';
 
@@ -129,7 +129,7 @@ describe('SoapRequest', function (): void {
 
     describe('HTML escaping', function (): void {
         it('escapes special characters in values', function (): void {
-            $request = new class() extends SoapRequest
+            $request = new class() extends AbstractSoapRequest
             {
                 public function wsdl(): ?string
                 {
@@ -163,7 +163,7 @@ describe('SoapRequest', function (): void {
 
     describe('soapOptions customization', function (): void {
         it('allows custom SOAP options', function (): void {
-            $request = new class() extends SoapRequest
+            $request = new class() extends AbstractSoapRequest
             {
                 public function wsdl(): ?string
                 {
@@ -214,7 +214,7 @@ describe('SoapRequest', function (): void {
 
     describe('default soapParams', function (): void {
         it('returns empty array by default', function (): void {
-            $request = new class() extends SoapRequest
+            $request = new class() extends AbstractSoapRequest
             {
                 public function wsdl(): ?string
                 {

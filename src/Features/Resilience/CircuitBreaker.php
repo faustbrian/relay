@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Features\Resilience;
 
-use Cline\Relay\Support\Contracts\CircuitBreakerStore;
+use Cline\Relay\Support\Contracts\CircuitBreakerStoreInterface;
 use Cline\Relay\Support\Exceptions\CircuitOpenException;
 use Closure;
 use Illuminate\Support\Facades\Date;
@@ -26,7 +26,7 @@ use function max;
 final readonly class CircuitBreaker
 {
     public function __construct(
-        private CircuitBreakerStore $store,
+        private CircuitBreakerStoreInterface $store,
         private CircuitBreakerConfig $config,
         private string $key,
     ) {}

@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability\Debugging;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 
 use const JSON_PRETTY_PRINT;
@@ -83,7 +83,7 @@ final class Debugger
     /**
      * Format a request for debugging.
      */
-    public function formatRequest(Request $request, string $baseUrl): string
+    public function formatRequest(AbstractRequest $request, string $baseUrl): string
     {
         $output = [];
         $output[] = '┌─ Request ─────────────────────────────────────';

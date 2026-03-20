@@ -8,12 +8,12 @@
  */
 
 use Carbon\CarbonImmutable;
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\Auth\AccessTokenAuthenticator;
-use Cline\Relay\Features\OAuth2\AuthorizationCodeGrant;
-use Cline\Relay\Features\OAuth2\ClientCredentialsGrant;
+use Cline\Relay\Features\OAuth2\AuthorizationCodeGrantTrait;
+use Cline\Relay\Features\OAuth2\ClientCredentialsGrantTrait;
 use Cline\Relay\Features\OAuth2\GetAccessTokenRequest;
 use Cline\Relay\Features\OAuth2\GetClientCredentialsTokenRequest;
 use Cline\Relay\Features\OAuth2\GetRefreshTokenRequest;
@@ -118,11 +118,11 @@ describe('OAuth2', function (): void {
             $modified = false;
 
             $config = OAuthConfig::make()
-                ->setRequestModifier(function (Request $request) use (&$modified): void {
+                ->setRequestModifier(function (AbstractRequest $request) use (&$modified): void {
                     $modified = true;
                 });
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -247,7 +247,7 @@ describe('OAuth2', function (): void {
         it('authenticates request with bearer token', function (): void {
             $auth = new AccessTokenAuthenticator('my-access-token');
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -357,9 +357,9 @@ describe('OAuth2', function (): void {
 
     describe('AuthorizationCodeGrant', function (): void {
         it('generates authorization URL with required parameters', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -392,9 +392,9 @@ describe('OAuth2', function (): void {
         });
 
         it('includes scopes in authorization URL', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -423,9 +423,9 @@ describe('OAuth2', function (): void {
         });
 
         it('uses custom state when provided', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -455,9 +455,9 @@ describe('OAuth2', function (): void {
         });
 
         it('includes PKCE parameters when enabled', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -489,9 +489,9 @@ describe('OAuth2', function (): void {
         });
 
         it('throws on state mismatch', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -518,9 +518,9 @@ describe('OAuth2', function (): void {
         })->throws(InvalidStateException::class);
 
         it('throws when refreshing non-refreshable authenticator', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -549,9 +549,9 @@ describe('OAuth2', function (): void {
         })->throws(InvalidArgumentException::class, 'does not contain a refresh token');
 
         it('includes additional query parameters in authorization URL', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -583,9 +583,9 @@ describe('OAuth2', function (): void {
         });
 
         it('merges default scopes with provided scopes', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -615,9 +615,9 @@ describe('OAuth2', function (): void {
         });
 
         it('uses custom scope separator', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -646,9 +646,9 @@ describe('OAuth2', function (): void {
         });
 
         it('stores generated state for later retrieval', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -682,9 +682,9 @@ describe('OAuth2', function (): void {
         });
 
         it('stores code verifier when PKCE is enabled', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -719,9 +719,9 @@ describe('OAuth2', function (): void {
         });
 
         it('handles authorize endpoint with existing query parameters', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -756,9 +756,9 @@ describe('OAuth2', function (): void {
     describe('ClientCredentialsGrant', function (): void {
         it('validates config without redirect URI', function (): void {
             // Client credentials flow doesn't require redirect URI
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use ClientCredentialsGrant;
+                use ClientCredentialsGrantTrait;
 
                 private OAuthConfig $config;
 
@@ -787,9 +787,9 @@ describe('OAuth2', function (): void {
         });
 
         it('gets access token with client credentials', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use ClientCredentialsGrant;
+                use ClientCredentialsGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -825,9 +825,9 @@ describe('OAuth2', function (): void {
         });
 
         it('includes scopes in request', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use ClientCredentialsGrant;
+                use ClientCredentialsGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -862,9 +862,9 @@ describe('OAuth2', function (): void {
         });
 
         it('returns response when returnResponse is true', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use ClientCredentialsGrant;
+                use ClientCredentialsGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -897,9 +897,9 @@ describe('OAuth2', function (): void {
         });
 
         it('uses custom scope separator', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use ClientCredentialsGrant;
+                use ClientCredentialsGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -936,9 +936,9 @@ describe('OAuth2', function (): void {
         it('applies request modifier', function (): void {
             $modifierCalled = false;
 
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use ClientCredentialsGrant;
+                use ClientCredentialsGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -974,9 +974,9 @@ describe('OAuth2', function (): void {
         });
 
         it('handles token without expires_in', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use ClientCredentialsGrant;
+                use ClientCredentialsGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1012,9 +1012,9 @@ describe('OAuth2', function (): void {
 
     describe('AuthorizationCodeGrant with MockableTrait', function (): void {
         it('exchanges authorization code for access token', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1052,9 +1052,9 @@ describe('OAuth2', function (): void {
         });
 
         it('returns response when returnResponse is true', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1089,9 +1089,9 @@ describe('OAuth2', function (): void {
         });
 
         it('refreshes access token', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1128,9 +1128,9 @@ describe('OAuth2', function (): void {
         });
 
         it('refreshes using OAuthAuthenticator', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1172,9 +1172,9 @@ describe('OAuth2', function (): void {
             $receivedNew = null;
             $receivedOld = null;
 
-            $connector = new class($callbackInvoked, $receivedNew, $receivedOld) extends Connector
+            $connector = new class($callbackInvoked, $receivedNew, $receivedOld) extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1220,9 +1220,9 @@ describe('OAuth2', function (): void {
         });
 
         it('gets authenticated user', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1260,9 +1260,9 @@ describe('OAuth2', function (): void {
         });
 
         it('includes code verifier in token request when PKCE is enabled', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1304,9 +1304,9 @@ describe('OAuth2', function (): void {
         });
 
         it('allows providing custom code verifier in token request', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1345,9 +1345,9 @@ describe('OAuth2', function (): void {
         test('invokes request modifier callback in getAccessToken', function (): void {
             $modifierCalled = false;
 
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1384,9 +1384,9 @@ describe('OAuth2', function (): void {
         });
 
         test('returns response when returnResponse is true in refreshAccessToken', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1425,9 +1425,9 @@ describe('OAuth2', function (): void {
         test('invokes request modifier callback in refreshAccessToken', function (): void {
             $modifierCalled = false;
 
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;
@@ -1466,9 +1466,9 @@ describe('OAuth2', function (): void {
         test('invokes request modifier callback in getUser', function (): void {
             $modifierCalled = false;
 
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
-                use AuthorizationCodeGrant;
+                use AuthorizationCodeGrantTrait;
                 use MockableTrait;
 
                 private OAuthConfig $config;

@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Features\Resilience;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Resilience\Retry;
-use Cline\Relay\Support\Contracts\RetryDecider;
-use Cline\Relay\Support\Contracts\RetryPolicy;
+use Cline\Relay\Support\Contracts\RetryDeciderInterface;
+use Cline\Relay\Support\Contracts\RetryPolicyInterface;
 use Closure;
 use Illuminate\Support\Sleep;
 use ReflectionClass;
@@ -42,7 +42,7 @@ final readonly class RetryHandler
     /**
      * Get retry config for a request.
      */
-    public function getConfig(Request $request): ?RetryConfig
+    public function getConfig(AbstractRequest $request): ?RetryConfig
     {
         $attribute = $this->getRetryAttribute($request);
 
@@ -50,7 +50,7 @@ final readonly class RetryHandler
         if ($attribute?->policy !== null) {
             $policy = $this->resolvePolicy($attribute->policy);
 
-            if ($policy instanceof RetryPolicy) {
+            if ($policy instanceof RetryPolicyInterface) {
                 return new RetryConfig(
                     times: $policy->times(),
                     delay: $policy->delay(),
@@ -77,7 +77,7 @@ final readonly class RetryHandler
     /**
      * Check if we should retry based on a response.
      */
-    public function shouldRetryResponse(Request $request, Response $response, int $attempt): bool
+    public function shouldRetryResponse(AbstractRequest $request, Response $response, int $attempt): bool
     {
         $attribute = $this->getRetryAttribute($request);
 
@@ -85,7 +85,7 @@ final readonly class RetryHandler
         if ($attribute?->policy !== null) {
             $policy = $this->resolvePolicy($attribute->policy);
 
-            if ($policy instanceof RetryPolicy) {
+            if ($policy instanceof RetryPolicyInterface) {
                 if ($attempt >= $policy->times()) {
                     return false;
                 }
@@ -104,7 +104,7 @@ final readonly class RetryHandler
             return false;
         }
 
-        // Custom callback - either method name or RetryDecider class
+        // Custom callback - either method name or RetryDeciderInterface class
         if ($attribute?->callback !== null && $this->canResolveCallback($request, $attribute->callback)) {
             return $this->resolveCallback($request, $attribute->callback, $response, $attempt);
         }
@@ -126,7 +126,7 @@ final readonly class RetryHandler
     /**
      * Check if we should retry based on an exception.
      */
-    public function shouldRetryException(Request $request, Throwable $exception, int $attempt): bool
+    public function shouldRetryException(AbstractRequest $request, Throwable $exception, int $attempt): bool
     {
         $attribute = $this->getRetryAttribute($request);
 
@@ -134,7 +134,7 @@ final readonly class RetryHandler
         if ($attribute?->policy !== null) {
             $policy = $this->resolvePolicy($attribute->policy);
 
-            if ($policy instanceof RetryPolicy) {
+            if ($policy instanceof RetryPolicyInterface) {
                 if ($attempt >= $policy->times()) {
                     return false;
                 }
@@ -165,7 +165,7 @@ final readonly class RetryHandler
     /**
      * Calculate delay for a retry attempt in milliseconds.
      */
-    public function calculateDelay(Request $request, int $attempt): int
+    public function calculateDelay(AbstractRequest $request, int $attempt): int
     {
         $attribute = $this->getRetryAttribute($request);
 
@@ -173,7 +173,7 @@ final readonly class RetryHandler
         if ($attribute?->policy !== null) {
             $policy = $this->resolvePolicy($attribute->policy);
 
-            if ($policy instanceof RetryPolicy) {
+            if ($policy instanceof RetryPolicyInterface) {
                 $delay = (int) ($policy->delay() * $policy->multiplier() ** ($attempt - 1));
 
                 return min($delay, $policy->maxDelay());
@@ -194,7 +194,7 @@ final readonly class RetryHandler
     /**
      * Sleep for the calculated delay.
      */
-    public function sleep(Request $request, int $attempt): void
+    public function sleep(AbstractRequest $request, int $attempt): void
     {
         $delay = $this->calculateDelay($request, $attempt);
 
@@ -208,7 +208,7 @@ final readonly class RetryHandler
     /**
      * Get the Retry attribute from a request.
      */
-    private function getRetryAttribute(Request $request): ?Retry
+    private function getRetryAttribute(AbstractRequest $request): ?Retry
     {
         $reflection = new ReflectionClass($request);
         $attributes = $reflection->getAttributes(Retry::class);
@@ -221,11 +221,11 @@ final readonly class RetryHandler
     }
 
     /**
-     * Resolve a RetryPolicy class to an instance.
+     * Resolve a RetryPolicyInterface class to an instance.
      *
-     * @param class-string<RetryPolicy> $policyClass
+     * @param class-string<RetryPolicyInterface> $policyClass
      */
-    private function resolvePolicy(string $policyClass): ?RetryPolicy
+    private function resolvePolicy(string $policyClass): ?RetryPolicyInterface
     {
         if (!class_exists($policyClass)) {
             return null;
@@ -237,9 +237,9 @@ final readonly class RetryHandler
     /**
      * Check if a callback can be resolved.
      */
-    private function canResolveCallback(Request $request, string $callback): bool
+    private function canResolveCallback(AbstractRequest $request, string $callback): bool
     {
-        return (class_exists($callback) && is_a($callback, RetryDecider::class, true))
+        return (class_exists($callback) && is_a($callback, RetryDeciderInterface::class, true))
             || method_exists($request, $callback);
     }
 
@@ -248,12 +248,12 @@ final readonly class RetryHandler
      *
      * The callback can be:
      * - A method name on the request class
-     * - A class-string of a RetryDecider implementation
+     * - A class-string of a RetryDeciderInterface implementation
      */
-    private function resolveCallback(Request $request, string $callback, Response $response, int $attempt): bool
+    private function resolveCallback(AbstractRequest $request, string $callback, Response $response, int $attempt): bool
     {
-        // Check if it's a RetryDecider class
-        if (class_exists($callback) && is_a($callback, RetryDecider::class, true)) {
+        // Check if it's a RetryDeciderInterface class
+        if (class_exists($callback) && is_a($callback, RetryDeciderInterface::class, true)) {
             $decider = new $callback();
 
             return $decider($request, $response, $attempt);

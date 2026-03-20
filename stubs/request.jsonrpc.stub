@@ -2,14 +2,14 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Protocols\JsonRpcRequest;
+use Cline\Relay\Protocols\AbstractJsonRpcRequest;
 use Override;
 
 /**
  * {{ class }} JSON-RPC request.
  */
 {{ attributes }}
-final class {{ class }} extends JsonRpcRequest
+final class {{ class }} extends AbstractJsonRpcRequest
 {
     public function __construct(
         private readonly array $data = [],

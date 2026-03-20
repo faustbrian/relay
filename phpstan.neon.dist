@@ -10,6 +10,6 @@ parameters:
     ignoreErrors:
         # OAuth2 traits are designed to be used by user-defined connectors
         - identifier: trait.unused
-          path: src/Features/OAuth2/AuthorizationCodeGrant.php
+          path: src/Features/OAuth2/AuthorizationCodeGrantTrait.php
         - identifier: trait.unused
-          path: src/Features/OAuth2/ClientCredentialsGrant.php
+          path: src/Features/OAuth2/ClientCredentialsGrantTrait.php

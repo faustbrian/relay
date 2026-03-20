@@ -9,13 +9,13 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\JsonRpcRequest;
+use Cline\Relay\Protocols\AbstractJsonRpcRequest;
 use Override;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class GetUsersJsonRpcRequest extends JsonRpcRequest
+final class GetUsersJsonRpcRequest extends AbstractJsonRpcRequest
 {
     #[Override()]
     public function params(): array

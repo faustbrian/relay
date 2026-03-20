@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 
 /**
  * API key authentication.
@@ -21,7 +21,7 @@ use Cline\Relay\Support\Contracts\Authenticator;
  *
  * @psalm-immutable
  */
-final readonly class ApiKeyAuth implements Authenticator
+final readonly class ApiKeyAuth implements AuthenticatorInterface
 {
     public const string IN_HEADER = 'header';
 
@@ -54,7 +54,7 @@ final readonly class ApiKeyAuth implements Authenticator
         return new self($key, $paramName, self::IN_QUERY);
     }
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return match ($this->in) {
             self::IN_QUERY => $request->withQuery($this->name, $this->key),

@@ -9,13 +9,13 @@
 
 namespace Tests\Fixtures\Protocols;
 
-use Cline\Relay\Protocols\SoapRequest;
+use Cline\Relay\Protocols\AbstractSoapRequest;
 use Override;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class GetWeatherRequest extends SoapRequest
+final class GetWeatherRequest extends AbstractSoapRequest
 {
     public function __construct(
         private readonly string $city,

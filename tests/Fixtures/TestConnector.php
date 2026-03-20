@@ -9,13 +9,13 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Override;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class TestConnector extends Connector
+final class TestConnector extends AbstractConnector
 {
     public function __construct(
         private readonly string $baseUrl = 'https://api.example.com',

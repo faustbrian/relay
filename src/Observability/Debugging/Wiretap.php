@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability\Debugging;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Closure;
 use Psr\Http\Message\RequestInterface;
@@ -22,7 +22,7 @@ use Psr\Http\Message\ResponseInterface;
  * use Cline\Relay\Observability\Debugging\Wiretap;
  *
  * // Tap into all requests
- * Wiretap::requests(function (Request $request, RequestInterface $psrRequest) {
+ * Wiretap::requests(function (AbstractRequest $request, RequestInterface $psrRequest) {
  *     ray($psrRequest);
  * });
  *
@@ -46,7 +46,7 @@ final class Wiretap
 
     private static bool $tapResponses = false;
 
-    /** @var null|Closure(Request, RequestInterface): void */
+    /** @var null|Closure(AbstractRequest, RequestInterface): void */
     private static ?Closure $requestHandler = null;
 
     /** @var null|Closure(Response, ResponseInterface): void */
@@ -75,7 +75,7 @@ final class Wiretap
     /**
      * Tap into all outgoing requests.
      *
-     * @param null|Closure(Request, RequestInterface): void $handler Custom handler
+     * @param null|Closure(AbstractRequest, RequestInterface): void $handler Custom handler
      */
     public static function requests(?Closure $handler = null): void
     {
@@ -115,7 +115,7 @@ final class Wiretap
      *
      * @internal Called by Connector
      */
-    public static function tapRequest(Request $request, RequestInterface $psrRequest): void
+    public static function tapRequest(AbstractRequest $request, RequestInterface $psrRequest): void
     {
         if (!self::$tapRequests) {
             return;

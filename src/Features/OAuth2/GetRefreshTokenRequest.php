@@ -9,17 +9,17 @@
 
 namespace Cline\Relay\Features\OAuth2;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Form;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
 /**
- * Request to refresh an access token.
+ * AbstractRequest to refresh an access token.
  *
  * @author Brian Faust <brian@cline.sh>
  */
 #[Post(), Form()]
-final class GetRefreshTokenRequest extends Request
+final class GetRefreshTokenRequest extends AbstractRequest
 {
     public function __construct(
         private readonly OAuthConfig $config,

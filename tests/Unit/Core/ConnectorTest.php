@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\RateLimiting\MemoryStore;
 use Cline\Relay\Support\Attributes\ThrowOnError;
@@ -22,7 +22,7 @@ use Tests\Fixtures\CustomFailureConnector;
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class TestConnector extends Connector
+final class TestConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -33,7 +33,7 @@ final class TestConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomTimeoutConnector extends Connector
+final class CustomTimeoutConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -56,7 +56,7 @@ final class CustomTimeoutConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomHeadersConnector extends Connector
+final class CustomHeadersConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -76,7 +76,7 @@ final class CustomHeadersConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class DynamicBaseUrlConnector extends Connector
+final class DynamicBaseUrlConnector extends AbstractConnector
 {
     public function __construct(
         private readonly string $environment = 'production',
@@ -101,7 +101,7 @@ final class DynamicBaseUrlConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class AuthenticatedConnector extends Connector
+final class AuthenticatedConnector extends AbstractConnector
 {
     private ?string $lastAuthHeader = null;
 
@@ -115,7 +115,7 @@ final class AuthenticatedConnector extends Connector
     }
 
     #[Override()]
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         $this->lastAuthHeader = 'Bearer '.$this->token;
 
@@ -131,7 +131,7 @@ final class AuthenticatedConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomConfigConnector extends Connector
+final class CustomConfigConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -151,7 +151,7 @@ final class CustomConfigConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomCacheableMethodsConnector extends Connector
+final class CustomCacheableMethodsConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -168,7 +168,7 @@ final class CustomCacheableMethodsConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomCacheKeyPrefixConnector extends Connector
+final class CustomCacheKeyPrefixConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -185,7 +185,7 @@ final class CustomCacheKeyPrefixConnector extends Connector
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomCacheTtlConnector extends Connector
+final class CustomCacheTtlConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {
@@ -338,7 +338,7 @@ describe('Connector', function (): void {
         it('authenticate method can be overridden to implement custom authentication', function (): void {
             // Arrange
             $connector = new AuthenticatedConnector('test-token-123');
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -374,7 +374,7 @@ describe('Connector', function (): void {
             // Arrange
             $connector = new TestConnector();
             $requests = [
-                new class() extends Request
+                new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -386,7 +386,7 @@ describe('Connector', function (): void {
                         return 'GET';
                     }
                 },
-                new class() extends Request
+                new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -640,7 +640,7 @@ describe('Connector', function (): void {
             // Arrange
             $connector = new TestConnector();
             $requests = [
-                'users' => new class() extends Request
+                'users' => new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -652,7 +652,7 @@ describe('Connector', function (): void {
                         return 'GET';
                     }
                 },
-                'posts' => new class() extends Request
+                'posts' => new class() extends AbstractRequest
                 {
                     public function endpoint(): string
                     {
@@ -702,7 +702,7 @@ describe('Connector', function (): void {
         it('authenticate does nothing when not overridden', function (): void {
             // Arrange
             $connector = new TestConnector();
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -725,7 +725,7 @@ describe('Connector', function (): void {
 
         it('resolveBaseUrl with trailing slash returns same as baseUrl', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -742,14 +742,14 @@ describe('Connector', function (): void {
 
         it('baseUrl with different protocols works correctly', function (): void {
             // Arrange
-            $httpConnector = new class() extends Connector
+            $httpConnector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
                     return 'http://api.example.com';
                 }
             };
-            $httpsConnector = new class() extends Connector
+            $httpsConnector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -764,7 +764,7 @@ describe('Connector', function (): void {
 
         it('baseUrl with port number works correctly', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -781,7 +781,7 @@ describe('Connector', function (): void {
 
         it('baseUrl with path works correctly', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -905,7 +905,7 @@ describe('Connector', function (): void {
                 }
             };
 
-            $connector = new class($cacheStore) extends Connector
+            $connector = new class($cacheStore) extends AbstractConnector
             {
                 public function __construct(
                     private readonly CacheInterface $cacheStore,
@@ -942,7 +942,7 @@ describe('Connector', function (): void {
 
         it('buildBody encodes form-urlencoded content type correctly', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -950,13 +950,13 @@ describe('Connector', function (): void {
                 }
 
                 // Expose buildBody for testing
-                public function testBuildBody(Request $request): ?string
+                public function testBuildBody(AbstractRequest $request): ?string
                 {
                     return $this->buildBody($request);
                 }
             };
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -991,7 +991,7 @@ describe('Connector', function (): void {
 
         it('buildBody encodes JSON content type correctly', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -999,13 +999,13 @@ describe('Connector', function (): void {
                 }
 
                 // Expose buildBody for testing
-                public function testBuildBody(Request $request): ?string
+                public function testBuildBody(AbstractRequest $request): ?string
                 {
                     return $this->buildBody($request);
                 }
             };
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -1040,7 +1040,7 @@ describe('Connector', function (): void {
 
         it('getHttpClient initializes GuzzleDriver when not set', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {

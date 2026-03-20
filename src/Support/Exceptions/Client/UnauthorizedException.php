@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Client;
 
-use Cline\Relay\Support\Exceptions\ClientException;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
 
 /**
  * Exception for 401 Unauthorized responses.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class UnauthorizedException extends ClientException {}
+final class UnauthorizedException extends AbstractClientException {}

@@ -7,21 +7,21 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Methods\Post;
-use Cline\Relay\Support\Exceptions\RequestException;
+use Cline\Relay\Support\Exceptions\AbstractRequestException;
 use Cline\Relay\Transport\Pool\Pool;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response as Psr7Response;
 
-function createTestConnectorForPool(): Connector
+function createTestConnectorForPool(): AbstractConnector
 {
-    return new class() extends Connector
+    return new class() extends AbstractConnector
     {
         public function baseUrl(): string
         {
@@ -38,9 +38,9 @@ function createTestConnectorForPool(): Connector
     };
 }
 
-function createTestRequest(string $endpoint = '/test', string $method = 'GET'): Request
+function createTestRequest(string $endpoint = '/test', string $method = 'GET'): AbstractRequest
 {
-    return new class($endpoint, $method) extends Request
+    return new class($endpoint, $method) extends AbstractRequest
     {
         public function __construct(
             private readonly string $endpoint,
@@ -134,7 +134,7 @@ describe('Pool', function (): void {
             // Arrange
             $connector = createTestConnectorForPool();
             $pool = new Pool($connector, []);
-            $callback = fn (Response $response, Request $request, int|string $key): null => null;
+            $callback = fn (Response $response, AbstractRequest $request, int|string $key): null => null;
 
             // Act
             $result = $pool->onResponse($callback);
@@ -148,7 +148,7 @@ describe('Pool', function (): void {
             // Arrange
             $connector = createTestConnectorForPool();
             $pool = new Pool($connector, []);
-            $callback = fn (RequestException $exception, Request $request, int|string $key): null => null;
+            $callback = fn (AbstractRequestException $exception, AbstractRequest $request, int|string $key): null => null;
 
             // Act
             $result = $pool->onError($callback);
@@ -294,7 +294,7 @@ describe('Pool', function (): void {
     describe('Private Method Effects', function (): void {
         test('buildUrl combines base URL and endpoint correctly', function (): void {
             // Arrange - using reflection to test buildUrl indirectly
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -302,7 +302,7 @@ describe('Pool', function (): void {
                 }
             };
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -319,7 +319,7 @@ describe('Pool', function (): void {
 
         test('buildUrl handles trailing slash in base URL', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -327,7 +327,7 @@ describe('Pool', function (): void {
                 }
             };
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -344,7 +344,7 @@ describe('Pool', function (): void {
 
         test('buildUrl handles leading slash in endpoint', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -352,7 +352,7 @@ describe('Pool', function (): void {
                 }
             };
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -371,7 +371,7 @@ describe('Pool', function (): void {
             // Arrange
             $connector = createTestConnectorForPool();
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -396,7 +396,7 @@ describe('Pool', function (): void {
 
         test('mergeHeaders combines connector and request headers', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -412,7 +412,7 @@ describe('Pool', function (): void {
                 }
             };
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -438,7 +438,7 @@ describe('Pool', function (): void {
             // Arrange
             $connector = createTestConnectorForPool();
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Json()]
                 public function endpoint(): string
@@ -456,7 +456,7 @@ describe('Pool', function (): void {
 
         test('mergeHeaders adds Accept header for JSON content type', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -469,7 +469,7 @@ describe('Pool', function (): void {
                 }
             };
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Json()]
                 public function endpoint(): string
@@ -492,7 +492,7 @@ describe('Pool', function (): void {
             ]);
             $handlerStack = HandlerStack::create($mockHandler);
 
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -506,7 +506,7 @@ describe('Pool', function (): void {
                 }
             };
 
-            $request = new #[Post()] class() extends Request
+            $request = new #[Post()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -546,7 +546,7 @@ describe('Pool', function (): void {
             ]);
             $handlerStack = HandlerStack::create($mockHandler);
 
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -560,7 +560,7 @@ describe('Pool', function (): void {
                 }
             };
 
-            $request = new #[Post()] class() extends Request
+            $request = new #[Post()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -598,7 +598,7 @@ describe('Pool', function (): void {
             // Arrange
             $connector = createTestConnectorForPool();
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Get()]
                 public function endpoint(): string
@@ -618,7 +618,7 @@ describe('Pool', function (): void {
             // Arrange
             $connector = createTestConnectorForPool();
 
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Post(), Json()]
                 public function endpoint(): string
@@ -651,7 +651,7 @@ describe('Pool', function (): void {
 
             $connector = createTestConnectorForPool();
 
-            $request = new #[Post()] class() extends Request
+            $request = new #[Post()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -692,7 +692,7 @@ describe('Pool', function (): void {
 
             $connector = createTestConnectorForPool();
 
-            $request = new #[Post()] class() extends Request
+            $request = new #[Post()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -787,7 +787,7 @@ describe('Pool', function (): void {
             $pool = new Pool($connector, []);
 
             // Act
-            $result = $pool->onResponse(function (Response $response, Request $request, int|string $key): void {
+            $result = $pool->onResponse(function (Response $response, AbstractRequest $request, int|string $key): void {
                 // Callback with all parameters
             });
 
@@ -801,8 +801,8 @@ describe('Pool', function (): void {
             $pool = new Pool($connector, []);
 
             // Act
-            $result = $pool->onError(function (RequestException $exception): void {
-                // Callback that expects RequestException
+            $result = $pool->onError(function (AbstractRequestException $exception): void {
+                // Callback that expects AbstractRequestException
             });
 
             // Assert
@@ -815,7 +815,7 @@ describe('Pool', function (): void {
             $pool = new Pool($connector, []);
 
             // Act
-            $result = $pool->onError(function (RequestException $exception, Request $request, int|string $key): void {
+            $result = $pool->onError(function (AbstractRequestException $exception, AbstractRequest $request, int|string $key): void {
                 // Callback with all parameters
             });
 

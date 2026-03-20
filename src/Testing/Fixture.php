@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Testing;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Exceptions\FixtureException;
 use Closure;
@@ -45,7 +45,7 @@ final class Fixture
 {
     private static string $fixturePath = 'tests/Fixtures/Saloon';
 
-    /** @var null|(Closure(Request): Response) */
+    /** @var null|(Closure(AbstractRequest): Response) */
     private static ?Closure $recorder = null;
 
     /**
@@ -70,9 +70,9 @@ final class Fixture
     private array $sensitiveRegexPatterns = [];
 
     /**
-     * Request associated with this fixture (for recording).
+     * AbstractRequest associated with this fixture (for recording).
      */
-    private ?Request $request = null;
+    private ?AbstractRequest $request = null;
 
     /**
      * Create a new Fixture instance.
@@ -84,7 +84,7 @@ final class Fixture
     /**
      * Set the recorder callback for making real requests.
      *
-     * @param Closure(Request): Response $recorder
+     * @param Closure(AbstractRequest): Response $recorder
      */
     public static function setRecorder(Closure $recorder): void
     {
@@ -126,7 +126,7 @@ final class Fixture
     /**
      * Set the request for recording purposes.
      */
-    public function forRequest(Request $request): self
+    public function forRequest(AbstractRequest $request): self
     {
         $this->request = $request;
 
@@ -313,7 +313,7 @@ final class Fixture
      */
     private function record(): Response
     {
-        if (!self::$recorder instanceof Closure || !$this->request instanceof Request) {
+        if (!self::$recorder instanceof Closure || !$this->request instanceof AbstractRequest) {
             throw FixtureException::recordingDisabled($this->name);
         }
 

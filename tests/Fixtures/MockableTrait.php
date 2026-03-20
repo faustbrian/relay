@@ -9,7 +9,7 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Exceptions\MockConnectorException;
 use Closure;
@@ -33,10 +33,10 @@ trait MockableTrait
     /** @var array<Closure|Response> */
     private array $responses = [];
 
-    /** @var array<Request> */
+    /** @var array<AbstractRequest> */
     private array $sentRequests = [];
 
-    /** @var array<array{request: Request, response: Response}> */
+    /** @var array<array{request: AbstractRequest, response: Response}> */
     private array $history = [];
 
     private bool $sequentialMode = true;
@@ -44,7 +44,7 @@ trait MockableTrait
     /**
      * Add a response to be returned.
      *
-     * @param Closure(Request): Response|Response $response
+     * @param Closure(AbstractRequest): Response|Response $response
      */
     public function addResponse(Response|Closure $response): static
     {
@@ -82,7 +82,7 @@ trait MockableTrait
      * Send a request and return the next mock response.
      */
     #[Override()]
-    public function send(Request $request): Response
+    public function send(AbstractRequest $request): Response
     {
         $this->sentRequests[] = $request;
 
@@ -107,7 +107,7 @@ trait MockableTrait
     /**
      * Get all sent requests.
      *
-     * @return array<Request>
+     * @return array<AbstractRequest>
      */
     public function sentRequests(): array
     {
@@ -117,7 +117,7 @@ trait MockableTrait
     /**
      * Get the last sent request.
      */
-    public function lastRequest(): ?Request
+    public function lastRequest(): ?AbstractRequest
     {
         return $this->sentRequests !== [] ? end($this->sentRequests) : null;
     }
@@ -125,7 +125,7 @@ trait MockableTrait
     /**
      * Get the request/response history.
      *
-     * @return array<array{request: Request, response: Response}>
+     * @return array<array{request: AbstractRequest, response: Response}>
      */
     public function history(): array
     {

@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 
 /**
  * HTTP Digest authentication.
@@ -34,7 +34,7 @@ use Cline\Relay\Support\Contracts\Authenticator;
  *
  * @psalm-immutable
  */
-final readonly class DigestAuth implements Authenticator
+final readonly class DigestAuth implements AuthenticatorInterface
 {
     public function __construct(
         private string $username,
@@ -45,7 +45,7 @@ final readonly class DigestAuth implements Authenticator
      * Digest auth cannot be applied via headers alone.
      * Returns the request unchanged - use toGuzzleAuth() for Guzzle config.
      */
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         // Digest auth must be handled at the HTTP client level
         // This is a no-op - use toGuzzleAuth() in connector's defaultConfig()

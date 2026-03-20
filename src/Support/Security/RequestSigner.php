@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Support\Security;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Contracts\RequestSignerInterface;
 use Illuminate\Support\Facades\Date;
 
@@ -38,7 +38,7 @@ final readonly class RequestSigner implements RequestSignerInterface
     /**
      * Sign a request.
      */
-    public function sign(Request $request): Request
+    public function sign(AbstractRequest $request): AbstractRequest
     {
         $timestamp = $this->includeTimestamp ? (string) Date::now()->getTimestamp() : null;
         $payload = $this->buildPayload($request, $timestamp);
@@ -56,7 +56,7 @@ final readonly class RequestSigner implements RequestSignerInterface
     /**
      * Verify a request signature.
      */
-    public function verify(Request $request, string $signature, ?string $timestamp = null): bool
+    public function verify(AbstractRequest $request, string $signature, ?string $timestamp = null): bool
     {
         $payload = $this->buildPayload($request, $timestamp);
         $expected = $this->computeSignature($payload);
@@ -67,7 +67,7 @@ final readonly class RequestSigner implements RequestSignerInterface
     /**
      * Build the payload to sign.
      */
-    private function buildPayload(Request $request, ?string $timestamp): string
+    private function buildPayload(AbstractRequest $request, ?string $timestamp): string
     {
         $parts = [
             $request->method(),

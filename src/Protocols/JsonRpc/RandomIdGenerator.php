@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
  *
  * @psalm-immutable
  */
-final readonly class RandomIdGenerator implements IdGenerator
+final readonly class RandomIdGenerator implements IdGeneratorInterface
 {
     public function __construct(
         private int $length = 32,

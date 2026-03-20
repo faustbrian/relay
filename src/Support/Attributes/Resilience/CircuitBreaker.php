@@ -10,7 +10,7 @@
 namespace Cline\Relay\Support\Attributes\Resilience;
 
 use Attribute;
-use Cline\Relay\Support\Contracts\CircuitBreakerPolicy;
+use Cline\Relay\Support\Contracts\CircuitBreakerPolicyInterface;
 
 /**
  * Configure circuit breaker for a request.
@@ -23,15 +23,15 @@ use Cline\Relay\Support\Contracts\CircuitBreakerPolicy;
 final readonly class CircuitBreaker
 {
     /**
-     * @param int                                     $failureThreshold  Failures to open circuit
-     * @param int                                     $resetTimeout      Seconds before retry (half-open)
-     * @param int                                     $halfOpenRequests  Allowed requests in half-open state
-     * @param int                                     $failureWindow     Time window for counting failures (seconds)
-     * @param int                                     $successThreshold  Successes needed to close circuit
-     * @param null|float                              $failurePercentage Open when this % of requests fail
-     * @param null|int                                $minimumRequests   Min requests before evaluating percentage
-     * @param null|string                             $key               Custom circuit key
-     * @param null|class-string<CircuitBreakerPolicy> $policy            Policy class that encapsulates all circuit breaker configuration
+     * @param int                                              $failureThreshold  Failures to open circuit
+     * @param int                                              $resetTimeout      Seconds before retry (half-open)
+     * @param int                                              $halfOpenRequests  Allowed requests in half-open state
+     * @param int                                              $failureWindow     Time window for counting failures (seconds)
+     * @param int                                              $successThreshold  Successes needed to close circuit
+     * @param null|float                                       $failurePercentage Open when this % of requests fail
+     * @param null|int                                         $minimumRequests   Min requests before evaluating percentage
+     * @param null|string                                      $key               Custom circuit key
+     * @param null|class-string<CircuitBreakerPolicyInterface> $policy            Policy class that encapsulates all circuit breaker configuration
      */
     public function __construct(
         public int $failureThreshold = 5,

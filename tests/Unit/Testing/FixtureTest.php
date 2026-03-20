@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Exceptions\FixtureException;
@@ -34,9 +34,9 @@ afterEach(function (): void {
     unlink($testFixturePath);
 });
 
-function createFixtureRequest(string $endpoint = '/users'): Request
+function createFixtureRequest(string $endpoint = '/users'): AbstractRequest
 {
-    return new #[Get()] class($endpoint) extends Request
+    return new #[Get()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $ep,
@@ -502,7 +502,7 @@ describe('Fixture Recording', function (): void {
     });
 
     it('sets and clears recorder callback', function (): void {
-        $recorder = fn (Request $req): Response => new Response(
+        $recorder = fn (AbstractRequest $req): Response => new Response(
             new Psr7Response(200, [], '{"recorded": true}'),
             $req,
         );
@@ -531,7 +531,7 @@ describe('Fixture Recording', function (): void {
         MockConfig::throwOnMissingFixtures(false);
 
         // Set up recorder that returns mock response
-        Fixture::setRecorder(fn (Request $req): Response => new Response(
+        Fixture::setRecorder(fn (AbstractRequest $req): Response => new Response(
             new Psr7Response(200, ['X-Test' => 'header'], json_encode(['recorded' => true, 'endpoint' => $req->endpoint()])),
             $req,
         ));
@@ -570,7 +570,7 @@ describe('Fixture Recording', function (): void {
     it('throws when recording without request set', function (): void {
         MockConfig::throwOnMissingFixtures(false);
 
-        Fixture::setRecorder(fn (Request $req): Response => new Response(
+        Fixture::setRecorder(fn (AbstractRequest $req): Response => new Response(
             new Psr7Response(200, [], '{}'),
             $req,
         ));
@@ -585,7 +585,7 @@ describe('Fixture Recording', function (): void {
     it('applies redactions when recording', function (): void {
         MockConfig::throwOnMissingFixtures(false);
 
-        Fixture::setRecorder(fn (Request $req): Response => new Response(
+        Fixture::setRecorder(fn (AbstractRequest $req): Response => new Response(
             new Psr7Response(200, ['Authorization' => 'Bearer secret-token'], json_encode(['password' => 'super-secret'])),
             $req,
         ));

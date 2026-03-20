@@ -10,7 +10,7 @@
 namespace Cline\Relay\Support\Attributes\Protocols;
 
 use Attribute;
-use Cline\Relay\Support\Contracts\Protocol;
+use Cline\Relay\Support\Contracts\ProtocolInterface;
 
 /**
  * Mark a request as using SOAP protocol.
@@ -20,7 +20,7 @@ use Cline\Relay\Support\Contracts\Protocol;
  * @psalm-immutable
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class Soap implements Protocol
+final readonly class Soap implements ProtocolInterface
 {
     public function __construct(
         public string $version = '1.1',

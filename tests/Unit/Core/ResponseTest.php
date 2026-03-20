@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Features\RateLimiting\RateLimitInfo;
 use Cline\Relay\Support\Attributes\Methods\Get;
@@ -628,7 +628,7 @@ describe('Response', function (): void {
         });
 
         it('returns DTO when request implements createDtoFromResponse', function (): void {
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Get()]
                 public function endpoint(): string
@@ -655,7 +655,7 @@ describe('Response', function (): void {
 
     describe('dtoOrFail()', function (): void {
         it('throws when response failed', function (): void {
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Get()]
                 public function endpoint(): string
@@ -679,7 +679,7 @@ describe('Response', function (): void {
         });
 
         it('throws when request does not implement createDtoFromResponse', function (): void {
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Get()]
                 public function endpoint(): string
@@ -697,7 +697,7 @@ describe('Response', function (): void {
         });
 
         it('returns DTO when successful', function (): void {
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 #[Get()]
                 public function endpoint(): string

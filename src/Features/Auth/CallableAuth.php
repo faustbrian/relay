@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Auth;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\Authenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\AuthenticatorInterface;
 use Closure;
 
 /**
@@ -20,16 +20,16 @@ use Closure;
  *
  * @psalm-immutable
  */
-final readonly class CallableAuth implements Authenticator
+final readonly class CallableAuth implements AuthenticatorInterface
 {
     /**
-     * @param Closure(Request): Request $callback
+     * @param Closure(AbstractRequest): AbstractRequest $callback
      */
     public function __construct(
         private Closure $callback,
     ) {}
 
-    public function authenticate(Request $request): Request
+    public function authenticate(AbstractRequest $request): AbstractRequest
     {
         return ($this->callback)($request);
     }

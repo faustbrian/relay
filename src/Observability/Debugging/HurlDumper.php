@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability\Debugging;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Exceptions\JsonEncodingException;
 use Cline\Relay\Support\Exceptions\ValueFormatException;
 
@@ -66,7 +66,7 @@ final class HurlDumper
     /**
      * Dump a request to Hurl format.
      */
-    public function dump(Request $request, string $baseUrl): string
+    public function dump(AbstractRequest $request, string $baseUrl): string
     {
         $lines = [];
 
@@ -124,7 +124,7 @@ final class HurlDumper
     /**
      * Dump multiple requests to a Hurl file.
      *
-     * @param array<array{request: Request, baseUrl: string}> $requests
+     * @param array<array{request: AbstractRequest, baseUrl: string}> $requests
      */
     public function dumpMultiple(array $requests): string
     {

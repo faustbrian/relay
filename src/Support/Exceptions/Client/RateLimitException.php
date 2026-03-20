@@ -9,9 +9,9 @@
 
 namespace Cline\Relay\Support\Exceptions\Client;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Exceptions\ClientException;
+use Cline\Relay\Support\Exceptions\AbstractClientException;
 use Override;
 
 /**
@@ -21,7 +21,7 @@ use Override;
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class RateLimitException extends ClientException
+final class RateLimitException extends AbstractClientException
 {
     private ?int $retryAfterSeconds = null;
 
@@ -33,7 +33,7 @@ final class RateLimitException extends ClientException
     {
         $exception = new self(
             'Rate limit exceeded',
-            new class() extends Request
+            new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -50,7 +50,7 @@ final class RateLimitException extends ClientException
     }
 
     #[Override()]
-    public static function fromResponse(Request $request, Response $response): static
+    public static function fromResponse(AbstractRequest $request, Response $response): static
     {
         $exception = new self(
             'Rate limit exceeded',

@@ -7,8 +7,8 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Attributes\Methods\Post;
@@ -16,14 +16,15 @@ use Cline\Relay\Transport\Pool\Pool;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response as GuzzleResponse;
 
 /**
  * Create a simple test connector.
  */
-function createPoolTestConnector(): Connector
+function createPoolTestConnector(): AbstractConnector
 {
-    return new class() extends Connector
+    return new class() extends AbstractConnector
     {
         public function baseUrl(): string
         {
@@ -53,9 +54,9 @@ function createPoolTestConnector(): Connector
 /**
  * Simple GET request for testing.
  */
-function createPoolGetRequest(string $endpoint): Request
+function createPoolGetRequest(string $endpoint): AbstractRequest
 {
-    return new #[Get()] class($endpoint) extends Request
+    return new #[Get()] class($endpoint) extends AbstractRequest
     {
         public function __construct(
             private readonly string $endpoint,
@@ -71,9 +72,9 @@ function createPoolGetRequest(string $endpoint): Request
 /**
  * GET request with query parameters.
  */
-function createPoolGetRequestWithQuery(string $endpoint, array $params): Request
+function createPoolGetRequestWithQuery(string $endpoint, array $params): AbstractRequest
 {
-    return new #[Get()] class($endpoint, $params) extends Request
+    return new #[Get()] class($endpoint, $params) extends AbstractRequest
     {
         public function __construct(
             private readonly string $endpoint,
@@ -95,9 +96,9 @@ function createPoolGetRequestWithQuery(string $endpoint, array $params): Request
 /**
  * POST request with JSON body.
  */
-function createPoolPostRequest(string $endpoint, array $data): Request
+function createPoolPostRequest(string $endpoint, array $data): AbstractRequest
 {
-    return new #[Post()] class($endpoint, $data) extends Request
+    return new #[Post()] class($endpoint, $data) extends AbstractRequest
     {
         public function __construct(
             private readonly string $endpoint,
@@ -406,7 +407,7 @@ describe('PoolIntegrationTest', function (): void {
             $authCallCount = new stdClass();
             $authCallCount->value = 0;
 
-            $connector = new class($authCallCount) extends Connector
+            $connector = new class($authCallCount) extends AbstractConnector
             {
                 public function __construct(
                     private readonly stdClass $authCallCount,
@@ -417,7 +418,7 @@ describe('PoolIntegrationTest', function (): void {
                     return 'https://api.example.com';
                 }
 
-                public function authenticate(Request $request): Request
+                public function authenticate(AbstractRequest $request): AbstractRequest
                 {
                     ++$this->authCallCount->value;
 
@@ -453,7 +454,7 @@ describe('PoolIntegrationTest', function (): void {
             $handler = createPoolMockHandler([
                 new RequestException(
                     'Connection failed',
-                    new GuzzleHttp\Psr7\Request('GET', 'https://api.example.com/users'),
+                    new Request('GET', 'https://api.example.com/users'),
                     new GuzzleResponse(500, [], 'Internal Server Error'),
                 ),
             ]);
@@ -474,7 +475,7 @@ describe('PoolIntegrationTest', function (): void {
     describe('Regressions', function (): void {
         test('buildUrl handles both trailing slash in base URL and leading slash in endpoint', function (): void {
             // Arrange
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -502,7 +503,7 @@ describe('PoolIntegrationTest', function (): void {
             $connector = createPoolTestConnector();
             $initCalled = false;
 
-            $request = new #[Get()] class('/users', $initCalled) extends Request
+            $request = new #[Get()] class('/users', $initCalled) extends AbstractRequest
             {
                 public function __construct(
                     private readonly string $endpoint,

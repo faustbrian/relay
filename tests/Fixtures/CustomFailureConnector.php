@@ -9,16 +9,16 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Core\Response;
 use Override;
 
 /**
- * Connector that checks for error key in response body.
+ * AbstractConnector that checks for error key in response body.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class CustomFailureConnector extends Connector
+final class CustomFailureConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {

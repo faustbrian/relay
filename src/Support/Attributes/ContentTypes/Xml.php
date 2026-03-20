@@ -10,7 +10,7 @@
 namespace Cline\Relay\Support\Attributes\ContentTypes;
 
 use Attribute;
-use Cline\Relay\Support\Contracts\ContentType;
+use Cline\Relay\Support\Contracts\ContentTypeInterface;
 
 /**
  * Mark a request as using XML content type (application/xml).
@@ -20,7 +20,7 @@ use Cline\Relay\Support\Contracts\ContentType;
  * @psalm-immutable
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class Xml implements ContentType
+final readonly class Xml implements ContentTypeInterface
 {
     public function contentType(): string
     {

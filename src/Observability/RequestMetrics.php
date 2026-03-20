@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Observability;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 
 use function json_encode;
@@ -42,7 +42,7 @@ final readonly class RequestMetrics
      * Create from request and response.
      */
     public static function fromRequestResponse(
-        Request $request,
+        AbstractRequest $request,
         Response $response,
         int $retryCount = 0,
     ): self {

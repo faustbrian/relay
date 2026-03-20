@@ -7,16 +7,16 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Methods\Get;
 use Cline\Relay\Support\Files\File;
 use Cline\Relay\Support\Files\FileCollection;
 use GuzzleHttp\Psr7\Response as Psr7Response;
 
-function createFileRequest(): Request
+function createFileRequest(): AbstractRequest
 {
-    return new #[Get()] class() extends Request
+    return new #[Get()] class() extends AbstractRequest
     {
         public function endpoint(): string
         {

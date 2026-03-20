@@ -9,12 +9,12 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
-final class PlainConnector extends Connector
+final class PlainConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {

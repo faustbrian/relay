@@ -9,9 +9,9 @@
 
 namespace Tests\Fixtures\Resilience;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\CircuitBreakerPolicy;
+use Cline\Relay\Support\Contracts\CircuitBreakerPolicyInterface;
 use RuntimeException;
 use Throwable;
 
@@ -22,7 +22,7 @@ use Throwable;
  *
  * @psalm-immutable
  */
-final class TestCircuitBreakerPolicy implements CircuitBreakerPolicy
+final class TestCircuitBreakerPolicy implements CircuitBreakerPolicyInterface
 {
     /** @var array<string> */
     public static array $events = [];
@@ -57,7 +57,7 @@ final class TestCircuitBreakerPolicy implements CircuitBreakerPolicy
         return 2;
     }
 
-    public function isFailure(Request $request, Response $response): bool
+    public function isFailure(AbstractRequest $request, Response $response): bool
     {
         // Only 500 and 503 are failures
         if ($response->status() === 500) {
@@ -67,7 +67,7 @@ final class TestCircuitBreakerPolicy implements CircuitBreakerPolicy
         return $response->status() === 503;
     }
 
-    public function isExceptionFailure(Request $request, Throwable $exception): bool
+    public function isExceptionFailure(AbstractRequest $request, Throwable $exception): bool
     {
         return $exception instanceof RuntimeException;
     }

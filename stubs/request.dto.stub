@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Dto;
@@ -14,7 +14,7 @@ use Cline\Relay\Support\Attributes\Methods\Get;
 #[Get(), Json()]
 #[Dto(class: ResourceDto::class)]
 {{ attributes }}
-final class {{ class }} extends Request
+final class {{ class }} extends AbstractRequest
 {
     public function __construct(
         private readonly int $id,

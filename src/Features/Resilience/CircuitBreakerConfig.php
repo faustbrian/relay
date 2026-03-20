@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Features\Resilience;
 
-use Cline\Relay\Support\Contracts\CircuitBreakerPolicy;
+use Cline\Relay\Support\Contracts\CircuitBreakerPolicyInterface;
 use Closure;
 
 /**
@@ -22,19 +22,19 @@ use Closure;
 final readonly class CircuitBreakerConfig
 {
     /**
-     * @param int                       $failureThreshold  Failures to open circuit
-     * @param int                       $resetTimeout      Seconds before retry (half-open)
-     * @param int                       $halfOpenRequests  Allowed requests in half-open state
-     * @param int                       $failureWindow     Time window for counting failures
-     * @param int                       $successThreshold  Successes needed to close circuit
-     * @param null|float                $failurePercentage Open when this % of requests fail
-     * @param null|int                  $minimumRequests   Min requests before evaluating percentage
-     * @param null|string               $key               Circuit key
-     * @param null|Closure              $failureCondition  What counts as failure
-     * @param null|Closure              $onOpen            Callback when circuit opens
-     * @param null|Closure              $onClose           Callback when circuit closes
-     * @param null|Closure              $onHalfOpen        Callback when circuit half-opens
-     * @param null|CircuitBreakerPolicy $policy            Policy instance that encapsulates all configuration
+     * @param int                                $failureThreshold  Failures to open circuit
+     * @param int                                $resetTimeout      Seconds before retry (half-open)
+     * @param int                                $halfOpenRequests  Allowed requests in half-open state
+     * @param int                                $failureWindow     Time window for counting failures
+     * @param int                                $successThreshold  Successes needed to close circuit
+     * @param null|float                         $failurePercentage Open when this % of requests fail
+     * @param null|int                           $minimumRequests   Min requests before evaluating percentage
+     * @param null|string                        $key               Circuit key
+     * @param null|Closure                       $failureCondition  What counts as failure
+     * @param null|Closure                       $onOpen            Callback when circuit opens
+     * @param null|Closure                       $onClose           Callback when circuit closes
+     * @param null|Closure                       $onHalfOpen        Callback when circuit half-opens
+     * @param null|CircuitBreakerPolicyInterface $policy            Policy instance that encapsulates all configuration
      */
     public function __construct(
         public int $failureThreshold = 5,
@@ -49,13 +49,13 @@ final readonly class CircuitBreakerConfig
         public ?Closure $onOpen = null,
         public ?Closure $onClose = null,
         public ?Closure $onHalfOpen = null,
-        public ?CircuitBreakerPolicy $policy = null,
+        public ?CircuitBreakerPolicyInterface $policy = null,
     ) {}
 
     /**
      * Create a config from a policy class.
      */
-    public static function fromPolicy(CircuitBreakerPolicy $policy): self
+    public static function fromPolicy(CircuitBreakerPolicyInterface $policy): self
     {
         return new self(
             failureThreshold: $policy->failureThreshold(),

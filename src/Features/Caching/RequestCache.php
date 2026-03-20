@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\Caching;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Caching\Cache;
 use Cline\Relay\Support\Attributes\Caching\InvalidatesCache;
@@ -46,7 +46,7 @@ final class RequestCache
     /**
      * Get a cached response if available.
      */
-    public function get(Connector $connector, Request $request): ?Response
+    public function get(AbstractConnector $connector, AbstractRequest $request): ?Response
     {
         if (!$this->isCacheable($request)) {
             return null;
@@ -70,7 +70,7 @@ final class RequestCache
     /**
      * Store a response in cache.
      */
-    public function put(Connector $connector, Request $request, Response $response): void
+    public function put(AbstractConnector $connector, AbstractRequest $request, Response $response): void
     {
         if (!$this->isCacheable($request)) {
             return;
@@ -91,7 +91,7 @@ final class RequestCache
     /**
      * Forget a specific request from cache.
      */
-    public function forget(Connector $connector, Request $request): bool
+    public function forget(AbstractConnector $connector, AbstractRequest $request): bool
     {
         $key = $this->keyGenerator->generate($connector, $request);
 
@@ -119,7 +119,7 @@ final class RequestCache
     /**
      * Invalidate cache after a mutation request.
      */
-    public function handleInvalidation(Connector $connector, Request $request): void
+    public function handleInvalidation(AbstractConnector $connector, AbstractRequest $request): void
     {
         $attribute = $this->getInvalidatesCacheAttribute($request);
 
@@ -163,7 +163,7 @@ final class RequestCache
     /**
      * Check if a request can be cached.
      */
-    public function isCacheable(Request $request): bool
+    public function isCacheable(AbstractRequest $request): bool
     {
         // Check for NoCache attribute
         if ($this->hasNoCacheAttribute($request)) {
@@ -177,7 +177,7 @@ final class RequestCache
     /**
      * Check if request has Cache attribute.
      */
-    public function hasCacheAttribute(Request $request): bool
+    public function hasCacheAttribute(AbstractRequest $request): bool
     {
         $reflection = new ReflectionClass($request);
 
@@ -187,7 +187,7 @@ final class RequestCache
     /**
      * Check if request has NoCache attribute.
      */
-    private function hasNoCacheAttribute(Request $request): bool
+    private function hasNoCacheAttribute(AbstractRequest $request): bool
     {
         $reflection = new ReflectionClass($request);
 
@@ -197,7 +197,7 @@ final class RequestCache
     /**
      * Get the InvalidatesCache attribute from a request.
      */
-    private function getInvalidatesCacheAttribute(Request $request): ?InvalidatesCache
+    private function getInvalidatesCacheAttribute(AbstractRequest $request): ?InvalidatesCache
     {
         $reflection = new ReflectionClass($request);
         $attributes = $reflection->getAttributes(InvalidatesCache::class);

@@ -2,13 +2,13 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Protocols\GraphQL\GraphQLRequest;
+use Cline\Relay\Protocols\GraphQL\AbstractGraphQLRequest;
 
 /**
  * {{ class }} GraphQL request.
  */
 {{ attributes }}
-final class {{ class }} extends GraphQLRequest
+final class {{ class }} extends AbstractGraphQLRequest
 {
     public function __construct(
         private readonly int $id,

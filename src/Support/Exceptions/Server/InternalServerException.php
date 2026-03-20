@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Server;
 
-use Cline\Relay\Support\Exceptions\ServerException;
+use Cline\Relay\Support\Exceptions\AbstractServerException;
 
 /**
  * Exception for 500 Internal Server Error responses.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class InternalServerException extends ServerException {}
+final class InternalServerException extends AbstractServerException {}

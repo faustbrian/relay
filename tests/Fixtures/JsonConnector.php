@@ -9,14 +9,14 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Connector;
+use Cline\Relay\Core\AbstractConnector;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 
 /**
  * @author Brian Faust <brian@cline.sh>
  */
 #[Json()]
-final class JsonConnector extends Connector
+final class JsonConnector extends AbstractConnector
 {
     public function baseUrl(): string
     {

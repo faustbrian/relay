@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Features\OAuth2;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Form;
 use Cline\Relay\Support\Attributes\Methods\Post;
 
@@ -18,12 +18,12 @@ use function array_merge;
 use function implode;
 
 /**
- * Request for client credentials grant.
+ * AbstractRequest for client credentials grant.
  *
  * @author Brian Faust <brian@cline.sh>
  */
 #[Post(), Form()]
-final class GetClientCredentialsTokenRequest extends Request
+final class GetClientCredentialsTokenRequest extends AbstractRequest
 {
     /**
      * @param array<string> $scopes

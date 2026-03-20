@@ -7,15 +7,15 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Protocols\GraphQL\GraphQLRequest;
+use Cline\Relay\Protocols\GraphQL\AbstractGraphQLRequest;
 use Cline\Relay\Protocols\GraphQL\GraphQLResponse;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Post;
 use Cline\Relay\Testing\MockResponse;
 
-function createGraphQLRequest(): GraphQLRequest
+function createGraphQLRequest(): AbstractGraphQLRequest
 {
-    return new #[Post(), Json()] class extends GraphQLRequest
+    return new #[Post(), Json()] class extends AbstractGraphQLRequest
     {
         public function graphqlQuery(): string
         {
@@ -24,9 +24,9 @@ function createGraphQLRequest(): GraphQLRequest
     };
 }
 
-function createGraphQLRequestWithVariables(): GraphQLRequest
+function createGraphQLRequestWithVariables(): AbstractGraphQLRequest
 {
-    return new #[Post(), Json()] class extends GraphQLRequest
+    return new #[Post(), Json()] class extends AbstractGraphQLRequest
     {
         public function graphqlQuery(): string
         {

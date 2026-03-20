@@ -7,9 +7,9 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
-use Cline\Relay\Core\Resource;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Core\AbstractResource;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Idempotent;
@@ -51,7 +51,7 @@ describe('Request', function (): void {
         });
 
         it('throws when no HTTP method attribute is present', function (): void {
-            $request = new class() extends Request
+            $request = new class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -333,7 +333,7 @@ describe('Request', function (): void {
 
     describe('isIdempotent()', function (): void {
         it('returns true when Idempotent attribute is present and enabled', function (): void {
-            $request = new #[Get(), Idempotent()] class() extends Request
+            $request = new #[Get(), Idempotent()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -345,7 +345,7 @@ describe('Request', function (): void {
         });
 
         it('returns false when Idempotent attribute is disabled', function (): void {
-            $request = new #[Get(), Idempotent(enabled: false)] class() extends Request
+            $request = new #[Get(), Idempotent(enabled: false)] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -365,7 +365,7 @@ describe('Request', function (): void {
 
     describe('idempotencyHeader()', function (): void {
         it('returns custom header name when specified in Idempotent attribute', function (): void {
-            $request = new #[Get(), Idempotent(header: 'X-Custom-Idempotency')] class() extends Request
+            $request = new #[Get(), Idempotent(header: 'X-Custom-Idempotency')] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -385,7 +385,7 @@ describe('Request', function (): void {
 
     describe('initialize() - idempotency', function (): void {
         it('generates random idempotency key when request is idempotent', function (): void {
-            $request = new #[Get(), Idempotent()] class() extends Request
+            $request = new #[Get(), Idempotent()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -400,7 +400,7 @@ describe('Request', function (): void {
         });
 
         it('uses existing idempotency key when already set', function (): void {
-            $request = new #[Get(), Idempotent()] class() extends Request
+            $request = new #[Get(), Idempotent()] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -416,7 +416,7 @@ describe('Request', function (): void {
         });
 
         it('uses custom key method when specified in Idempotent attribute', function (): void {
-            $request = new #[Get(), Idempotent(keyMethod: 'customKey')] class() extends Request
+            $request = new #[Get(), Idempotent(keyMethod: 'customKey')] class() extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -473,7 +473,7 @@ describe('Request', function (): void {
         });
 
         it('returns resource after setResource is called', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -481,7 +481,7 @@ describe('Request', function (): void {
                 }
             };
 
-            $resource = new class($connector) extends Resource {};
+            $resource = new class($connector) extends AbstractResource {};
 
             $request = new GetUserRequest(1);
             $request->setResource($resource);
@@ -490,7 +490,7 @@ describe('Request', function (): void {
         });
 
         it('returns connector through resource when only resource is set', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -498,7 +498,7 @@ describe('Request', function (): void {
                 }
             };
 
-            $resource = new class($connector) extends Resource {};
+            $resource = new class($connector) extends AbstractResource {};
 
             $request = new GetUserRequest(1);
             $request->setResource($resource);
@@ -507,7 +507,7 @@ describe('Request', function (): void {
         });
 
         it('returns directly set connector', function (): void {
-            $connector = new class() extends Connector
+            $connector = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -523,7 +523,7 @@ describe('Request', function (): void {
         });
 
         it('prefers directly set connector over resource connector', function (): void {
-            $connectorDirect = new class() extends Connector
+            $connectorDirect = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -531,7 +531,7 @@ describe('Request', function (): void {
                 }
             };
 
-            $connectorFromResource = new class() extends Connector
+            $connectorFromResource = new class() extends AbstractConnector
             {
                 public function baseUrl(): string
                 {
@@ -539,7 +539,7 @@ describe('Request', function (): void {
                 }
             };
 
-            $resource = new class($connectorFromResource) extends Resource {};
+            $resource = new class($connectorFromResource) extends AbstractResource {};
 
             $request = new GetUserRequest(1);
             $request->setResource($resource);

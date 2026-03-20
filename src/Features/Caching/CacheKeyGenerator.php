@@ -9,10 +9,10 @@
 
 namespace Cline\Relay\Features\Caching;
 
-use Cline\Relay\Core\Connector;
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractConnector;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Caching\Cache;
-use Cline\Relay\Support\Contracts\CacheKeyResolver;
+use Cline\Relay\Support\Contracts\CacheKeyResolverInterface;
 use Cline\Relay\Support\Exceptions\CacheKeyException;
 use ReflectionClass;
 
@@ -46,7 +46,7 @@ final readonly class CacheKeyGenerator
     /**
      * Generate a cache key for a request.
      */
-    public function generate(Connector $connector, Request $request): string
+    public function generate(AbstractConnector $connector, AbstractRequest $request): string
     {
         $cacheAttribute = $this->getCacheAttribute($request);
 
@@ -75,7 +75,7 @@ final readonly class CacheKeyGenerator
      *
      * @return array<string>
      */
-    public function getTags(Request $request): array
+    public function getTags(AbstractRequest $request): array
     {
         $cacheAttribute = $this->getCacheAttribute($request);
 
@@ -85,7 +85,7 @@ final readonly class CacheKeyGenerator
     /**
      * Get TTL for a request.
      */
-    public function getTtl(Request $request): int
+    public function getTtl(AbstractRequest $request): int
     {
         $cacheAttribute = $this->getCacheAttribute($request);
 
@@ -95,10 +95,10 @@ final readonly class CacheKeyGenerator
     /**
      * Resolve a custom key with placeholder substitution.
      */
-    private function resolveCustomKey(Request $request, string $keyTemplate): string
+    private function resolveCustomKey(AbstractRequest $request, string $keyTemplate): string
     {
-        // Check if it's a CacheKeyResolver class
-        if (class_exists($keyTemplate) && is_a($keyTemplate, CacheKeyResolver::class, true)) {
+        // Check if it's a CacheKeyResolverInterface class
+        if (class_exists($keyTemplate) && is_a($keyTemplate, CacheKeyResolverInterface::class, true)) {
             $resolver = new $keyTemplate();
 
             return $resolver->resolve($request);
@@ -142,7 +142,7 @@ final readonly class CacheKeyGenerator
     /**
      * Generate the default cache key.
      */
-    private function generateDefaultKey(Connector $connector, Request $request): string
+    private function generateDefaultKey(AbstractConnector $connector, AbstractRequest $request): string
     {
         $parts = [
             $connector::class,
@@ -170,7 +170,7 @@ final readonly class CacheKeyGenerator
     /**
      * Get the Cache attribute from a request.
      */
-    private function getCacheAttribute(Request $request): ?Cache
+    private function getCacheAttribute(AbstractRequest $request): ?Cache
     {
         $reflection = new ReflectionClass($request);
         $attributes = $reflection->getAttributes(Cache::class);

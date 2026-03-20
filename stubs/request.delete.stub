@@ -2,7 +2,7 @@
 
 namespace {{ namespace }};
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\Methods\Delete;
 
 /**
@@ -10,7 +10,7 @@ use Cline\Relay\Support\Attributes\Methods\Delete;
  */
 #[Delete()]
 {{ attributes }}
-final class {{ class }} extends Request
+final class {{ class }} extends AbstractRequest
 {
     public function __construct(
         private readonly int $id,

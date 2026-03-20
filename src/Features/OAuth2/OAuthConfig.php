@@ -9,8 +9,8 @@
 
 namespace Cline\Relay\Features\OAuth2;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\OAuthAuthenticator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\OAuthAuthenticatorInterface;
 use Cline\Relay\Support\Exceptions\OAuthConfigException;
 use Closure;
 
@@ -36,10 +36,10 @@ final class OAuthConfig
     /** @var array<string> */
     private array $defaultScopes = [];
 
-    /** @var null|Closure(Request): void */
+    /** @var null|Closure(AbstractRequest): void */
     private ?Closure $requestModifier = null;
 
-    /** @var null|Closure(OAuthAuthenticator, OAuthAuthenticator): void */
+    /** @var null|Closure(OAuthAuthenticatorInterface, OAuthAuthenticatorInterface): void */
     private ?Closure $onTokenRefreshed = null;
 
     private bool $autoRefreshOn401 = false;
@@ -142,7 +142,7 @@ final class OAuthConfig
     }
 
     /**
-     * @param callable(Request): void $requestModifier
+     * @param callable(AbstractRequest): void $requestModifier
      */
     public function setRequestModifier(callable $requestModifier): static
     {
@@ -151,7 +151,7 @@ final class OAuthConfig
         return $this;
     }
 
-    public function invokeRequestModifier(Request $request): Request
+    public function invokeRequestModifier(AbstractRequest $request): AbstractRequest
     {
         if (!$this->requestModifier instanceof Closure) {
             return $request;
@@ -165,7 +165,7 @@ final class OAuthConfig
     /**
      * Set a callback to be invoked when a token is refreshed.
      *
-     * @param callable(OAuthAuthenticator $newToken, OAuthAuthenticator $oldToken): void $callback
+     * @param callable(OAuthAuthenticatorInterface $newToken, OAuthAuthenticatorInterface $oldToken): void $callback
      */
     public function setOnTokenRefreshed(callable $callback): static
     {
@@ -177,7 +177,7 @@ final class OAuthConfig
     /**
      * Invoke the token refreshed callback.
      */
-    public function invokeOnTokenRefreshed(OAuthAuthenticator $newToken, OAuthAuthenticator $oldToken): void
+    public function invokeOnTokenRefreshed(OAuthAuthenticatorInterface $newToken, OAuthAuthenticatorInterface $oldToken): void
     {
         if (!$this->onTokenRefreshed instanceof Closure) {
             return;

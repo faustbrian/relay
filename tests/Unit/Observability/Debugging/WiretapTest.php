@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Observability\Debugging\Wiretap;
 use Cline\Relay\Support\Attributes\Methods\Get;
@@ -47,13 +47,13 @@ describe('Wiretap', function (): void {
             $capturedRequest = null;
             $capturedPsrRequest = null;
 
-            Wiretap::requests(function (Request $request, RequestInterface $psrRequest) use (&$called, &$capturedRequest, &$capturedPsrRequest): void {
+            Wiretap::requests(function (AbstractRequest $request, RequestInterface $psrRequest) use (&$called, &$capturedRequest, &$capturedPsrRequest): void {
                 $called = true;
                 $capturedRequest = $request;
                 $capturedPsrRequest = $psrRequest;
             });
 
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -117,7 +117,7 @@ describe('Wiretap', function (): void {
 
     describe('tapRequest()', function (): void {
         it('does nothing when tapping disabled', function (): void {
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {
@@ -137,7 +137,7 @@ describe('Wiretap', function (): void {
         it('outputs formatted debug info when enabled', function (): void {
             Wiretap::requests();
 
-            $request = new #[Get()] class extends Request
+            $request = new #[Get()] class extends AbstractRequest
             {
                 public function endpoint(): string
                 {

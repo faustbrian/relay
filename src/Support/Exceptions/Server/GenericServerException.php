@@ -9,11 +9,11 @@
 
 namespace Cline\Relay\Support\Exceptions\Server;
 
-use Cline\Relay\Support\Exceptions\ServerException;
+use Cline\Relay\Support\Exceptions\AbstractServerException;
 
 /**
  * Generic server exception for unhandled 5xx status codes.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class GenericServerException extends ServerException {}
+final class GenericServerException extends AbstractServerException {}

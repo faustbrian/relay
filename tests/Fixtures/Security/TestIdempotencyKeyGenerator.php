@@ -9,8 +9,8 @@
 
 namespace Tests\Fixtures\Security;
 
-use Cline\Relay\Core\Request;
-use Cline\Relay\Support\Contracts\IdempotencyKeyGenerator;
+use Cline\Relay\Core\AbstractRequest;
+use Cline\Relay\Support\Contracts\IdempotencyKeyGeneratorInterface;
 
 use function hash;
 use function serialize;
@@ -22,9 +22,9 @@ use function serialize;
  *
  * @psalm-immutable
  */
-final readonly class TestIdempotencyKeyGenerator implements IdempotencyKeyGenerator
+final readonly class TestIdempotencyKeyGenerator implements IdempotencyKeyGeneratorInterface
 {
-    public function generate(Request $request): string
+    public function generate(AbstractRequest $request): string
     {
         // Generate key based on request endpoint and body
         return hash('sha256', $request->endpoint().serialize($request->body() ?? []));

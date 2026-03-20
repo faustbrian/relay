@@ -9,21 +9,21 @@
 
 namespace Cline\Relay\Features\Middleware;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
-use Cline\Relay\Support\Contracts\Middleware;
+use Cline\Relay\Support\Contracts\MiddlewareInterface;
 use Closure;
 
 use function microtime;
 
 /**
- * Middleware that records request timing.
+ * MiddlewareInterface that records request timing.
  *
  * @author Brian Faust <brian@cline.sh>
  */
-final class TimingMiddleware implements Middleware
+final class TimingMiddleware implements MiddlewareInterface
 {
-    public function handle(Request $request, Closure $next): Response
+    public function handle(AbstractRequest $request, Closure $next): Response
     {
         $startTime = microtime(true);
 

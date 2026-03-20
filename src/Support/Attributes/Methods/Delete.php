@@ -19,7 +19,7 @@ use Attribute;
  * @psalm-immutable
  */
 #[Attribute(Attribute::TARGET_CLASS)]
-final readonly class Delete implements HttpMethod
+final readonly class Delete implements HttpMethodInterface
 {
     public function method(): string
     {

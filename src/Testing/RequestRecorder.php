@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Testing;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Exceptions\RequestRecorderException;
 
@@ -27,13 +27,13 @@ use function throw_if;
  */
 final class RequestRecorder
 {
-    /** @var array<array{request: Request, response: null|Response, timestamp: float}> */
+    /** @var array<array{request: AbstractRequest, response: null|Response, timestamp: float}> */
     private array $records = [];
 
     /**
      * Record a request/response pair.
      */
-    public function record(Request $request, ?Response $response = null): void
+    public function record(AbstractRequest $request, ?Response $response = null): void
     {
         $this->records[] = [
             'request' => $request,
@@ -45,7 +45,7 @@ final class RequestRecorder
     /**
      * Get all records.
      *
-     * @return array<array{request: Request, response: null|Response, timestamp: float}>
+     * @return array<array{request: AbstractRequest, response: null|Response, timestamp: float}>
      */
     public function all(): array
     {
@@ -55,7 +55,7 @@ final class RequestRecorder
     /**
      * Get all recorded requests.
      *
-     * @return array<Request>
+     * @return array<AbstractRequest>
      */
     public function requests(): array
     {
@@ -75,7 +75,7 @@ final class RequestRecorder
     /**
      * Get the last recorded request.
      */
-    public function lastRequest(): ?Request
+    public function lastRequest(): ?AbstractRequest
     {
         return $this->records !== [] ? end($this->records)['request'] : null;
     }
@@ -107,8 +107,8 @@ final class RequestRecorder
     /**
      * Find requests matching a filter.
      *
-     * @param  callable(Request): bool $filter
-     * @return array<Request>
+     * @param  callable(AbstractRequest): bool $filter
+     * @return array<AbstractRequest>
      */
     public function findRequests(callable $filter): array
     {
@@ -128,24 +128,24 @@ final class RequestRecorder
     /**
      * Find requests to a specific endpoint.
      *
-     * @return array<Request>
+     * @return array<AbstractRequest>
      */
     public function findByEndpoint(string $endpoint): array
     {
         return $this->findRequests(
-            fn (Request $r): bool => $r->endpoint() === $endpoint,
+            fn (AbstractRequest $r): bool => $r->endpoint() === $endpoint,
         );
     }
 
     /**
      * Find requests with a specific method.
      *
-     * @return array<Request>
+     * @return array<AbstractRequest>
      */
     public function findByMethod(string $method): array
     {
         return $this->findRequests(
-            fn (Request $r): bool => $r->method() === mb_strtoupper($method),
+            fn (AbstractRequest $r): bool => $r->method() === mb_strtoupper($method),
         );
     }
 
@@ -160,7 +160,7 @@ final class RequestRecorder
     /**
      * Assert a request was recorded matching the filter.
      *
-     * @param callable(Request): bool $filter
+     * @param callable(AbstractRequest): bool $filter
      */
     public function assertRecorded(callable $filter): void
     {

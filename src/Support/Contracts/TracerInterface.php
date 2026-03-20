@@ -9,7 +9,7 @@
 
 namespace Cline\Relay\Support\Contracts;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Core\Response;
 
 /**
@@ -61,7 +61,7 @@ interface TracerInterface
     /**
      * Record request attributes for telemetry.
      */
-    public function recordRequest(Request $request): void;
+    public function recordRequest(AbstractRequest $request): void;
 
     /**
      * Record response attributes for telemetry.

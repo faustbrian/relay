@@ -9,7 +9,7 @@
 
 namespace Tests\Fixtures;
 
-use Cline\Relay\Core\Request;
+use Cline\Relay\Core\AbstractRequest;
 use Cline\Relay\Support\Attributes\ContentTypes\Json;
 use Cline\Relay\Support\Attributes\Methods\Post;
 use Cline\Relay\Support\Attributes\ThrowOnError;
@@ -18,7 +18,7 @@ use Cline\Relay\Support\Attributes\ThrowOnError;
  * @author Brian Faust <brian@cline.sh>
  */
 #[Post(), Json(), ThrowOnError()]
-final class CreateUserRequest extends Request
+final class CreateUserRequest extends AbstractRequest
 {
     public function __construct(
         private readonly string $name,
