@@ -13,8 +13,6 @@ use Cline\Relay\Protocols\JsonRpcRequest;
 use Cline\Struct\AbstractData;
 use Override;
 
-use function is_array;
-
 /**
  * Base request for internal microservices using JSON-RPC.
  *
@@ -43,35 +41,9 @@ abstract class JsonRpcMicroserviceRequest extends JsonRpcRequest
         }
 
         if ($data instanceof AbstractData) {
-            $array = $this->filterNulls($data->toArray());
-
-            return $array === [] ? [] : ['data' => $array];
+            return ['data' => $data->toArray()];
         }
 
-        // Plain arrays are returned directly without wrapping
-        return $data;
-    }
-
-    /**
-     * Recursively filter null values from array.
-     *
-     * @param  array<mixed>         $array
-     * @return array<string, mixed>
-     */
-    private function filterNulls(array $array): array
-    {
-        $result = [];
-
-        /** @var int|string $key */
-        foreach ($array as $key => $value) {
-            if ($value === null) {
-                continue;
-            }
-
-            /** @var string $key */
-            $result[$key] = is_array($value) ? $this->filterNulls($value) : $value;
-        }
-
-        return $result;
+        return ['data' => $data];
     }
 }
