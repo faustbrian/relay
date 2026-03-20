@@ -26,6 +26,14 @@ use function sprintf;
 final class MockResponse
 {
     /**
+     * Load a response from a named fixture.
+     */
+    public static function fixture(string $name): Fixture
+    {
+        return Fixture::make($name);
+    }
+
+    /**
      * Create a successful JSON response.
      *
      * @param array<string, mixed>  $data

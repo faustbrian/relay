@@ -24,6 +24,12 @@ beforeEach(function (): void {
 
 afterEach(function (): void {
     MockClient::destroyGlobal();
+
+    $fixturePath = 'tests/Fixtures/Saloon/mock-client-fixture.json';
+
+    if (file_exists($fixturePath)) {
+        unlink($fixturePath);
+    }
 });
 
 function createMockClientTestRequest(string $endpoint = '/users', string $method = 'GET'): Request
@@ -149,6 +155,31 @@ describe('MockClient Response Mapping', function (): void {
         $response = $mockClient->resolve($request, 'https://api.example.com');
 
         expect($response->json('endpoint'))->toBe('/users/42');
+    });
+
+    it('resolves fixtures through MockResponse helper', function (): void {
+        $fixture = Fixture::make('mock-client-fixture');
+        $path = $fixture->getFilePath();
+        $dir = dirname($path);
+
+        if (!is_dir($dir)) {
+            mkdir($dir, 0o755, true);
+        }
+
+        file_put_contents($path, json_encode([
+            'status' => 200,
+            'headers' => ['Content-Type' => 'application/json'],
+            'body' => ['source' => 'fixture'],
+        ]));
+
+        $request = createMockClientTestRequest('/users');
+        $mockClient = new MockClient([
+            $request::class => MockResponse::fixture('mock-client-fixture'),
+        ]);
+
+        $response = $mockClient->resolve($request, 'https://api.example.com');
+
+        expect($response->json('source'))->toBe('fixture');
     });
 });
 
