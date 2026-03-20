@@ -417,9 +417,11 @@ describe('PoolIntegrationTest', function (): void {
                     return 'https://api.example.com';
                 }
 
-                public function authenticate(Request $request): void
+                public function authenticate(Request $request): Request
                 {
                     ++$this->authCallCount->value;
+
+                    return $request;
                 }
             };
 

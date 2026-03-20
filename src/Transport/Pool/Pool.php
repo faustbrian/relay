@@ -177,7 +177,7 @@ final class Pool
         $requestGenerator = function () use (&$requestMap): Generator {
             foreach ($this->requests as $key => $request) {
                 $request->initialize();
-                $this->connector->authenticate($request);
+                $request = $this->connector->authenticate($request);
 
                 $url = $this->buildUrl($request);
                 $headers = $this->mergeHeaders($request);

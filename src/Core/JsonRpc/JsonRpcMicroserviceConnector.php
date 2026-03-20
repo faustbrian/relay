@@ -54,15 +54,15 @@ abstract class JsonRpcMicroserviceConnector extends Connector
     }
 
     #[Override()]
-    public function authenticate(Request $request): void
+    public function authenticate(Request $request): Request
     {
         $token = $this->configByKey('token');
 
         if (!is_string($token)) {
-            return;
+            return $request;
         }
 
-        new BearerToken($token)->authenticate($request);
+        return new BearerToken($token)->authenticate($request);
     }
 
     #[Override()]

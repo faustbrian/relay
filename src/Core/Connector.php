@@ -129,9 +129,9 @@ abstract class Connector
     /**
      * Authenticate the request.
      */
-    public function authenticate(Request $request): void
+    public function authenticate(Request $request): Request
     {
-        // Override in subclass
+        return $request;
     }
 
     /**
@@ -265,12 +265,14 @@ abstract class Connector
         $request->initialize();
 
         // Authenticate the request
-        $this->authenticate($request);
+        $request = $this->authenticate($request);
 
         // Check for mock client (local or global)
         $mockClient = $this->getMockClient();
 
         if ($mockClient instanceof MockClient) {
+            $request = $request->withHeaders($this->mergeHeaders($request));
+
             // Set up recorder for fixture recording (captures this connector)
             $mockClient->setRecorder(fn (Request $req): Response => $this->sendRaw($req));
 

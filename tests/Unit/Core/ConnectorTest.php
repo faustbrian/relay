@@ -115,11 +115,11 @@ final class AuthenticatedConnector extends Connector
     }
 
     #[Override()]
-    public function authenticate(Request $request): void
+    public function authenticate(Request $request): Request
     {
         $this->lastAuthHeader = 'Bearer '.$this->token;
-        // Note: Request::withHeader() returns a clone, so we can't modify $request directly
-        // This test verifies the method is callable and doesn't throw
+
+        return $request->withBearerToken($this->token);
     }
 
     public function getLastAuthHeader(): ?string
@@ -352,12 +352,11 @@ describe('Connector', function (): void {
             };
 
             // Act
-            $connector->authenticate($request);
+            $authenticated = $connector->authenticate($request);
 
             // Assert
-            // Since Request::withHeader() returns a clone, we verify the method was called
-            // by checking the connector's internal state
             expect($connector->getLastAuthHeader())->toBe('Bearer test-token-123');
+            expect($authenticated->allHeaders()['Authorization'])->toBe('Bearer test-token-123');
         });
 
         it('rateLimitStore returns MemoryStore instance by default', function (): void {
@@ -718,10 +717,10 @@ describe('Connector', function (): void {
             $originalHeaders = $request->allHeaders();
 
             // Act
-            $connector->authenticate($request);
+            $authenticated = $connector->authenticate($request);
 
             // Assert
-            expect($request->allHeaders())->toEqual($originalHeaders);
+            expect($authenticated->allHeaders())->toEqual($originalHeaders);
         });
 
         it('resolveBaseUrl with trailing slash returns same as baseUrl', function (): void {

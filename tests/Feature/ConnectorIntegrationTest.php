@@ -10,8 +10,11 @@
 use Cline\Relay\Core\Connector;
 use Cline\Relay\Core\Request;
 use Cline\Relay\Core\Response;
+use Cline\Relay\Features\Auth\BearerToken;
 use Cline\Relay\Features\Pagination\PaginatedResponse;
 use Cline\Relay\Features\RateLimiting\RateLimitConfig;
+use Cline\Relay\Support\Attributes\ContentTypes\Json;
+use Cline\Relay\Support\Attributes\Methods\Post;
 use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
 use Cline\Relay\Support\Attributes\Pagination\LinkPagination;
 use Cline\Relay\Support\Attributes\Pagination\OffsetPagination;
@@ -1393,6 +1396,48 @@ describe('Connector', function (): void {
             $response = $connector->send($request);
 
             expect($response->json('local'))->toBeTrue();
+        });
+
+        it('captures authenticated wire-ready headers in mocked requests', function (): void {
+            $connector = new class() extends Connector
+            {
+                public function baseUrl(): string
+                {
+                    return 'https://api.example.com';
+                }
+
+                public function authenticate(Request $request): Request
+                {
+                    return new BearerToken('test-token')->authenticate($request);
+                }
+            };
+
+            $mockClient = new MockClient([
+                MockResponse::json(['ok' => true]),
+            ]);
+
+            $connector->withMockClient($mockClient);
+
+            $request = new #[Post(), Json()] class() extends Request
+            {
+                public function endpoint(): string
+                {
+                    return '/users';
+                }
+
+                public function body(): array
+                {
+                    return ['name' => 'John'];
+                }
+            };
+
+            $connector->send($request);
+
+            expect($mockClient->lastRequest()?->allHeaders())->toMatchArray([
+                'Authorization' => 'Bearer test-token',
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ]);
         });
 
         it('throws MockClientException when stray requests are prevented', function (): void {
