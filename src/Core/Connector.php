@@ -850,7 +850,7 @@ abstract class Connector
             }
         }
 
-        $body = $request->body();
+        $body = $request->allBody();
 
         if ($body === null) {
             return null;

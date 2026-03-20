@@ -37,6 +37,7 @@ use function base64_encode;
 use function bin2hex;
 use function class_exists;
 use function count;
+use function data_set;
 use function dd;
 use function dump;
 use function is_a;
@@ -60,6 +61,9 @@ abstract class Request
 
     /** @var array<string, mixed> */
     private array $additionalQuery = [];
+
+    /** @var null|array<string, mixed> */
+    private ?array $overriddenBody = null;
 
     private ?string $idempotencyKey = null;
 
@@ -138,6 +142,31 @@ abstract class Request
         $clone->additionalQuery[$name] = $value;
 
         return $clone;
+    }
+
+    /**
+     * Replace the request body.
+     *
+     * @param array<string, mixed> $body
+     */
+    public function withBody(array $body): static
+    {
+        $clone = $this->clone();
+        $clone->overriddenBody = $body;
+
+        return $clone;
+    }
+
+    /**
+     * Set a nested value on the request body.
+     */
+    public function withBodyValue(string $key, mixed $value): static
+    {
+        $body = $this->allBody() ?? [];
+
+        data_set($body, $key, $value);
+
+        return $this->withBody($body);
     }
 
     /**
@@ -237,6 +266,16 @@ abstract class Request
     public function allQuery(): array
     {
         return [...($this->query() ?? []), ...$this->additionalQuery];
+    }
+
+    /**
+     * Get the effective request body, including immutable overrides.
+     *
+     * @return null|array<string, mixed>
+     */
+    public function allBody(): ?array
+    {
+        return $this->overriddenBody ?? $this->body();
     }
 
     /**

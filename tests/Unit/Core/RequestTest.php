@@ -141,6 +141,42 @@ describe('Request', function (): void {
 
             expect($request->body())->toBeNull();
         });
+
+        it('allows replacing the request body immutably', function (): void {
+            $request = new CreateUserRequest('John', 'john@example.com');
+            $modified = $request->withBody([
+                'name' => 'Jane',
+                'email' => 'jane@example.com',
+            ]);
+
+            expect($modified->allBody())->toBe([
+                'name' => 'Jane',
+                'email' => 'jane@example.com',
+            ]);
+            expect($request->allBody())->toBe([
+                'name' => 'John',
+                'email' => 'john@example.com',
+            ]);
+        });
+
+        it('allows setting a nested body value immutably', function (): void {
+            $request = new CreateUserRequest('John', 'john@example.com');
+            $modified = $request->withBodyValue('meta.cursor.next', 'cursor-123');
+
+            expect($modified->allBody())->toBe([
+                'name' => 'John',
+                'email' => 'john@example.com',
+                'meta' => [
+                    'cursor' => [
+                        'next' => 'cursor-123',
+                    ],
+                ],
+            ]);
+            expect($request->allBody())->toBe([
+                'name' => 'John',
+                'email' => 'john@example.com',
+            ]);
+        });
     });
 
     describe('headers()', function (): void {
@@ -156,6 +192,14 @@ describe('Request', function (): void {
             $request = new GetUserRequest(1);
 
             expect($request->query())->toBeNull();
+        });
+    });
+
+    describe('allBody()', function (): void {
+        it('returns null by default', function (): void {
+            $request = new GetUserRequest(1);
+
+            expect($request->allBody())->toBeNull();
         });
     });
 
