@@ -297,10 +297,14 @@ final class Fixture
         }
 
         /** @var array<array<string>|string> $headers */
-        $encodedBody = json_encode($body);
+        if (is_string($body)) {
+            $encodedBody = $body;
+        } else {
+            $encodedBody = json_encode($body);
 
-        if ($encodedBody === false) {
-            $encodedBody = '{}';
+            if ($encodedBody === false) {
+                $encodedBody = '{}';
+            }
         }
 
         return new Response(
