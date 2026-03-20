@@ -54,6 +54,23 @@ final class TestPaginator implements Paginator
 
         return null;
     }
+
+    public function nextRequest(Request $request, Response $response): ?Request
+    {
+        $nextPage = $this->getNextPage($response);
+
+        if ($nextPage === null) {
+            return null;
+        }
+
+        $nextRequest = $request->clone();
+
+        foreach ($nextPage as $key => $value) {
+            $nextRequest = $nextRequest->withQuery($key, $value);
+        }
+
+        return $nextRequest;
+    }
 }
 
 /**
@@ -82,6 +99,61 @@ final class AfterPaginator implements Paginator
         $after = $response->json('pagination.after');
 
         return $after !== null ? ['after' => $after] : null;
+    }
+
+    public function nextRequest(Request $request, Response $response): ?Request
+    {
+        $nextPage = $this->getNextPage($response);
+
+        if ($nextPage === null) {
+            return null;
+        }
+
+        $nextRequest = $request->clone();
+
+        foreach ($nextPage as $key => $value) {
+            $nextRequest = $nextRequest->withQuery($key, $value);
+        }
+
+        return $nextRequest;
+    }
+}
+
+/**
+ * Test paginator that advances pagination through the request body.
+ *
+ * @author Brian Faust <brian@cline.sh>
+ */
+final class BodyCursorPaginator implements Paginator
+{
+    public function getItems(Response $response): array
+    {
+        return $response->json('result.data') ?? [];
+    }
+
+    public function hasMorePages(Response $response): bool
+    {
+        return $response->json('result.meta.page.cursor.next') !== null;
+    }
+
+    public function getNextPage(Response $response): ?array
+    {
+        $cursor = $response->json('result.meta.page.cursor.next');
+
+        return $cursor !== null ? ['cursor' => $cursor] : null;
+    }
+
+    public function nextRequest(Request $request, Response $response): ?Request
+    {
+        $cursor = $response->json('result.meta.page.cursor.next');
+
+        if ($cursor === null) {
+            return null;
+        }
+
+        return $request
+            ->withBodyValue('params.page.cursor', $cursor)
+            ->withBodyValue('params.page.size', 100);
     }
 }
 
@@ -116,6 +188,33 @@ final class TestRequest extends Request
     public function method(): string
     {
         return 'GET';
+    }
+}
+
+/**
+ * @author Brian Faust <brian@cline.sh>
+ */
+final class TestBodyPaginationRequest extends Request
+{
+    public function endpoint(): string
+    {
+        return '/rpc';
+    }
+
+    public function body(): ?array
+    {
+        return [
+            'jsonrpc' => '2.0',
+            'id' => 'request-id',
+            'method' => 'app.list_items',
+            'params' => [],
+        ];
+    }
+
+    #[Override()]
+    public function method(): string
+    {
+        return 'POST';
     }
 }
 
@@ -305,6 +404,59 @@ describe('PaginatedResponse', function (): void {
                 ->and($collection)->toHaveCount(6)
                 ->and($collection->first())->toBe(['id' => 1])
                 ->and($collection->last())->toBe(['id' => 6]);
+        });
+
+        test('advances pagination by mutating the next request body', function (): void {
+            $connector = new PaginationTestConnector();
+            $connector->addResponse(
+                Response::make([
+                    'result' => [
+                        'data' => [['id' => 3]],
+                        'meta' => [
+                            'page' => [
+                                'cursor' => [
+                                    'next' => null,
+                                ],
+                            ],
+                        ],
+                    ],
+                ], 200),
+            );
+
+            $request = new TestBodyPaginationRequest();
+            $paginator = new BodyCursorPaginator();
+            $initialResponse = Response::make([
+                'result' => [
+                    'data' => [['id' => 1], ['id' => 2]],
+                    'meta' => [
+                        'page' => [
+                            'cursor' => [
+                                'next' => 'page-2',
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200);
+
+            $paginatedResponse = new PaginatedResponse($connector, $request, $paginator, $initialResponse);
+
+            expect($paginatedResponse->collect()->all())->toBe([
+                ['id' => 1],
+                ['id' => 2],
+                ['id' => 3],
+            ]);
+
+            expect($connector->lastRequest()?->allBody())->toBe([
+                'jsonrpc' => '2.0',
+                'id' => 'request-id',
+                'method' => 'app.list_items',
+                'params' => [
+                    'page' => [
+                        'cursor' => 'page-2',
+                        'size' => 100,
+                    ],
+                ],
+            ]);
         });
 
         test('returns self from first method', function (): void {
@@ -640,6 +792,13 @@ describe('PaginatedResponse', function (): void {
                 public function getNextPage(Response $response): ?array
                 {
                     // But return null on first call to test the break condition
+                    ++$this->callCount;
+
+                    return null;
+                }
+
+                public function nextRequest(Request $request, Response $response): ?Request
+                {
                     ++$this->callCount;
 
                     return null;

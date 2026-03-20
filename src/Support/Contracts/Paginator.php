@@ -9,6 +9,7 @@
 
 namespace Cline\Relay\Support\Contracts;
 
+use Cline\Relay\Core\Request;
 use Cline\Relay\Core\Response;
 
 /**
@@ -24,6 +25,11 @@ interface Paginator
      * @return null|array<string, mixed>
      */
     public function getNextPage(Response $response): ?array;
+
+    /**
+     * Build the request for the next page, or null if no more pages.
+     */
+    public function nextRequest(Request $request, Response $response): ?Request;
 
     /**
      * Extract items from the response.

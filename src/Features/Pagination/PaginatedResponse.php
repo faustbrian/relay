@@ -196,17 +196,10 @@ final class PaginatedResponse implements IteratorAggregate
         $currentResponse = $this->initialResponse;
 
         while ($this->shouldContinue($currentResponse)) {
-            $nextParams = $this->paginator->getNextPage($currentResponse);
+            $nextRequest = $this->paginator->nextRequest($this->request, $currentResponse);
 
-            if ($nextParams === null) {
+            if ($nextRequest === null) {
                 break;
-            }
-
-            // Create a new request with next page parameters
-            $nextRequest = $this->request->clone();
-
-            foreach ($nextParams as $key => $value) {
-                $nextRequest = $nextRequest->withQuery($key, $value);
             }
 
             // Send the request

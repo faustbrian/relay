@@ -9,6 +9,7 @@
 
 namespace Cline\Relay\Features\Pagination;
 
+use Cline\Relay\Core\Request;
 use Cline\Relay\Core\Response;
 use Cline\Relay\Support\Attributes\Pagination\CursorPagination;
 use Cline\Relay\Support\Contracts\Paginator;
@@ -44,6 +45,23 @@ final readonly class CursorPaginator implements Paginator
             $this->config->cursor => $nextCursor,
             $this->config->perPage => $this->perPage,
         ];
+    }
+
+    public function nextRequest(Request $request, Response $response): ?Request
+    {
+        $nextPage = $this->getNextPage($response);
+
+        if ($nextPage === null) {
+            return null;
+        }
+
+        $nextRequest = $request->clone();
+
+        foreach ($nextPage as $key => $value) {
+            $nextRequest = $nextRequest->withQuery($key, $value);
+        }
+
+        return $nextRequest;
     }
 
     public function getItems(Response $response): array
