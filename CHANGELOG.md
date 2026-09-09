@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release
 
 ### Changed
+- Allow Guzzle 7 and 8 for the HTTP transport and testing utilities.
+
+### Changed
 - Renamed abstract base classes to use the `Abstract*` prefix across `src/`.
 - Renamed interfaces to use the `*Interface` suffix across `src/`.
 - Renamed traits to use the `*Trait` suffix across `src/`.
