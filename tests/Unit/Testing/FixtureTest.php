@@ -158,6 +158,30 @@ describe('Fixture Resolution', function (): void {
         // Cleanup
         unlink($path);
     });
+
+    it('loads string fixture bodies without json encoding them', function (): void {
+        $fixture = Fixture::make('test-fixture');
+        $path = $fixture->getFilePath();
+        $dir = dirname($path);
+
+        if (!is_dir($dir)) {
+            mkdir($dir, 0o755, true);
+        }
+
+        file_put_contents($path, json_encode([
+            'statusCode' => 200,
+            'headers' => ['Content-Type' => 'application/xml'],
+            'data' => '<root><message>Hello</message></root>',
+        ]));
+
+        $response = $fixture->resolve();
+
+        expect($response)->toBeInstanceOf(Response::class);
+        expect($response->status())->toBe(200);
+        expect($response->body())->toBe('<root><message>Hello</message></root>');
+
+        unlink($path);
+    });
 });
 
 describe('Fixture Storage', function (): void {

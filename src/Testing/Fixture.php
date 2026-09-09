@@ -144,8 +144,7 @@ final class Fixture
     /**
      * Set sensitive headers to redact.
      *
-     * @param  array<string, callable|string> $headers
-     * @return $this
+     * @param array<string, callable|string> $headers
      */
     public function withSensitiveHeaders(array $headers): self
     {
@@ -157,8 +156,7 @@ final class Fixture
     /**
      * Set sensitive JSON parameters to redact.
      *
-     * @param  array<string, callable|string> $parameters
-     * @return $this
+     * @param array<string, callable|string> $parameters
      */
     public function withSensitiveJsonParameters(array $parameters): self
     {
@@ -170,8 +168,7 @@ final class Fixture
     /**
      * Set sensitive regex patterns to redact.
      *
-     * @param  array<string, string> $patterns
-     * @return $this
+     * @param array<string, string> $patterns
      */
     public function withSensitiveRegexPatterns(array $patterns): self
     {
@@ -297,10 +294,14 @@ final class Fixture
         }
 
         /** @var array<array<string>|string> $headers */
-        $encodedBody = json_encode($body);
+        if (is_string($body)) {
+            $encodedBody = $body;
+        } else {
+            $encodedBody = json_encode($body);
 
-        if ($encodedBody === false) {
-            $encodedBody = '{}';
+            if ($encodedBody === false) {
+                $encodedBody = '{}';
+            }
         }
 
         return new Response(

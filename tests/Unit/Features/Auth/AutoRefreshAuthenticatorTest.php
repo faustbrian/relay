@@ -124,7 +124,6 @@ describe('AutoRefreshAuthenticator', function (): void {
     it('does not refresh when token is not refreshable', function (): void {
         $authenticator = new AccessTokenAuthenticator(
             accessToken: 'token',
-            refreshToken: null,
             expiresAt: CarbonImmutable::now()->subHour(),
         );
         $connector = new MockConnector();
