@@ -77,7 +77,6 @@ describe('IdempotencyManager', function (): void {
 
     it('uses custom header name', function (): void {
         $manager = new IdempotencyManager(
-            cache: null,
             headerName: 'X-Request-Id',
         );
         $request = createExtensibilityRequest();

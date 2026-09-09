@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Allow Guzzle 7 and 8 for the HTTP transport and testing utilities.
+- Updated Rector-compatible type annotations and test call sites.
 
 ### Changed
 - Renamed abstract base classes to use the `Abstract*` prefix across `src/`.

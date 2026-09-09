@@ -224,7 +224,7 @@ final class Debugger
      */
     private function isSensitiveHeader(string $name): bool
     {
-        return array_any($this->sensitiveHeaders, fn ($sensitive): bool => strcasecmp($name, (string) $sensitive) === 0);
+        return array_any($this->sensitiveHeaders, fn (string $sensitive): bool => strcasecmp($name, $sensitive) === 0);
     }
 
     /**
@@ -232,7 +232,7 @@ final class Debugger
      */
     private function isSensitiveBodyKey(string $key): bool
     {
-        return array_any($this->sensitiveBodyKeys, fn ($sensitive): bool => strcasecmp($key, (string) $sensitive) === 0);
+        return array_any($this->sensitiveBodyKeys, fn (string $sensitive): bool => strcasecmp($key, $sensitive) === 0);
     }
 
     /**
